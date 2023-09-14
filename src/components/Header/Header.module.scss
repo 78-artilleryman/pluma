@@ -25,8 +25,12 @@
   display: flex;
   gap: 16px;
   padding-right: 16px;
+  align-items: center;
 }
-
+.dangerBtn {
+  @extend .dangerBtn;
+  margin-right: 16px;
+}
 .button {
   @extend .button; // buttonStyles.scss에서 정의한 .button 스타일을 확장
 }
@@ -40,5 +44,8 @@
 
   .button {
     @extend .button; // buttonStyles.scss에서 정의한 .button 스타일을 확장
+  }
+  .dangerBtn {
+    @extend .dangerBtn;
   }
 }

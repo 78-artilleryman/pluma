@@ -1,34 +1,44 @@
-// App.js
-
 import React, { useEffect } from "react";
 import { getInitialTheme } from "./utils/theme";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Provider } from "react-redux";
-import store from "./store/configureStore";
+import { useSelector } from "react-redux";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import Home from "./pages/Home/Home";
-import "./App.module.scss"; // App.module.scss 파일을 불러옵니다.
+import DocumentsList from "./pages/List/DocumentList";
+import { selectIsAuthenticated } from "./store/auth/authSelectors";
+
+import "./App.module.scss";
+import DocumentDetailPage from "./pages/Detail/DocumentDetail";
 
 function App() {
   const initialTheme = getInitialTheme();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
+  // 초기 테마 설정 코드를 useEffect 밖으로 이동
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", initialTheme);
-  }, [initialTheme]);
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log(isAuthenticated);
+      // 로그인 후 리디렉션을 여기서 수행하지 않음
+    }
+  }, [isAuthenticated]);
 
   return (
-    <Provider store={store}>
-      <Router>
-        <div className="App">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </div>
-      </Router>
-    </Provider>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/document" element={<DocumentsList />} />
+          <Route path="/document/:documentId" element={<DocumentDetailPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

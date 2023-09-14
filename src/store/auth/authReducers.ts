@@ -8,8 +8,8 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  isAuthenticated: false,
-  user: null,
+  isAuthenticated: localStorage.getItem("user") ? true : false,
+  user: localStorage.getItem("user") || null,
   loading: false,
   error: null,
 };
@@ -32,9 +32,26 @@ const authReducer = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    // 로그인 관련 리듀서
+    logoutRequest: (state, action: PayloadAction<string>) => {
+      state.loading = true;
+      state.error = null;
+    },
+    logoutSuccess: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.isAuthenticated = false;
+      state.user = null;
+    },
+    logoutFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
 
     // 회원가입 관련 리듀서
-    registerRequest: (state, action: PayloadAction<{ username: string; password: string }>) => {
+    registerRequest: (
+      state,
+      action: PayloadAction<{ username: string; password: string; name: string }>
+    ) => {
       state.loading = true;
       state.error = null;
     },

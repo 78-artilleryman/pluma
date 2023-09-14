@@ -1,25 +1,82 @@
-import React from "react";
-import { Link } from "react-router-dom"; // react-router-dom을 사용하여 링크 생성
-import ThemeToggle from "../ThemeToggle/ThemeToggle"; // 다크 모드 토글 컴포넌트
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import logo from "../../assets/flumaLogo2.png";
 
-import styles from "./Header.module.scss"; // CSS Modules 스타일
+import styles from "./Header.module.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../../store/auth/authSelectors";
+import { logoutRequest } from "../../store/auth/authActions";
+import ModalStyles from "../../utils/Modal.module.scss"; // Modal 스타일 파일 import
 
 const Header = () => {
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
+  const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
+
+  const openLogoutModal = () => {
+    setLogoutModalOpen(true);
+  };
+
+  const closeLogoutModal = () => {
+    setLogoutModalOpen(false);
+  };
+
+  const confirmLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    dispatch(logoutRequest());
+    closeLogoutModal();
+  };
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   return (
     <header className={styles.header}>
       <div className={styles.logoContainer}>
-        <img src={logo} alt="로고 이미지" className={styles.logo} />
+        <Link to={user ? "/document" : "/"}>
+          <img src={logo} alt="로고 이미지" className={styles.logo} />
+        </Link>
       </div>
+
       <div className={styles.buttonsContainer}>
         <ThemeToggle />
-        <Link to="/register" className={styles.button}>
-          회원가입
-        </Link>
-        <Link to="/login" className={styles.button}>
-          로그인
-        </Link>
+        {user ? (
+          <>
+            <span>{user}</span>
+            <button className={styles.button} onClick={openLogoutModal}>
+              로그아웃
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/register" className={styles.button}>
+              회원가입
+            </Link>
+            <Link to="/login" className={styles.button}>
+              로그인
+            </Link>
+          </>
+        )}
       </div>
+
+      {/* 로그아웃 확인 모달 */}
+      {isLogoutModalOpen && (
+        <div className={ModalStyles.modalOverlay}>
+          <div className={ModalStyles.modalContainer}>
+            <p>정말 로그아웃 하시겠습니까?</p>
+            <button onClick={confirmLogout} className={styles.dangerBtn}>
+              로그아웃
+            </button>
+            <button onClick={closeLogoutModal} className={styles.button}>
+              취소
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

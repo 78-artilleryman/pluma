@@ -1,5 +1,5 @@
 // authSelectors.ts
-import { RootState } from "../configureStore";
+import { RootState } from "../../configureStore";
 
 export const selectAuth = (state: RootState) => state.auth;
 export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
