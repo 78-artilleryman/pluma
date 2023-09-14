@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { timeSince } from "src/utils/TimeSince";
 import { DocumentInfo } from "../../store/document/types";
 import { getInitialTheme } from "../../utils/theme";
-import { timeSince } from "../../utils/TimeSince";
 import styles from "./Document.module.scss";
 
 interface DocumentProps {
