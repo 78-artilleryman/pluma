@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
+import { getTokenFromCookie } from "src/utils/tokenUtils";
 import {
   loadDocumentsRequest,
   loadDocumentsSuccess,
@@ -26,7 +27,7 @@ import { DocumentInfo } from "./types";
 function* loadDocuments(action: any) {
   try {
     // 쿠키에서 accessToken 가져오기
-    const access_token = localStorage.getItem("access_token");
+    const access_token = getTokenFromCookie("access_token");
     if (access_token) {
       // API 호출
       const response: AxiosResponse<any> = yield call(() =>
@@ -55,7 +56,7 @@ function* loadDocuments(action: any) {
 // 단일 글 로딩
 function* loadDocument(action: any) {
   try {
-    const accessToken = localStorage.getItem("access_token");
+    const accessToken = getTokenFromCookie("access_token");
     const response: AxiosResponse<any> = yield call(() =>
       axios.get(`/documents/${action.payload}`, {
         headers: {

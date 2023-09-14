@@ -14,7 +14,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Login: React.FC = () => {
   const dispatch = useDispatch();
   const authState = useSelector(selectAuth);
-  const user = localStorage.getItem("user");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +32,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      redirect("/document");
+      navigate("/document");
     }
   }, [isAuthenticated]);
 
@@ -75,11 +74,6 @@ const Login: React.FC = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
   }, []);
-  useEffect(() => {
-    if (user) {
-      navigate("/document");
-    }
-  }, [user]);
 
   useEffect(() => {
     if (authState.error) {
