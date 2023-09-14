@@ -1,0 +1,130 @@
+@import "../../styles/common.scss";
+.authContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  .logoContainer {
+    padding-left: 16px;
+  }
+  .logo {
+    height: auto;
+    width: 150px;
+  }
+
+  .authForm {
+    max-width: 400px;
+    width: 100%;
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      height: 50px;
+      border: 1px solid #ccc;
+      border-radius: $common-border-radius;
+      transition: border-color 0.3s, box-shadow 0.3s; /* 추가: hover 및 focus 효과 스타일 */
+
+      &:hover {
+        border-color: #007bff; /* 추가: hover 효과 스타일 */
+      }
+
+      &:focus {
+        border-color: #007bff; /* 추가: focus 효과 스타일 */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 추가: focus 효과 스타일 */
+      }
+    }
+    .passwordInputContainer {
+      position: relative; /* Position the container relative to its parent */
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .passwordToggleIcon {
+      position: absolute; /* Position the icon absolutely inside the container */
+      top: 50%; /* Align vertically in the middle */
+      right: 10px; /* Position 10px from the right */
+      transform: translateY(-50%); /* Center vertically */
+      cursor: pointer;
+    }
+    p {
+      font-size: 20px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: underline;
+
+      &:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+    }
+    button {
+      width: 100%;
+      padding: $common-padding;
+      border: none;
+      height: 50px;
+      cursor: pointer;
+      color: #fff;
+      border-radius: $common-border-radius;
+      transition: background-color 0.3s; /* 버튼 공통 스타일 */
+
+      &:hover {
+        /* 버튼 공통 스타일 */
+      }
+
+      &.loginButton {
+        background-color: #007bff;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+
+      &.registerButton {
+        background-color: #28a745;
+        color: #fff;
+
+        &:hover {
+          background-color: #1e7e34;
+        }
+      }
+    }
+  }
+}
+
+// 다크모드
+[data-theme="dark"] {
+  .authForm {
+    input {
+      background-color: #444444;
+      color: #ffffff;
+      border: 1px solid #666666;
+    }
+
+    &.loginButton {
+      background-color: #007bff;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+
+    &.registerButton {
+      background-color: #28a745;
+      color: #fff;
+
+      &:hover {
+        background-color: #1e7e34;
+      }
+    }
+  }
+}
