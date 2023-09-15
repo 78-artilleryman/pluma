@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIsAuthenticated, selectUser } from "../../store/auth/authSelectors";
+import { selectIsAuthenticated, selectUser, selectUserInfo } from "../../store/auth/authSelectors";
 import { loadDocumentsRequest } from "../../store/document/documentActions";
 import {
   selectDocumentsList,
@@ -22,17 +22,16 @@ const DocumentList: React.FC = () => {
 
   // 모달 상태 추가
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user = useSelector(selectUser);
+  const userInfo = useSelector(selectUserInfo);
   useEffect(() => {
     // 문서 목록을 불러오는 액션 디스패치
     if (!isAuthenticated) {
       setIsModalOpen(true); // 사용자가 로그인하지 않은 경우 모달 열기
     } else {
       setIsModalOpen(false);
-      dispatch(loadDocumentsRequest(user));
+      dispatch(loadDocumentsRequest(userInfo?.userId || ""));
     }
-  }, [user, isAuthenticated]);
-  useEffect(() => console.log(documents), [documents]);
+  }, [userInfo, isAuthenticated]);
   // 모달을 닫기 위한 함수
   const closeModal = () => {
     setIsModalOpen(false);
