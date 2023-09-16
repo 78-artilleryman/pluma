@@ -1,7 +1,5 @@
-// authSaga.js
-import { put, takeLatest, call } from "redux-saga/effects";
+import { put, takeLatest, call, getContext } from "redux-saga/effects";
 import axios, { AxiosResponse } from "axios";
-
 import {
   loginRequest,
   loginSuccess,
@@ -12,12 +10,101 @@ import {
   logoutSuccess,
   logoutFailure,
   logoutRequest,
+  checkTokenExpirationSuccess,
+  checkTokenExpirationFailure,
+  checkTokenExpirationRequest,
+  fetchUserInfoRequest,
+  fetchUserInfoSuccess,
+  fetchUserInfoFailure,
+  refreshTokenSuccess,
+  refreshTokenFailure,
+  refreshTokenRequest,
 } from "./authActions";
+import { Dispatch } from "redux";
+
+import {
+  setTokenToCookie, // 쿠키에 토큰 저장 함수 가져오기
+  clearTokenFromCookie,
+  checkTokenExpiration,
+  getTokenFromCookie, // 쿠키에서 토큰 삭제 함수 가져오기
+} from "../../utils/tokenUtils"; // tokenUtil 파일에서 가져옴
+
+// 사용자 정보를 가져오는 사가
+function* fetchUserInfo() {
+  try {
+    // 서버에 사용자 정보를 요청
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get("/users/info", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getTokenFromCookie("access_token")}`,
+        },
+      })
+    );
+
+    if (response.status === 200) {
+      // 응답 데이터에서 사용자 정보 추출
+      const userInfo = response.data;
+      setTokenToCookie("user", JSON.stringify(response.data));
+      yield put(fetchUserInfoSuccess(userInfo));
+      yield put(loginSuccess(userInfo.userName));
+    } else {
+      yield put(fetchUserInfoFailure("사용자 정보를 가져오는데 실패했습니다."));
+    }
+  } catch (error) {
+    yield put(fetchUserInfoFailure("사용자 정보를 가져오는데 실패했습니다."));
+  }
+}
+
+// 토큰 만료 검사 사가
+export function* checkTokenExpirationSaga() {
+  try {
+    // 먼저 dispatch 함수를 가져옴
+    const dispatch: Dispatch = yield getContext("dispatch");
+
+    // dispatch 함수를 이용하여 액션을 디스패치하고 결과를 반환
+    const tokenExpired: boolean = yield call(checkTokenExpiration, dispatch);
+    if (tokenExpired) {
+      // 토큰이 만료되었다면 로그아웃을 실행
+      yield put(logoutRequest());
+    } else {
+      yield put(checkTokenExpirationSuccess());
+    }
+  } catch (error) {
+    yield put(checkTokenExpirationFailure("토큰 재발급 검사 실패"));
+  }
+}
+
+// 토큰 재발급 사가
+function* refreshTokenSaga() {
+  try {
+    // refresh_token을 사용하여 토큰 재발급 요청
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get("/users/token/refresh", {
+        headers: {
+          Authorization: `Bearer ${getTokenFromCookie("access_token")}`,
+        },
+      })
+    );
+
+    if (response.status === 200) {
+      const access_token = response.data?.access_token;
+      // 새로 발급받은 access_token을 쿠키에 저장
+      setTokenToCookie("access_token", access_token, 30); // 예: 30분 동안 유효한 토큰
+      yield put(refreshTokenSuccess());
+    } else {
+      yield put(refreshTokenFailure("토큰 재발급에 실패했습니다."));
+      yield put(logoutRequest());
+    }
+  } catch (error) {
+    yield put(refreshTokenFailure("토큰 재발급에 실패했습니다."));
+    yield put(logoutRequest());
+  }
+}
 
 // 로그인 사가
 function* login(action: any) {
   try {
-    console.log(action.payload);
     const { username, password } = action.payload;
 
     // Axios를 사용하여 실제 API 호출
@@ -32,21 +119,18 @@ function* login(action: any) {
         }
       )
     );
+
     if (response.status === 200) {
       // 응답 데이터에서 access_token 추출
       const access_token = response.data?.access_token;
       const refresh_token = response.data?.refresh_token;
-      localStorage.setItem("user", username);
-      if (access_token) {
-        // access_token을 로컬 스토리지에 저장
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("refresh_token", refresh_token);
 
-        // 로그인 성공 액션 디스패치
-        yield put(loginSuccess(username));
-      } else {
-        yield put(loginFailure("로그인에 실패했습니다."));
-      }
+      // access_token과 refresh_token을 쿠키에 저장
+      setTokenToCookie("access_token", access_token, 30);
+      setTokenToCookie("refresh_token", refresh_token, 180);
+
+      // 로그인 성공 액션 디스패치
+      yield put(fetchUserInfoRequest());
     } else {
       yield put(loginFailure("로그인에 실패했습니다."));
     }
@@ -55,9 +139,14 @@ function* login(action: any) {
   }
 }
 
-// 회원가입 사가 - 유사한 방식으로 작성
+// 로그아웃 사가
 function* logout(action: any) {
   try {
+    // 쿠키에서 토큰 삭제
+    clearTokenFromCookie("access_token");
+    clearTokenFromCookie("refresh_token");
+    clearTokenFromCookie("user");
+
     yield put(logoutSuccess("로그아웃 성공"));
   } catch (error) {
     yield put(logoutFailure("로그아웃 실패했습니다."));
@@ -67,7 +156,6 @@ function* logout(action: any) {
 // 회원가입 사가 - 유사한 방식으로 작성
 function* register(action: any) {
   try {
-    console.log(action.payload);
     const { username, password, name } = action.payload;
 
     // Axios를 사용하여 실제 API 호출
@@ -86,6 +174,9 @@ function* register(action: any) {
 }
 
 function* authSaga() {
+  yield takeLatest(fetchUserInfoRequest.type, fetchUserInfo);
+  yield takeLatest(checkTokenExpirationRequest.type, checkTokenExpirationSaga);
+  yield takeLatest(refreshTokenRequest.type, refreshTokenSaga);
   yield takeLatest(loginRequest.type, login);
   yield takeLatest(logoutRequest.type, logout);
   yield takeLatest(registerRequest.type, register);

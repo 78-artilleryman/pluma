@@ -1,5 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
+import { checkTokenExpiration, getTokenFromCookie } from "src/utils/tokenUtils";
+import { checkTokenExpirationRequest, logoutRequest } from "../auth/authActions";
+import { checkTokenExpirationSaga } from "../auth/authSagas";
 import {
   loadDocumentsRequest,
   loadDocumentsSuccess,
@@ -26,11 +29,11 @@ import { DocumentInfo } from "./types";
 function* loadDocuments(action: any) {
   try {
     // 쿠키에서 accessToken 가져오기
-    const access_token = localStorage.getItem("access_token");
+    const access_token = getTokenFromCookie("access_token");
     if (access_token) {
       // API 호출
       const response: AxiosResponse<any> = yield call(() =>
-        axios.get(`/documents?username=${action.payload}`, {
+        axios.get(`/documents?userId=${action.payload}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
@@ -39,8 +42,11 @@ function* loadDocuments(action: any) {
       );
       if (response.status === 200) {
         const documents: DocumentInfo[] = response.data.dtoList;
-        console.log(response.data);
+        // console.log(response.data);
         yield put(loadDocumentsSuccess(documents));
+      } else if (response.data.error === "토큰 기한 만료") {
+        // 토큰이 만료되었다면 로그아웃을 실행
+        yield put(logoutRequest());
       } else {
         yield put(loadDocumentsFailure("문서목록 로딩에 실패했습니다."));
       }
@@ -48,25 +54,44 @@ function* loadDocuments(action: any) {
       yield put(loadDocumentsFailure("문서목록 로딩에 실패했습니다."));
     }
   } catch (error) {
-    yield put(loadDocumentsFailure("문서목록 로딩에 실패했습니다."));
+    if ((error as any).response && (error as any).response.data.error === "토큰 기한 만료") {
+      console.log("토큰이 만료되었습니다.");
+      yield put(logoutRequest());
+    } else {
+      console.error("문서목록 로딩에 실패했습니다.", error);
+      yield put(loadDocumentsFailure("문서목록 로딩에 실패했습니다."));
+    }
   }
 }
-
 // 단일 글 로딩
 function* loadDocument(action: any) {
   try {
-    const accessToken = localStorage.getItem("access_token");
+    const accessToken = getTokenFromCookie("access_token");
     const response: AxiosResponse<any> = yield call(() =>
       axios.get(`/documents/${action.payload}`, {
         headers: {
-          "Content-Type": "application/json", // Content-Type 추가
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
     );
-    yield put(loadDocumentSuccess(response.data));
+    // 토큰 만료 여부 확인
+    if (response.status === 200) {
+      yield put(loadDocumentSuccess(response.data));
+    } else if (response.data.error === "토큰 기한 만료") {
+      // 토큰이 만료되었다면 로그아웃을 실행
+      yield put(logoutRequest());
+    } else {
+      yield put(loadDocumentFailure("문서 로딩에 실패했습니다."));
+    }
   } catch (error) {
-    yield put(loadDocumentFailure("문서 로딩에 실패했습니다."));
+    if ((error as any).response && (error as any).response.data.error === "토큰 기한 만료") {
+      console.log("토큰이 만료되었습니다.");
+      yield put(logoutRequest());
+    } else {
+      console.error("문서 로딩에 실패했습니다.", error);
+      yield put(loadDocumentFailure("문서 로딩에 실패했습니다."));
+    }
   }
 }
 

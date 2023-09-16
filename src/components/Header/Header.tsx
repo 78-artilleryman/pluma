@@ -5,11 +5,12 @@ import logo from "../../assets/flumaLogo2.png";
 
 import styles from "./Header.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser } from "../../store/auth/authSelectors";
+import { selectIsAuthenticated, selectUser } from "../../store/auth/authSelectors";
 import { logoutRequest } from "../../store/auth/authActions";
 import ModalStyles from "../../utils/Modal.module.scss"; // Modal 스타일 파일 import
 
 const Header = () => {
+  const isLogin = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
   const [isLogoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -23,21 +24,14 @@ const Header = () => {
   };
 
   const confirmLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("user");
     dispatch(logoutRequest());
     closeLogoutModal();
   };
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
   return (
     <header className={styles.header}>
       <div className={styles.logoContainer}>
-        <Link to={user ? "/document" : "/"}>
+        <Link to={isLogin ? "/document" : "/"}>
           <img src={logo} alt="로고 이미지" className={styles.logo} />
         </Link>
       </div>

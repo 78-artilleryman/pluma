@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginRequest } from "../../store/auth/authActions";
 import { getInitialTheme } from "../../utils/theme";
 import logo from "../../assets/FlumaLogo.png";
@@ -14,12 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Login: React.FC = () => {
   const dispatch = useDispatch();
   const authState = useSelector(selectAuth);
-  const user = localStorage.getItem("user");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(authState);
-  }, [authState]);
 
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState<{ username: string | null; password: string | null }>({
@@ -33,7 +28,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      redirect("/document");
+      navigate("/document");
     }
   }, [isAuthenticated]);
 
@@ -75,11 +70,6 @@ const Login: React.FC = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
   }, []);
-  useEffect(() => {
-    if (user) {
-      navigate("/document");
-    }
-  }, [user]);
 
   useEffect(() => {
     if (authState.error) {

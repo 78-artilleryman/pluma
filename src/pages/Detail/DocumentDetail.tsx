@@ -7,6 +7,7 @@ import { selectSingleDocument } from "../../store/document/documentSelectors";
 import { getInitialTheme } from "../../utils/theme";
 import Editor from "../../components/Editor";
 import styles from "../../components/Document/Document.module.scss";
+import { formatDate } from "src/utils/dateUtils";
 
 const DocumentDetailPage: React.FC = () => {
   const { documentId } = useParams();
@@ -30,7 +31,7 @@ const DocumentDetailPage: React.FC = () => {
         <h2>문서 상세 페이지</h2>
         <h3>제목: {detailDocument.title}</h3>
         <p>작성자: {detailDocument.username}</p>
-        <p>작성일: {detailDocument.regDate}</p>
+        <p>작성일: {formatDate(new Date(detailDocument.regDate))}</p>
 
         {/* Editor 컴포넌트 추가 */}
 
