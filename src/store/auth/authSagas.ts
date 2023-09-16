@@ -20,7 +20,7 @@ import {
   refreshTokenFailure,
   refreshTokenRequest,
 } from "./authActions";
-import { Dispatch } from "redux"; // Dispatch 가져오기
+import { Dispatch } from "redux";
 
 import {
   setTokenToCookie, // 쿠키에 토큰 저장 함수 가져오기
@@ -28,7 +28,6 @@ import {
   checkTokenExpiration,
   getTokenFromCookie, // 쿠키에서 토큰 삭제 함수 가져오기
 } from "../../utils/tokenUtils"; // tokenUtil 파일에서 가져옴
-import { Navigate } from "react-router-dom";
 
 // 사용자 정보를 가져오는 사가
 function* fetchUserInfo() {
@@ -92,20 +91,20 @@ function* refreshTokenSaga() {
       const access_token = response.data?.access_token;
       // 새로 발급받은 access_token을 쿠키에 저장
       setTokenToCookie("access_token", access_token, 30); // 예: 30분 동안 유효한 토큰
-
       yield put(refreshTokenSuccess());
     } else {
       yield put(refreshTokenFailure("토큰 재발급에 실패했습니다."));
+      yield put(logoutRequest());
     }
   } catch (error) {
     yield put(refreshTokenFailure("토큰 재발급에 실패했습니다."));
+    yield put(logoutRequest());
   }
 }
 
 // 로그인 사가
 function* login(action: any) {
   try {
-    console.log(action.payload);
     const { username, password } = action.payload;
 
     // Axios를 사용하여 실제 API 호출
@@ -149,7 +148,6 @@ function* logout(action: any) {
     clearTokenFromCookie("user");
 
     yield put(logoutSuccess("로그아웃 성공"));
-    Navigate({ to: "/" });
   } catch (error) {
     yield put(logoutFailure("로그아웃 실패했습니다."));
   }
@@ -158,7 +156,6 @@ function* logout(action: any) {
 // 회원가입 사가 - 유사한 방식으로 작성
 function* register(action: any) {
   try {
-    console.log(action.payload);
     const { username, password, name } = action.payload;
 
     // Axios를 사용하여 실제 API 호출

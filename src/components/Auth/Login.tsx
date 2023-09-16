@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginRequest } from "../../store/auth/authActions";
 import { getInitialTheme } from "../../utils/theme";
 import logo from "../../assets/FlumaLogo.png";
@@ -15,10 +15,6 @@ const Login: React.FC = () => {
   const dispatch = useDispatch();
   const authState = useSelector(selectAuth);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(authState);
-  }, [authState]);
 
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState<{ username: string | null; password: string | null }>({

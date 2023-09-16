@@ -28,10 +28,6 @@ const Header = () => {
     closeLogoutModal();
   };
 
-  useEffect(() => {
-    console.log(isLogin);
-  }, [isLogin]);
-
   return (
     <header className={styles.header}>
       <div className={styles.logoContainer}>
