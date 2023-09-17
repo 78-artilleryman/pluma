@@ -47,19 +47,34 @@
 /* 스타일을 원하는 대로 추가하세요 */
 .container {
   margin: 0 auto;
-  width: 900px;
+  margin-top: 6vh;
+  display: flex;
+  height: 80vh;
+  // flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.documentInfoLeft {
+  flex: 3;
+  padding: 16px;
+}
+
+.documentInfoRight {
+  flex: 1;
+  padding: 16px;
 }
 
 /* Editor 컴포넌트의 스타일 추가 */
 .editorContainer {
+  flex: 4;
   margin: 0 auto;
-  width: 900px;
 }
 
 .documentLink {
   text-decoration: none;
   color: inherit;
 }
+
 [data-theme="dark"] {
   .documentCard {
     background-color: #444444;

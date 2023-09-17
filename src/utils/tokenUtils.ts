@@ -1,4 +1,4 @@
-import { logoutRequest, refreshTokenRequest } from "src/store/auth/authActions";
+import { logoutRequest, refreshTokenRequest } from "../store/auth/authActions";
 
 // 토큰을 쿠키에 저장하는 함수
 export function setTokenToCookie(name: string, value: string, expirationMinutes?: number) {
@@ -40,7 +40,6 @@ export function checkTokenExpiration(dispatch: any) {
 
     if (access_token_expiration && access_token_expiration < new Date()) {
       // access_token이 만료된 경우, 재발급 요청 등의 처리를 수행
-      // 예: refreshTokenRequest 액션을 디스패치
       dispatch(refreshTokenRequest());
       console.log("access토큰 재발급");
     }
@@ -52,7 +51,6 @@ export function checkTokenExpiration(dispatch: any) {
 
     if (refresh_token_expiration && refresh_token_expiration < new Date()) {
       // refresh_token이 만료된 경우, 로그아웃 등의 처리를 수행
-      // 예: logoutRequest 액션을 디스패치
       clearTokenFromCookie("user");
       clearTokenFromCookie("access_token");
       clearTokenFromCookie("refresh_token");
@@ -68,7 +66,7 @@ function getTokenExpiration(token: string): Date | null {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     if (payload && payload.exp) {
-      return new Date(payload.exp * 1000); // UNIX 시간을 밀리초로 변환
+      return new Date(payload.exp * 1000);
     }
   } catch (error) {
     return null;
