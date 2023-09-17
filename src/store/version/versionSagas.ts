@@ -49,8 +49,10 @@ function* addDocumentVersion(action: any) {
         },
       })
     );
-    if (response.status === 201) {
+    if (response.status === 200) {
       yield put(addDocumentVersionSuccess(response.data));
+      const newVersionId = response.data.documentId;
+      yield put(loadDocumentVersionsRequest(newVersionId));
     } else {
       yield put(addDocumentVersionFailure("문서 버전 추가에 실패했습니다."));
     }

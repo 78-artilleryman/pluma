@@ -37,7 +37,7 @@ const versionReducer = createSlice({
     },
     addDocumentVersionSuccess: (state, action: PayloadAction<VersionInfo>) => {
       state.loading = false;
-      state.versionsList.push(action.payload);
+      state.versionsList = [...state.versionsList, action.payload]; // 배열을 변경하지 않고 새로운 배열로 업데이트
     },
     addDocumentVersionFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;

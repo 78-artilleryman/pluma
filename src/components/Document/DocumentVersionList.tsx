@@ -28,19 +28,17 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   const versions = useSelector(selectVersionsList);
   const loading = useSelector(selectVersionLoading);
   useEffect(() => {
+    console.log(versions);
     if (versions && versions.length > 0) {
       const latestVersion = versions[0]; // 가장 최근 버전 선택
       setContent(latestVersion.content);
       setSelectedVersionSubtitle(latestVersion.subtitle);
       setSelectedVersionDate(latestVersion.createdAt);
     }
-  }, [versions]);
+  }, [setContent, setSelectedVersionDate, setSelectedVersionSubtitle, versions]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subtitle, setSubtitle] = useState("");
-
-  // documentId를 기준으로 버전 배열 정렬
-  const sortedVersions = versions?.slice().sort((a, b) => a.documentId - b.documentId);
 
   const handleAddVersion = () => {
     setIsModalOpen(true);
@@ -63,7 +61,6 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
       setSubtitle("");
     }
   };
-
   useEffect(() => {
     if (documentId) {
       dispatch(loadDocumentVersionsRequest(documentId));
@@ -87,13 +84,13 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     <div>
       <h3>문서 버전</h3>
       <div className={styles["version-list"]}>
-        {sortedVersions.map((version) => (
+        {versions.map((version) => (
           <div
             key={version.versionId}
             className={styles["version-item"]}
             onClick={() => {
               setContent(version.content || "");
-              handleVersionSelect(version.subtitle, version.createdAt); // subtitle, createdAt 콜백으로 호출합니다
+              handleVersionSelect(version.subtitle, version.createdAt);
             }}
           >
             {version.subtitle}
