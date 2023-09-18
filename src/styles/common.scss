@@ -1,0 +1,32 @@
+$common-padding: 10px;
+$common-border: 1px solid #ccc;
+$common-border-radius: 5px;
+$button-padding: 8px 16px;
+$button-background-light: #007bff;
+$button-background-dark: #222222;
+$button-color: #fff;
+$button-border: none;
+$button-border-radius: 4px;
+$button-transition: background-color 0.3s ease;
+
+@mixin common-input-style {
+  width: 100%;
+  box-sizing: border-box;
+  padding: $common-padding;
+  margin-bottom: 10px;
+  border: $common-border;
+}
+@import "buttonStyles.scss";
+
+.errorMessage {
+  opacity: 0;
+  color: red;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: opacity 0.5s ease;
+}
+
+.errorMessage.show {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}

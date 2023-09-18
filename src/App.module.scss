@@ -1,0 +1,17 @@
+/* App.module.scss */
+
+/* 라이트 모드 스타일 */
+[data-theme="light"] {
+  body {
+    background-color: white;
+    color: black;
+  }
+}
+
+/* 다크 모드 스타일 */
+[data-theme="dark"] {
+  body {
+    background-color: #333333;
+    color: white;
+  }
+}

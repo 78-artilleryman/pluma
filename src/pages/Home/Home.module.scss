@@ -1,0 +1,22 @@
+/* Home.module.scss */
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+@import "../../styles/buttonStyles.scss";
+
+.button {
+  @extend .button;
+  width: 200px;
+  height: 50px;
+  margin-top: 10px;
+}
+// 다크 모드 스타일
+[data-theme="dark"] {
+  .button {
+    @extend .button;
+  }
+}

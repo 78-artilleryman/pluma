@@ -1,46 +1,44 @@
-# Getting Started with Create React App
+# **플루마(Fluma)**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+## **프로젝트 소개**
 
-## Available Scripts
+이 프로젝트는 소설 작가들을 위한 웹 소설 에디터 웹 서비스를 개발하는 것을 목표로 합니다.  
+작가들은 이 서비스를 사용하여 소설을 작성하고 편집할 수 있으며, 편리한 기능과 도구를 통해 작품을 관리할 수 있습니다.
 
-In the project directory, you can run:
+## **주요 기능**
 
-### `npm start`
+- **소설 작성**: 웹 기반의 에디터를 통해 소설을 작성하고 저장할 수 있습니다.
+- **편집 도구**: 텍스트 편집을 위한 다양한 도구 및 서식을 제공합니다.
+- **저장 및 백업**: 작품을 안전하게 저장하고 백업할 수 있습니다.
+- **소설 버전 관리**: 소설의 버전을 관리하고 변경 내용을 추적할 수 있습니다. 작가들은 커밋 메시지를 작성하고 브랜치를 생성하여 작업을 분리할 수 있으며, 이전 버전으로 손쉽게 복구할 수 있습니다.
+- **사용자 관리**: 작가들은 개별 계정을 생성하고 로그인하여 자신의 작품을 관리할 수 있습니다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 설치 및 실행
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+프로젝트를 로컬 환경에서 실행하려면 다음 단계를 따르십시오.
 
-### `npm test`
+1. 이 저장소를 클론합니다.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   git clone https://github.com/your-username/your-project.git
+   ```
 
-### `npm run build`
+2. 프로젝트 디렉토리로 이동합니다.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   cd your-project
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. 필요한 종속성을 설치합니다.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   ```bash
+   npm install
+   ```
 
-### `npm run eject`
+4. 서버를 실행합니다.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+   ```bash
+   npm start
+   ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+브라우저에서 http://localhost:3000에 접속하여 웹 서비스를 확인합니다.

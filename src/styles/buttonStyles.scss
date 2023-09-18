@@ -1,0 +1,46 @@
+/* buttonStyles.scss */
+
+.button {
+  text-decoration: none;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+.dangerBtn {
+  text-decoration: none;
+  padding: 8px 16px;
+  background-color: #ff0000; /* 빨간색 배경색 */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #cc0000; /* 빨간색 버튼에 호버 시 밝은 빨간색으로 변경 */
+  }
+}
+[data-theme="dark"] {
+  .button {
+    background-color: #444444;
+    color: #fff;
+
+    &:hover {
+      background-color: #222222;
+    }
+  }
+  .dangerBtn {
+    background-color: #990000; /* 다크 모드에서 빨간색 버튼 배경색 변경 */
+    &:hover {
+      background-color: #770000; /* 다크 모드에서 호버 시 밝은 빨간색으로 변경 */
+    }
+  }
+}
