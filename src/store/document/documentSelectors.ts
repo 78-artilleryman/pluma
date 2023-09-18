@@ -8,3 +8,4 @@ export const selectDocumentsList = (state: RootState) => state.document.document
 export const selectSingleDocument = (state: RootState) => state.document.singleDocument;
 export const selectDocumentLoading = (state: RootState) => state.document.loading;
 export const selectDocumentError = (state: RootState) => state.document.error;
+export const selectNewDocument = (state: RootState) => state.document.newDocument;

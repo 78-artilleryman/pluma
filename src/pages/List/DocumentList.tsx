@@ -12,6 +12,8 @@ import DocumentItem from "../../components/Document/DocumentItem";
 
 import styles from "../../components/Document/Document.module.scss";
 import Layout from "../../components/Layout/Layout";
+import AddDocument from "src/components/Document/AddDocumentItem";
+
 
 const DocumentList: React.FC = () => {
   const dispatch = useDispatch();
@@ -53,16 +55,18 @@ const DocumentList: React.FC = () => {
           {documents?.map((document) => (
             <DocumentItem key={document.documentId} documentData={document} />
           ))}
+           <AddDocument />
         </div>
       )}
-
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <h2>로그인이 필요합니다</h2>
           <p>문서를 보려면 먼저 로그인하세요.</p>
         </Modal>
       )}
+
     </Layout>
+   
   );
 };
 

@@ -5,13 +5,17 @@ import { DocumentDetailInfo, DocumentInfo } from "./types";
 interface DocumentState {
   documentsList: DocumentInfo[];
   singleDocument: DocumentDetailInfo | null;
+  newDocument: DocumentInfo | null;
   loading: boolean;
   error: string | null;
 }
 
+
+
 const initialState: DocumentState = {
   documentsList: [],
   singleDocument: null,
+  newDocument: null,
   loading: false,
   error: null,
 };
@@ -44,6 +48,21 @@ const documentReducer = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    addEventListenerDocumentRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    addDocumentSuccess: (state, action: PayloadAction<DocumentInfo | null>) => {
+      console.log(action)
+      state.loading = false;
+      state.newDocument = action.payload;
+    },
+    addDocumentFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    
   },
 });
 

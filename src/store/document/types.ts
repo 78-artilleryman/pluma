@@ -13,3 +13,8 @@ export interface DocumentDetailInfo {
   regDate: string;
   modDate: string;
 }
+
+export interface AddDocument{
+  title: string;
+  userId: string;
+}

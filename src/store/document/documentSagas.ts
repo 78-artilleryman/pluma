@@ -95,6 +95,35 @@ function* loadDocument(action: any) {
   }
 }
 
+//새 문서 추가
+function* addDocument(action: any){
+  const {title, userId} = action.payload;
+  try{
+    // 쿠키에서 accessToken 가져오기
+    const access_token = getTokenFromCookie("access_token");
+    if (access_token) {
+      const response: AxiosResponse<any> = yield call(() =>
+        axios.post(`/documents`, {"title": title, "userId": userId},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        })
+      );
+
+      if (response.status === 200) {
+        yield put(addDocumentSuccess(response.data));
+        
+      } else {
+        yield put(addDocumentFailure("새 문서 추가에 실패했습니다."));
+      }
+    }
+  } catch (error){
+    yield put(addDocumentFailure("새 문서 추가에 실패했습니다."));
+  }
+}
+
 // // 새 문서 추가
 // function* addDocument(action: any) {
 //   try {
@@ -107,7 +136,7 @@ function* loadDocument(action: any) {
 //       id: action.payload.id, // payload에서 id를 가져옴
 //       content: action.payload.content, // payload에서 content를 가져옴
 //     };
-//     yield put(addDocumentSuccess(dummyData));
+//     yield put(addDocumentSuccess(dummyDta));
 //   } catch (error) {
 //     yield put(addDocumentFailure("새 문서 추가에 실패했습니다."));
 //   }
@@ -152,7 +181,7 @@ function* loadDocument(action: any) {
 function* documentSaga() {
   yield takeLatest(loadDocumentsRequest.type, loadDocuments);
   yield takeLatest(loadDocumentRequest.type, loadDocument);
-  // yield takeLatest(addDocumentRequest.type, addDocument);
+  yield takeLatest(addDocumentRequest.type, addDocument);
   // yield takeLatest(saveDocumentRequest.type, saveDocument);
   // yield takeLatest(deleteDocumentRequest.type, deleteDocument);
   // yield takeLatest(updateDocumentRequest.type, updateDocument);
