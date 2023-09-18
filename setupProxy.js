@@ -16,4 +16,11 @@ module.exports = function (app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    "/versions", // 다른 경로도 필요한 경우 이와 같이 추가
+    createProxyMiddleware({
+      target: "http://localhost:8080", // API 서버 주소
+      changeOrigin: true,
+    })
+  );
 };

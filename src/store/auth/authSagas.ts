@@ -82,7 +82,7 @@ function* refreshTokenSaga() {
     const response: AxiosResponse<any> = yield call(() =>
       axios.get("/users/token/refresh", {
         headers: {
-          Authorization: `Bearer ${getTokenFromCookie("access_token")}`,
+          Authorization: `Bearer ${getTokenFromCookie("refresh_token")}`,
         },
       })
     );
