@@ -17,8 +17,8 @@ export const loadDocumentSuccess = createAction<DocumentDetailInfo | null>(
 export const loadDocumentFailure = createAction<string>("document/loadDocumentFailure");
 
 // 문서 추가
-export const addDocumentRequest = createAction<DocumentDetailInfo>("document/addDocumentRequest");
-export const addDocumentSuccess = createAction<DocumentDetailInfo>("document/addDocumentSuccess");
+export const addDocumentRequest = createAction<string>("document/addDocumentRequest");
+export const addDocumentSuccess = createAction<DocumentInfo>("document/addDocumentSuccess");
 export const addDocumentFailure = createAction<string>("document/addDocumentFailure");
 
 // 문서 저장

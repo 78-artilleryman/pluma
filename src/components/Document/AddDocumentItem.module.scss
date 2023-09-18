@@ -1,0 +1,94 @@
+
+
+/* 문서 카드 스타일 */
+.documentCard {
+  width: 150px;
+  height: 200px;
+  border: 1px solid #d3d3d3;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #f5f5f5;
+  }
+}
+
+/* +아이콘 스타일 */
+.iconBox{
+  width: 120%;
+  height: 120%;
+  margin: -10% 0 0  -10%;
+
+}
+
+.faSquarePlus{
+ color: #ebebeb;
+ font-size: 70px;
+ display: block;
+ margin: 0 auto;
+ position: absolute;
+ top: 80px;
+ left: 60px;
+ 
+}
+
+.faCircleXmark{
+  font-size: 20px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #c9c9c9;
+}
+
+
+/* 모달 */
+.title{
+  margin-top: 90%;
+  width: 95%;
+  font-size: 18px;
+  
+}
+
+.linkDocument {
+  width: 100%;
+  height: 30px;
+  margin-top: 10px; /* 필요에 따라 여백 조정 */
+  cursor: pointer;
+  display: inline-block; /* 링크를 인라인 블록 요소로 변경하여 버튼처럼 보이도록 함 */
+  background-color: #007bff; /* 배경 색상 설정 */
+  border: none; /* 테두리 제거 */
+  border-radius: 5px; /* 둥근 모서리 설정 */
+  transition: background-color 0.3s ease; /* 배경 색상 전환 효과 */
+  line-height: 30px;
+  color: white; /* 글자 색상 설정 */
+ 
+}
+
+.linkDocument:hover {
+  background-color: #0056b3; /* 호버 시 배경 색상 변경 */
+}
+
+
+[data-theme="dark"] {
+  .documentCard {
+    background-color: #444444;
+    border: 1px solid #444444;
+    color: white;
+  }
+  .documentDescription {
+    color: white;
+  }
+  .linkDocument{
+    background-color: #939393;
+    border: 1px solid #939393;
+    color: white;
+  }
+}
+
