@@ -1,8 +1,6 @@
-// DocumentList.tsx
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIsAuthenticated, selectUser } from "../../store/auth/authSelectors";
+import { selectIsAuthenticated, selectUser, selectUserInfo } from "../../store/auth/authSelectors";
 import { loadDocumentsRequest } from "../../store/document/documentActions";
 import {
   selectDocumentsList,
@@ -10,9 +8,9 @@ import {
   selectDocumentError,
 } from "../../store/document/documentSelectors";
 import Modal from "../../utils/Modal";
-import DocumentItem from "../../components/Document/DocumentItem"; // Document 컴포넌트 임포트
+import DocumentItem from "../../components/Document/DocumentItem";
 
-import styles from "../../components/Document/Document.module.scss"; // SCSS 모듈 임포트
+import styles from "../../components/Document/Document.module.scss";
 import Layout from "../../components/Layout/Layout";
 import AddDocument from "src/components/Document/AddDocumentItem";
 
@@ -26,17 +24,16 @@ const DocumentList: React.FC = () => {
 
   // 모달 상태 추가
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user = useSelector(selectUser);
+  const userInfo = useSelector(selectUserInfo);
   useEffect(() => {
     // 문서 목록을 불러오는 액션 디스패치
     if (!isAuthenticated) {
       setIsModalOpen(true); // 사용자가 로그인하지 않은 경우 모달 열기
     } else {
       setIsModalOpen(false);
-      dispatch(loadDocumentsRequest(user));
+      dispatch(loadDocumentsRequest(userInfo?.userId || ""));
     }
-  }, [user, isAuthenticated]);
-  useEffect(() => console.log(documents), [documents]);
+  }, [userInfo, isAuthenticated]);
   // 모달을 닫기 위한 함수
   const closeModal = () => {
     setIsModalOpen(false);
@@ -49,12 +46,14 @@ const DocumentList: React.FC = () => {
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error}</p>
+      ) : documents.length === 0 ? (
+        <div style={{ textAlign: "center", marginTop: "100px" }}>
+          <h1>문서가 없습니다.</h1>
+        </div>
       ) : (
         <div className={styles.documentCardContainer}>
           {documents?.map((document) => (
-            <>
-              <DocumentItem key={document.documentId} documentData={document} />
-            </>
+            <DocumentItem key={document.documentId} documentData={document} />
           ))}
            <AddDocument />
         </div>
@@ -62,7 +61,7 @@ const DocumentList: React.FC = () => {
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <h2>로그인이 필요합니다</h2>
-          <p>문서를 볼려면 먼저 로그인하세요.</p>
+          <p>문서를 보려면 먼저 로그인하세요.</p>
         </Modal>
       )}
 

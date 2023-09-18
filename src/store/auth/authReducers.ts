@@ -1,17 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getTokenFromCookie } from "src/utils/tokenUtils";
 
 interface AuthState {
   isAuthenticated: boolean;
   user: string | null;
   loading: boolean;
   error: string | null;
+  userInfo: { userName: string; userId: string } | null;
+  refreshingToken: boolean;
 }
 
+const userFromCookie = getTokenFromCookie("user");
+const initialUser = userFromCookie ? JSON.parse(userFromCookie) : null;
+
 const initialState: AuthState = {
-  isAuthenticated: localStorage.getItem("user") ? true : false,
-  user: localStorage.getItem("user") || null,
+  isAuthenticated: !!getTokenFromCookie("refresh_token"),
+  user: initialUser && initialUser.userName ? initialUser.userName : null,
   loading: false,
   error: null,
+  userInfo: initialUser || null,
+  refreshingToken: false,
 };
 
 const authReducer = createSlice({
@@ -46,7 +54,19 @@ const authReducer = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-
+    // 회원 정보 로드 리듀서
+    fetchUserInfoRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    fetchUserInfoSuccess: (state, action: PayloadAction<{ userName: string; userId: string }>) => {
+      state.loading = false;
+      state.userInfo = action.payload;
+    },
+    fetchUserInfoFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     // 회원가입 관련 리듀서
     registerRequest: (
       state,
@@ -62,6 +82,17 @@ const authReducer = createSlice({
     },
     registerFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
+      state.error = action.payload;
+    },
+    //토큰 재발급 리듀서
+    refreshTokenRequest: (state) => {
+      state.refreshingToken = true;
+    },
+    refreshTokenSuccess: (state) => {
+      state.refreshingToken = false;
+    },
+    refreshTokenFailure: (state, action: PayloadAction<string>) => {
+      state.refreshingToken = false;
       state.error = action.payload;
     },
   },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import { Editor as ToastEditor } from "@toast-ui/react-editor";
 import "@toast-ui/editor/dist/toastui-editor.css";
@@ -18,13 +18,17 @@ const Editor: React.FC<IEditor> = ({ htmlStr, setHtmlStr }) => {
   // Editor Change 이벤트
   const onChangeEditor = () => {
     if (editorRef.current) {
-      setHtmlStr(editorRef.current.getInstance().getHTML());
+      const currentHtml = editorRef.current.getInstance().getHTML();
+      if (currentHtml !== htmlStr) {
+        // 이전 HTML과 현재 HTML이 다를 때만 상태 업데이트
+        setHtmlStr(currentHtml);
+      }
     }
   };
 
   useEffect(() => {
     if (editorRef.current) {
-      // 전달받은 html값으로 초기화
+      // 전달받은 html 값으로 초기화
       editorRef.current.getInstance().setHTML(htmlStr);
 
       // 기존 이미지 업로드 기능 제거
@@ -36,7 +40,7 @@ const Editor: React.FC<IEditor> = ({ htmlStr, setHtmlStr }) => {
           formData.append("multipartFiles", blob);
 
           try {
-            const res = await axios.post("http://localhost:8080/uploadImage", formData); //이미지 업로드 준비
+            const res = await axios.post("http://localhost:8080/uploadImage", formData); // 이미지 업로드 준비
             callback(res.data, "이미지 설명");
           } catch (error) {
             console.error("이미지 업로드 실패:", error);
@@ -46,7 +50,7 @@ const Editor: React.FC<IEditor> = ({ htmlStr, setHtmlStr }) => {
         return false;
       });
     }
-  }, []);
+  }, [htmlStr]);
 
   // Editor에 사용되는 plugin 추가
   const plugins = [colorSyntax, tableMergedCell]; // 글자 색상 및 테이블 병합 셀 플러그인 추가
@@ -61,6 +65,7 @@ const Editor: React.FC<IEditor> = ({ htmlStr, setHtmlStr }) => {
       ref={editorRef}
       plugins={plugins}
       onChange={onChangeEditor}
+      height="94vh"
     />
   );
 };
