@@ -22,7 +22,7 @@ export const addDocumentVersionSuccess = createAction<sendVersion>(
 export const addDocumentVersionFailure = createAction<string>("version/addDocumentVersionFailure");
 
 // 문서 버전 로딩
-export const loadDocumentVersionRequest = createAction<string>(
+export const loadDocumentVersionRequest = createAction<number>(
   "version/loadDocumentVersionRequest"
 );
 export const loadDocumentVersionSuccess = createAction<VersionDetailInfo | null>(

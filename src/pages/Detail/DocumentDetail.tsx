@@ -1,4 +1,3 @@
-// DocumentDetail.tsx
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
@@ -49,7 +48,7 @@ const DocumentDetailPage: React.FC = () => {
 
   // 버전 선택을 처리하는 함수를 업데이트합니다
   const handleVersionSelect = (subtitle: string | undefined, createdAt: string | undefined) => {
-    setSelectedVersionSubtitle(subtitle || ""); // 이 부분 수정
+    setSelectedVersionSubtitle(subtitle || "");
     setSelectedVersionDate(createdAt || "");
   };
 
@@ -76,10 +75,7 @@ const DocumentDetailPage: React.FC = () => {
     <Layout>
       <div className={styles.container}>
         <div className={styles.editorContainer}>
-          <Editor
-            htmlStr={content || ""}
-            setHtmlStr={(newHtmlStr) => setContent(newHtmlStr as string)}
-          />
+          <Editor content={content} setContent={setContent} />
         </div>
         <div className={styles.documentInfo}>
           <div className={styles.documentInfoLeft}>

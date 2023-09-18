@@ -1,67 +1,49 @@
-.versionListContainer {
-  width: 300px; /* 원하는 너비 설정 */
-  margin-left: 20px; /* 텍스트 에디터와의 간격 설정 */
-  padding: 16px;
-  background-color: #f0f0f0; /* 배경 색상 설정 */
-  border: 1px solid #ddd; /* 테두리 설정 */
-  border-radius: 4px; /* 둥근 테두리 설정 */
-}
-
-/* 버전 목록 스타일링 예시 */
-.versionItem {
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
-.versionLink {
-  text-decoration: none;
-  color: #007bff; /* 링크 색상 설정 */
-  &:hover {
-    text-decoration: underline; /* 링크에 호버 시 밑줄 표시 */
-  }
-}
-
-// DocumentVersionList.module.scss
-
-.version-list {
+.versionList {
+  overflow: auto;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px; // 각 버전 아이템 간격
-  padding: 8px; // 버전 목록 전체 패딩
+  height: 30vh;
 }
 
-.version-item {
+.versionItem {
   cursor: pointer;
   background-color: #f2f2f2;
   padding: 8px;
-  border-radius: 4px;
-
+  border-bottom: 1px solid#e0e0e0;
   &:hover {
     background-color: #e0e0e0;
   }
 }
 
-// DocumentVersionModal.scss
+.selectedVersion {
+  background-color: #007bff;
+  color: white;
 
-.modal-container {
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+
+.modalContainer {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); // 배경을 어둡게 만듭니다.
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999; // 모달을 다른 요소 위에 표시합니다.
+  z-index: 999;
 }
 
-.modal-content {
-  background-color: #fff; // 모달 내용의 배경색을 설정합니다.
+.modalContent {
+  background-color: #fff;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // 그림자 효과를 추가합니다.
-  width: 300px; // 모달 너비를 조정합니다.
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 300px;
   text-align: center;
 
   div {
@@ -84,7 +66,6 @@
     background-color: #007bff;
     color: #fff;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
 
     &:last-child {
@@ -94,5 +75,116 @@
     &:hover {
       background-color: #0056b3;
     }
+  }
+}
+[data-theme="dark"] {
+  .versionList {
+    overflow: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 30vh;
+    background-color: #333; /* 다크 모드 배경 색상 */
+  }
+
+  .versionItem {
+    cursor: pointer;
+    background-color: #f2f2f2;
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+  .selectedVersion {
+    background-color: #007bff;
+    color: white;
+
+    &:hover {
+      background-color: #0056b3; /* 선택된 버전의 호버 배경 색상 유지 */
+    }
+  }
+
+  .modalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 배경 투명도 조절 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+
+  .modalContent {
+    background-color: #444; /* 다크 모드 배경 색상 */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+
+    div {
+      margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #777; /* 다크 모드 테두리 색상 */
+      border-radius: 4px;
+      box-sizing: border-box;
+      outline: none;
+      background-color: #333; /* 다크 모드 배경 색상 */
+      color: white; /* 다크 모드 텍스트 색상 */
+    }
+
+    button {
+      padding: 8px 16px;
+      margin-right: 10px;
+      background-color: #007bff; /* 기본 버튼 배경 색상 유지 */
+      color: #fff; /* 기본 버튼 텍스트 색상 유지 */
+      border: none;
+      cursor: pointer;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      &:hover {
+        background-color: #0056b3; /* 기본 버튼 호버 배경 색상 유지 */
+      }
+    }
+  }
+  .versionList {
+    background-color: #333;
+    color: white;
+    /* 다크 모드에 맞게 스타일 추가 */
+  }
+
+  .versionItem {
+    background-color: #444;
+    color: white;
+    /* 다크 모드에 맞게 스타일 추가 */
+  }
+
+  .selectedVersion {
+    background-color: #007bff;
+    color: white;
+    /* 다크 모드에 맞게 스타일 추가 */
+  }
+
+  .modalContainer {
+    background-color: rgba(0, 0, 0, 0.7);
+    /* 다크 모드에 맞게 스타일 추가 */
+  }
+
+  .modalContent {
+    background-color: #444;
+    color: white;
+    /* 다크 모드에 맞게 스타일 추가 */
   }
 }

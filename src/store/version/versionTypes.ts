@@ -1,10 +1,8 @@
 // 문서 버전 정보
 export interface VersionInfo {
-  versionId: number;
-  subtitle: string;
-  content: string;
+  id: number;
   createdAt: string;
-  documentId: number;
+  subtitle: string;
 }
 export interface sendVersion {
   subtitle: string;
