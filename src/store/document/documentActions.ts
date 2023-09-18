@@ -1,6 +1,6 @@
 // store/document/documentActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { DocumentInfo, DocumentDetailInfo } from "./types";
+import { DocumentInfo, DocumentDetailInfo , AddDocument} from "./types";
 
 // 문서 리스트 로딩
 export const loadDocumentsRequest = createAction<string | null>("document/loadDocumentsRequest");
@@ -17,7 +17,7 @@ export const loadDocumentSuccess = createAction<DocumentDetailInfo | null>(
 export const loadDocumentFailure = createAction<string>("document/loadDocumentFailure");
 
 // 문서 추가
-export const addDocumentRequest = createAction<string>("document/addDocumentRequest");
+export const addDocumentRequest = createAction<AddDocument>("document/addDocumentRequest");
 export const addDocumentSuccess = createAction<DocumentInfo>("document/addDocumentSuccess");
 export const addDocumentFailure = createAction<string>("document/addDocumentFailure");
 

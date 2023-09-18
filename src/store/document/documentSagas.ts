@@ -97,26 +97,24 @@ function* loadDocument(action: any) {
 
 //새 문서 추가
 function* addDocument(action: any){
-  const {title} = action.payload;
+  const {title, userId} = action.payload;
   try{
     // 쿠키에서 accessToken 가져오기
-    const access_token = localStorage.getItem("access_token");
+    const access_token = getTokenFromCookie("access_token");
     if (access_token) {
       const response: AxiosResponse<any> = yield call(() =>
-        axios.post(`/documents`, {
+        axios.post(`/documents`, {"title": title, "userId": userId},
+        {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
           },
-          body: {
-            "title": title,
-            "userId": 1
-          }
         })
       );
 
       if (response.status === 200) {
-        console.log(response);
+        yield put(addDocumentSuccess(response.data));
+        
       } else {
         yield put(addDocumentFailure("새 문서 추가에 실패했습니다."));
       }

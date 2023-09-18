@@ -9,13 +9,16 @@ import {faSquarePlus, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import CreateModal from "src/utils/CreateModal";
 import { useNavigate } from "react-router-dom";
 import { addDocumentRequest } from "src/store/document/documentActions";
-
+import { selectUserInfo } from "src/store/auth/authSelectors";
+import { selectNewDocument } from "src/store/document/documentSelectors";
 
 
 
 const AddDocument: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 이동 처리
+  const userInfo = useSelector(selectUserInfo);
+  const addDocument = useSelector(selectNewDocument);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newDocuments, setNewDocuments]= useState("");
@@ -23,6 +26,10 @@ const AddDocument: React.FC = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
   }, []);
+
+  useEffect(() =>{
+    console.log(addDocument)
+  }, [addDocument])
   
   // useEffect(() => {
   //   console.log(isCreateModalOpen); // Log the updated value here
@@ -45,9 +52,15 @@ const AddDocument: React.FC = () => {
     e.preventDefault(); // 기본 폼 제출 동작을 막습니다.
     console.log(newDocuments)
 
+    if(userInfo){
+      dispatch(addDocumentRequest({title: newDocuments, userId: userInfo?.userId }))
+     
+    }
+    if(addDocument){
+      console.log(123)
+      navigate(`/document/${addDocument.documentId}`); //여기에 작품번호 들어가게 바꿔야함
+    }
     
-    dispatch(addDocumentRequest(newDocuments))
-    navigate(`/document/10`); //여기에 작품번호 들어가게 바꿔야함
   };
 
   
