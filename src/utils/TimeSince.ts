@@ -4,7 +4,7 @@ export function timeSince(date: string | number | Date): string {
   const seconds = Math.floor((currentDate.getTime() - inputDate.getTime()) / 1000);
 
   if (seconds < 60) {
-    return seconds + " 초 전";
+    return " 방금";
   } else if (seconds < 3600) {
     const minutes = Math.floor(seconds / 60);
     return minutes + " 분 전";

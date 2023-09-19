@@ -12,6 +12,7 @@ import {
   selectSingleVersion,
 } from "../../store/version/versionSelectors";
 import styles from "./DocumentVersionList.module.scss";
+import { timeSince } from "../../utils/TimeSince";
 
 interface VersionListProps {
   content: string | undefined;
@@ -134,7 +135,8 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
               fetchVersionInfo(version.id); // 선택한 버전의 정보를 요청
             }}
           >
-            {version.subtitle}
+            <span> {version.subtitle}</span>
+            <span> {timeSince(version.createdAt)}</span>
           </div>
         ))}
       </div>
