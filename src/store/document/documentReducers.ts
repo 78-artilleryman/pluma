@@ -10,8 +10,6 @@ interface DocumentState {
   error: string | null;
 }
 
-
-
 const initialState: DocumentState = {
   documentsList: [],
   singleDocument: null,
@@ -43,6 +41,7 @@ const documentReducer = createSlice({
     loadDocumentSuccess: (state, action: PayloadAction<DocumentDetailInfo | null>) => {
       state.loading = false;
       state.singleDocument = action.payload;
+      state.newDocument = null;
     },
     loadDocumentFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -54,7 +53,7 @@ const documentReducer = createSlice({
       state.error = null;
     },
     addDocumentSuccess: (state, action: PayloadAction<DocumentInfo | null>) => {
-      console.log(action)
+      console.log(action);
       state.loading = false;
       state.newDocument = action.payload;
     },
@@ -62,7 +61,6 @@ const documentReducer = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    
   },
 });
 

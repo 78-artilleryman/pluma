@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { checkTokenExpiration, getTokenFromCookie } from "src/utils/tokenUtils";
+import { checkTokenExpiration, getTokenFromCookie } from "../../utils/tokenUtils";
 import { checkTokenExpirationRequest, logoutRequest } from "../auth/authActions";
 import { checkTokenExpirationSaga } from "../auth/authSagas";
 import {
@@ -96,30 +96,32 @@ function* loadDocument(action: any) {
 }
 
 //새 문서 추가
-function* addDocument(action: any){
-  const {title, userId} = action.payload;
-  try{
+function* addDocument(action: any) {
+  const { title, userId } = action.payload;
+  try {
     // 쿠키에서 accessToken 가져오기
     const access_token = getTokenFromCookie("access_token");
     if (access_token) {
       const response: AxiosResponse<any> = yield call(() =>
-        axios.post(`/documents`, {"title": title, "userId": userId},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-          },
-        })
+        axios.post(
+          `/documents`,
+          { title: title, userId: userId },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        )
       );
 
       if (response.status === 200) {
         yield put(addDocumentSuccess(response.data));
-        
       } else {
         yield put(addDocumentFailure("새 문서 추가에 실패했습니다."));
       }
     }
-  } catch (error){
+  } catch (error) {
     yield put(addDocumentFailure("새 문서 추가에 실패했습니다."));
   }
 }

@@ -12,8 +12,7 @@ import DocumentItem from "../../components/Document/DocumentItem";
 
 import styles from "../../components/Document/Document.module.scss";
 import Layout from "../../components/Layout/Layout";
-import AddDocument from "src/components/Document/AddDocumentItem";
-
+import AddDocument from "../../components/Document/AddDocumentItem";
 
 const DocumentList: React.FC = () => {
   const dispatch = useDispatch();
@@ -55,7 +54,7 @@ const DocumentList: React.FC = () => {
           {documents?.map((document) => (
             <DocumentItem key={document.documentId} documentData={document} />
           ))}
-           <AddDocument />
+          <AddDocument />
         </div>
       )}
       {isModalOpen && (
@@ -64,9 +63,7 @@ const DocumentList: React.FC = () => {
           <p>문서를 보려면 먼저 로그인하세요.</p>
         </Modal>
       )}
-
     </Layout>
-   
   );
 };
 

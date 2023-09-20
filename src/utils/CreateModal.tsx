@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import style from "./CreateModal.module.scss";
+import style from "./Modal.module.scss";
 
 interface CreateModalProps {
   isOpen: boolean;
@@ -11,12 +11,9 @@ interface CreateModalProps {
 const CreateModal: FC<CreateModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
- 
   return (
-    <div className={style.modalOverlay} >
-      <div className={style.modalContainer}>
-        {children}
-      </div>
+    <div className={style.modalOverlay}>
+      <div className={style.modalContainer}>{children}</div>
     </div>
   );
 };
