@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getTokenFromCookie } from "src/utils/tokenUtils";
+import { getTokenFromCookie } from "../../utils/tokenUtils";
 
 interface AuthState {
   isAuthenticated: boolean;
   user: string | null;
   loading: boolean;
   error: string | null;
-  userInfo: { userName: string; userId: string } | null;
+  userInfo: { name: string; userId: string } | null;
   refreshingToken: boolean;
 }
 
@@ -15,7 +15,7 @@ const initialUser = userFromCookie ? JSON.parse(userFromCookie) : null;
 
 const initialState: AuthState = {
   isAuthenticated: !!getTokenFromCookie("refresh_token"),
-  user: initialUser && initialUser.userName ? initialUser.userName : null,
+  user: initialUser && initialUser.name ? initialUser.name : null,
   loading: false,
   error: null,
   userInfo: initialUser || null,
@@ -49,6 +49,7 @@ const authReducer = createSlice({
       state.loading = false;
       state.isAuthenticated = false;
       state.user = null;
+      state.userInfo = null;
     },
     logoutFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -59,9 +60,10 @@ const authReducer = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchUserInfoSuccess: (state, action: PayloadAction<{ userName: string; userId: string }>) => {
+    fetchUserInfoSuccess: (state, action: PayloadAction<{ name: string; userId: string }>) => {
       state.loading = false;
       state.userInfo = action.payload;
+      state.user = action.payload.name;
     },
     fetchUserInfoFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;

@@ -34,7 +34,7 @@ function* fetchUserInfo() {
   try {
     // 서버에 사용자 정보를 요청
     const response: AxiosResponse<any> = yield call(() =>
-      axios.get("/users/info", {
+      axios.get("/users/getInfo", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${getTokenFromCookie("access_token")}`,
@@ -47,7 +47,7 @@ function* fetchUserInfo() {
       const userInfo = response.data;
       setTokenToCookie("user", JSON.stringify(response.data));
       yield put(fetchUserInfoSuccess(userInfo));
-      yield put(loginSuccess(userInfo.userName));
+      yield put(loginSuccess(userInfo.name));
     } else {
       yield put(fetchUserInfoFailure("사용자 정보를 가져오는데 실패했습니다."));
     }
@@ -80,17 +80,18 @@ function* refreshTokenSaga() {
   try {
     // refresh_token을 사용하여 토큰 재발급 요청
     const response: AxiosResponse<any> = yield call(() =>
-      axios.get("/users/token/refresh", {
-        headers: {
-          Authorization: `Bearer ${getTokenFromCookie("refresh_token")}`,
-        },
+      axios.post("/auth/refresh", {
+        accessToken: getTokenFromCookie("access_token"),
+        refreshToken: getTokenFromCookie("refresh_token"),
       })
     );
 
     if (response.status === 200) {
-      const access_token = response.data?.access_token;
+      const access_token = response.data?.accessToken;
+      const refresh_token = response.data?.refreshToken;
       // 새로 발급받은 access_token을 쿠키에 저장
-      setTokenToCookie("access_token", access_token, 30); // 예: 30분 동안 유효한 토큰
+      setTokenToCookie("access_token", access_token, 30);
+      setTokenToCookie("refresh_token", refresh_token, 180);
       yield put(refreshTokenSuccess());
     } else {
       yield put(refreshTokenFailure("토큰 재발급에 실패했습니다."));
@@ -110,11 +111,11 @@ function* login(action: any) {
     // Axios를 사용하여 실제 API 호출
     const response: AxiosResponse<any> = yield call(() =>
       axios.post(
-        "/users/login",
+        "/auth/login",
         { username, password },
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
         }
       )
@@ -122,11 +123,12 @@ function* login(action: any) {
 
     if (response.status === 200) {
       // 응답 데이터에서 access_token 추출
-      const access_token = response.data?.access_token;
-      const refresh_token = response.data?.refresh_token;
+      const access_token = response.data?.accessToken;
+      const refresh_token = response.data?.refreshToken;
 
       // access_token과 refresh_token을 쿠키에 저장
       setTokenToCookie("access_token", access_token, 30);
+      // axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       setTokenToCookie("refresh_token", refresh_token, 180);
 
       // 로그인 성공 액션 디스패치
@@ -144,6 +146,7 @@ function* logout(action: any) {
   try {
     // 쿠키에서 토큰 삭제
     clearTokenFromCookie("access_token");
+    // delete axios.defaults.headers.common["ACCESS_TOKEN"];
     clearTokenFromCookie("refresh_token");
     clearTokenFromCookie("user");
 
@@ -160,7 +163,12 @@ function* register(action: any) {
 
     // Axios를 사용하여 실제 API 호출
     const response: AxiosResponse<any> = yield call(
-      () => axios.post("/users/join", { username, password, name }) // 회원가입 엔드포인트 URL
+      () =>
+        axios.post(
+          "/auth/join",
+          { username, password, name },
+          { headers: { "Content-Type": "application/json" } }
+        ) // 회원가입 엔드포인트 URL
     );
 
     if (response.status === 200) {
