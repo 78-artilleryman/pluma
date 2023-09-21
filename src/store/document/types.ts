@@ -14,7 +14,7 @@ export interface DocumentDetailInfo {
   modDate: string;
 }
 
-export interface AddDocument{
+export interface AddDocument {
   title: string;
   userId: string;
 }

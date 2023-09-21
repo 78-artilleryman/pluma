@@ -1,86 +1,77 @@
-// Document.tsx
-
 import React, { useEffect, useState } from "react";
-import { getInitialTheme } from "../../utils/theme";
-import styles from "./AddDocumentItem.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faSquarePlus, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
-import CreateModal from "src/utils/CreateModal";
+import { faSquarePlus, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { addDocumentRequest } from "src/store/document/documentActions";
-import { selectUserInfo } from "src/store/auth/authSelectors";
-import { selectNewDocument } from "src/store/document/documentSelectors";
-
-
+import { addDocumentRequest } from "../../store/document/documentActions";
+import { selectUserInfo } from "../../store/auth/authSelectors";
+import { selectNewDocument } from "../../store/document/documentSelectors";
+import { getInitialTheme } from "../../utils/theme";
+import CreateModal from "../../utils/CreateModal";
+import styles from "./AddDocumentItem.module.scss";
 
 const AddDocument: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // useNavigate 훅을 사용하여 이동 처리
+  const navigate = useNavigate();
   const userInfo = useSelector(selectUserInfo);
   const addDocument = useSelector(selectNewDocument);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newDocuments, setNewDocuments]= useState("");
+  const [newDocuments, setNewDocuments] = useState("");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
   }, []);
 
-  useEffect(() =>{
-    console.log(addDocument)
-  }, [addDocument])
-  
-  // useEffect(() => {
-  //   console.log(isCreateModalOpen); // Log the updated value here
-  // }, [isCreateModalOpen]);
+  useEffect(() => {
+    console.log(addDocument);
+    if (addDocument) {
+      navigate(`/document/${addDocument?.documentId}`);
+    }
+  }, [addDocument]);
 
-  function createmodal(){
+  const openModal = () => {
     setIsCreateModalOpen(true);
-  }
+  };
 
-  function closeModal(){
+  const closeModal = () => {
     setIsCreateModalOpen(false);
-  }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // 사용자가 입력한 값을 documentTitle 상태 변수에 저장합니다.
-    setNewDocuments(e.target.value );
+    setNewDocuments(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // 기본 폼 제출 동작을 막습니다.
-    console.log(newDocuments)
+    e.preventDefault();
 
-    if(userInfo){
-      dispatch(addDocumentRequest({title: newDocuments, userId: userInfo?.userId }))
-     
+    if (userInfo) {
+      dispatch(addDocumentRequest({ title: newDocuments, userId: userInfo?.userId }));
     }
-    if(addDocument){
-      console.log(123)
-      navigate(`/document/${addDocument.documentId}`); //여기에 작품번호 들어가게 바꿔야함
+    if (addDocument) {
+      navigate(`/document/${addDocument.documentId}`);
     }
-    
   };
 
-  
-
   return (
-    <div className={styles.documentCard} > 
-    
-      <div className={styles.iconBox} onClick={createmodal}>
+    <div>
+      <div className={styles.documentCard} onClick={openModal}>
         <FontAwesomeIcon className={styles.faSquarePlus} icon={faSquarePlus} />
       </div>
 
-       {isCreateModalOpen && (
+      {isCreateModalOpen && (
         <CreateModal isOpen={isCreateModalOpen} onClose={closeModal}>
-          <FontAwesomeIcon className={styles.faCircleXmark} icon={faCircleXmark} onClick={closeModal} />
           <form onSubmit={handleSubmit}>
-            <input className={styles.title}
-              type="text"
-              onChange={handleInputChange}
+            <FontAwesomeIcon
+              className={styles.faCircleXmark}
+              icon={faCircleXmark}
+              onClick={closeModal}
             />
-            <button type="submit" className={styles.linkDocument}>생성하기</button>
+            <h2>새 문서 생성하기</h2>
+            <input className={styles.title} type="text" onChange={handleInputChange} />
+            <button type="submit" className={styles.linkDocument}>
+              생성하기
+            </button>
           </form>
         </CreateModal>
       )}

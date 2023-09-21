@@ -11,13 +11,18 @@ import { formatDate } from "../../utils/dateUtils";
 import Modal from "../../utils/Modal"; // 모달 컴포넌트 import
 import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
+import { selectSingleVersion } from "../../store/version/versionSelectors";
 
 const DocumentDetailPage: React.FC = () => {
   const { documentId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const detailDocument = useSelector(selectSingleDocument);
-  const [content, setContent] = useState<string | undefined>(detailDocument?.content);
+  const detailVersion = useSelector(selectSingleVersion);
+  const [content, setContent] = useState<string | undefined>(detailVersion?.content);
+  useEffect(() => {
+    console.log(detailVersion);
+  }, [detailVersion]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
     if (documentId) {

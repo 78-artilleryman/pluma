@@ -27,6 +27,9 @@ const Header = () => {
     dispatch(logoutRequest());
     closeLogoutModal();
   };
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   return (
     <header className={styles.header}>

@@ -14,7 +14,7 @@ export const logoutFailure = createAction<string>("auth/logoutFailure");
 
 //사용자 정보 요청
 export const fetchUserInfoRequest = createAction("auth/fetchUserInfoRequest");
-export const fetchUserInfoSuccess = createAction<{ userName: string; userId: string }>(
+export const fetchUserInfoSuccess = createAction<{ name: string; userId: string }>(
   "auth/fetchUserInfoSuccess"
 );
 export const fetchUserInfoFailure = createAction<string>("auth/fetchUserInfoFailure");

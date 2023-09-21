@@ -1,6 +1,6 @@
 // store/document/documentActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { DocumentInfo, DocumentDetailInfo , AddDocument} from "./types";
+import { DocumentInfo, DocumentDetailInfo, AddDocument } from "./types";
 
 // 문서 리스트 로딩
 export const loadDocumentsRequest = createAction<string | null>("document/loadDocumentsRequest");
