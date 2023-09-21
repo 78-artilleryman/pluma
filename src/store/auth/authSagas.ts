@@ -69,6 +69,7 @@ export function* checkTokenExpirationSaga() {
       yield put(logoutRequest());
     } else {
       yield put(checkTokenExpirationSuccess());
+      yield put(refreshTokenRequest());
     }
   } catch (error) {
     yield put(checkTokenExpirationFailure("토큰 재발급 검사 실패"));

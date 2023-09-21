@@ -51,11 +51,7 @@ export function checkTokenExpiration(dispatch: any) {
 
     if (refresh_token_expiration && refresh_token_expiration < new Date()) {
       // refresh_token이 만료된 경우, 로그아웃 등의 처리를 수행
-      clearTokenFromCookie("user");
-      clearTokenFromCookie("access_token");
-      clearTokenFromCookie("refresh_token");
       console.log("재로그인 필요");
-
       dispatch(logoutRequest());
     }
   }
