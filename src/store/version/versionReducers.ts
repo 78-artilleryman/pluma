@@ -46,6 +46,7 @@ const versionReducer = createSlice({
     loadDocumentVersionRequest: (state) => {
       state.loading = true;
       state.error = null;
+      state.singleVersion = null;
     },
     loadDocumentVersionSuccess: (state, action: PayloadAction<VersionDetailInfo | null>) => {
       state.loading = false;

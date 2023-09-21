@@ -107,11 +107,10 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   }, [documentId, dispatch]);
 
   useEffect(() => {
-    // 버전 정보가 업데이트되면 해당 버전의 content를 설정합니다.
-    if (versionInfo) {
+    if (versions.length !== 0) {
       setContent(versionInfo?.content);
     }
-  }, [versionInfo, setContent]);
+  }, [versionInfo, setContent, versions]);
 
   return (
     <>

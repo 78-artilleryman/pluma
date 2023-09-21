@@ -27,6 +27,7 @@ function* loadDocumentVersions(action: any) {
     );
     // 토큰 만료 여부 확인
     if (response.status === 200) {
+      console.log();
       yield put(loadDocumentVersionsSuccess(response.data.dtoList));
     } else {
       yield put(loadDocumentVersionsFailure("문서 버전 로딩에 실패했습니다."));
