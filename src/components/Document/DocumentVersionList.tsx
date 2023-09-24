@@ -17,7 +17,6 @@ import { timeSince } from "../../utils/TimeSince";
 interface VersionListProps {
   content: string | undefined;
   setContent: React.Dispatch<React.SetStateAction<string | undefined>>;
-  handleVersionSelect: (subtitle: string | undefined, createdAt: string | undefined) => void;
   setSelectedVersionSubtitle: React.Dispatch<React.SetStateAction<string | undefined>>;
   setSelectedVersionDate: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
@@ -25,7 +24,6 @@ interface VersionListProps {
 const DocumentVersionList: React.FC<VersionListProps> = ({
   content,
   setContent,
-  handleVersionSelect,
   setSelectedVersionSubtitle,
   setSelectedVersionDate,
 }) => {
@@ -37,44 +35,35 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   const [selectedVersionId, setSelectedVersionId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subtitle, setSubtitle] = useState("");
+  const [contentChanged, setContentChanged] = useState(false);
+  const [isVersionComparatorExpanded, setIsVersionComparatorExpanded] = useState(false);
 
   const handleCtrlS = (event: KeyboardEvent) => {
     if ((event.ctrlKey && event.key === "s") || (event.metaKey && event.key === "s")) {
-      event.preventDefault(); // 브라우저의 기본 저장 동작을 막습니다.
-      if (versionInfo?.content === content) {
+      event.preventDefault();
+      if (!contentChanged) {
         alert("수정된 내용이 없습니다.");
         return;
       }
-      setIsModalOpen(true); // Ctrl + S 눌렀을 때 실행할 함수 호출
+      setIsModalOpen(true);
     }
   };
 
   useEffect(() => {
-    if (versions && versions.length > 0) {
-      const latestVersion = versions[0];
-      fetchVersionInfo(latestVersion.id);
-      setSelectedVersionSubtitle(latestVersion.subtitle);
-      setSelectedVersionDate(latestVersion.createdAt);
-      setSelectedVersionId(latestVersion.id); // 초기 선택 버전 설정
-    }
-  }, [setContent, setSelectedVersionDate, setSelectedVersionSubtitle, versions]);
-  useEffect(() => {
-    // 컴포넌트가 마운트될 때 Ctrl + S 키 이벤트 핸들러 등록
     window.addEventListener("keydown", handleCtrlS);
 
-    // 컴포넌트가 언마운트될 때 이벤트 핸들러 제거
     return () => {
       window.removeEventListener("keydown", handleCtrlS);
     };
-  }, [content]);
+  }, [contentChanged]);
 
   const handleAddVersion = () => {
-    if (versionInfo?.content === content) {
-      alert("수정된 내용이 없습니다.");
+    if (contentChanged) {
+      setIsModalOpen(true);
+    } else {
+      alert("변경된 내용이 없습니다");
       return;
     }
-
-    setIsModalOpen(true);
   };
 
   const handleModalClose = () => {
@@ -83,6 +72,11 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   };
 
   const handleModalSubmit = () => {
+    if (!subtitle) {
+      alert("버전 이름을 입력해주세요.");
+      return;
+    }
+
     if (documentId) {
       const newVersionInfo = {
         subtitle: subtitle,
@@ -96,7 +90,6 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   };
 
   const fetchVersionInfo = (versionId: number) => {
-    // 선택한 버전의 정보를 요청합니다.
     dispatch(loadDocumentVersionRequest(versionId));
   };
 
@@ -107,20 +100,39 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   }, [documentId, dispatch]);
 
   useEffect(() => {
-    if (versions.length !== 0) {
+    if (versions.length !== 0 && versionInfo?.content !== content) {
       setContent(versionInfo?.content);
     }
-  }, [versionInfo, setContent, versions]);
+  }, [versionInfo, versions, documentId]);
+
+  useEffect(() => {
+    if (versionInfo?.content !== content) {
+      setContentChanged(true);
+    } else {
+      setContentChanged(false);
+    }
+  }, [content, contentChanged]);
+
+  const handleModalOuterClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (event.target === event.currentTarget) {
+      handleModalClose();
+    }
+  };
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+        }}
+      >
         <h3>문서 버전</h3>
         <button onClick={handleAddVersion} style={{ height: "30px" }}>
           +
         </button>
       </div>
-
       <div className={styles.versionList}>
         {versions?.map((version) => (
           <div
@@ -129,9 +141,11 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
               selectedVersionId === version.id ? styles.selectedVersion : ""
             }`}
             onClick={() => {
-              handleVersionSelect(version.subtitle, version.createdAt);
-              setSelectedVersionId(version.id); // 선택한 버전 갱신
-              fetchVersionInfo(version.id); // 선택한 버전의 정보를 요청
+              setSelectedVersionSubtitle(version.subtitle);
+              setSelectedVersionDate(version.createdAt);
+              setSelectedVersionId(version.id);
+              fetchVersionInfo(version.id);
+              setIsVersionComparatorExpanded(true);
             }}
           >
             <span> {version.subtitle}</span>
@@ -140,9 +154,9 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
         ))}
       </div>
       {isModalOpen && (
-        <div className={styles.modalContainer}>
+        <div className={styles.modalContainer} onClick={handleModalOuterClick}>
           <div className={styles.modalContent}>
-            <div>서브타이틀 입력</div>
+            <div>버전 이름</div>
             <input type="text" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
             <button onClick={handleModalSubmit}>확인</button>
             <button onClick={handleModalClose}>취소</button>
