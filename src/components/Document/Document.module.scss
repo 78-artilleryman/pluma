@@ -1,7 +1,15 @@
 /* Document.module.scss */
 @import "../../styles/common.scss"; /* 공통 스타일 임포트 */
 
-/* 문서 카드 스타일 */
+.slideContainer {
+  overflow: hidden;
+  width: 0;
+  transition: width 0.3s;
+
+  &.visible {
+    width: 400px; // 원하는 너비로 조정
+  }
+}
 
 /* 문서 카드 컨테이너 스타일 */
 .documentCardContainer {

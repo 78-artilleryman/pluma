@@ -16,9 +16,9 @@ import { timeSince } from "../../utils/TimeSince";
 
 interface VersionListProps {
   content: string | undefined;
-  setContent: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setSelectedVersionSubtitle: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setSelectedVersionDate: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setContent: (content: string) => void;
+  setSelectedVersionSubtitle: (subtitle: string) => void;
+  setSelectedVersionDate: (date: string) => void;
 }
 
 const DocumentVersionList: React.FC<VersionListProps> = ({
@@ -32,11 +32,13 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   const versions = useSelector(selectVersionsList);
   const loading = useSelector(selectVersionLoading);
   const versionInfo = useSelector(selectSingleVersion);
+
   const [selectedVersionId, setSelectedVersionId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subtitle, setSubtitle] = useState("");
   const [contentChanged, setContentChanged] = useState(false);
   const [isVersionComparatorExpanded, setIsVersionComparatorExpanded] = useState(false);
+  const [previousVersionContent, setPreviousVersionContent] = useState<string | undefined>();
 
   const handleCtrlS = (event: KeyboardEvent) => {
     if ((event.ctrlKey && event.key === "s") || (event.metaKey && event.key === "s")) {
@@ -51,7 +53,6 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
 
   useEffect(() => {
     window.addEventListener("keydown", handleCtrlS);
-
     return () => {
       window.removeEventListener("keydown", handleCtrlS);
     };
@@ -93,6 +94,22 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     dispatch(loadDocumentVersionRequest(versionId));
   };
 
+  const handleVersionItemClick = (version: any) => {
+    // contentChanged가 true일 때만 confirm 메시지 띄움
+    if (contentChanged) {
+      const isConfirmed = window.confirm(
+        "변경된 사항은 저장되지 않습니다. 정말로 이동하시겠습니까?"
+      );
+      if (!isConfirmed) return; // 사용자가 이동을 원하지 않으면 함수 종료
+    }
+
+    setSelectedVersionSubtitle(version.subtitle);
+    setSelectedVersionDate(version.createdAt);
+    setSelectedVersionId(version.id);
+    fetchVersionInfo(version.id);
+    setIsVersionComparatorExpanded(true);
+  };
+
   useEffect(() => {
     if (documentId) {
       dispatch(loadDocumentVersionsRequest(documentId));
@@ -100,8 +117,19 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   }, [documentId, dispatch]);
 
   useEffect(() => {
-    if (versions.length !== 0 && versionInfo?.content !== content) {
-      setContent(versionInfo?.content);
+    if (versions && versions.length > 0) {
+      const firstVersion = versions[0];
+      setSelectedVersionSubtitle(firstVersion.subtitle);
+      setSelectedVersionDate(firstVersion.createdAt);
+      setSelectedVersionId(firstVersion.id);
+      fetchVersionInfo(firstVersion.id);
+    }
+  }, [versions]);
+
+  useEffect(() => {
+    if (versionInfo?.content) {
+      setContent(versionInfo.content);
+      setPreviousVersionContent(content);
     }
   }, [versionInfo, versions, documentId]);
 
@@ -140,13 +168,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             className={`${styles.versionItem} ${
               selectedVersionId === version.id ? styles.selectedVersion : ""
             }`}
-            onClick={() => {
-              setSelectedVersionSubtitle(version.subtitle);
-              setSelectedVersionDate(version.createdAt);
-              setSelectedVersionId(version.id);
-              fetchVersionInfo(version.id);
-              setIsVersionComparatorExpanded(true);
-            }}
+            onClick={() => handleVersionItemClick(version)}
           >
             <span> {version.subtitle}</span>
             <span> {timeSince(version.createdAt)}</span>

@@ -1,6 +1,7 @@
 // 문서 버전 정보
 export interface VersionInfo {
   id: number;
+  content: string;
   createdAt: string;
   subtitle: string;
 }

@@ -21,9 +21,7 @@ const DocumentDetailPage: React.FC = () => {
   const detailDocument = useSelector(selectSingleDocument);
   const detailVersion = useSelector(selectSingleVersion);
   const [content, setContent] = useState<string | undefined>(detailVersion?.content);
-  useEffect(() => {
-    console.log(detailVersion);
-  }, [detailVersion]);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
     if (documentId) {
@@ -48,12 +46,12 @@ const DocumentDetailPage: React.FC = () => {
 
   const [selectedVersionSubtitle, setSelectedVersionSubtitle] = useState<string | undefined>("");
   const [selectedVersionDate, setSelectedVersionDate] = useState<string | undefined>("");
-
-  const handleVersionSelect = (subtitle: string | undefined, createdAt: string | undefined) => {
-    setSelectedVersionSubtitle(subtitle || "");
-    setSelectedVersionDate(createdAt || "");
-  };
   const [selectedLineNumber, setSelectedLineNumber] = useState<number | null>(null);
+
+  const [isComparatorVisible, setIsComparatorVisible] = useState(false);
+  const toggleComparator = () => {
+    setIsComparatorVisible(!isComparatorVisible);
+  };
 
   const handleDiffLineClick = (lineNumber: number) => {
     setSelectedLineNumber(lineNumber);
@@ -81,6 +79,13 @@ const DocumentDetailPage: React.FC = () => {
   return (
     <Layout>
       <div className={styles.container}>
+        <div className={`${styles.slideContainer} ${isComparatorVisible ? styles.visible : ""}`}>
+          <ContentComparator
+            firstContent={detailVersion?.content || ""}
+            currentContent={content}
+            onDiffLineClick={handleDiffLineClick}
+          />
+        </div>
         <div className={styles.editorContainer}>
           <Editor
             content={content}
@@ -100,16 +105,14 @@ const DocumentDetailPage: React.FC = () => {
             </p>
           </div>
           <div className={styles.documentInfoRight}>
+            <button onClick={toggleComparator}>
+              {isComparatorVisible ? "숨기기" : "비교 보기"}
+            </button>
             <DocumentVersionList
               content={content}
               setContent={setContent}
               setSelectedVersionSubtitle={setSelectedVersionSubtitle}
               setSelectedVersionDate={setSelectedVersionDate}
-            />
-            <ContentComparator
-              firstContent={detailVersion?.content || ""}
-              currentContent={content}
-              onDiffLineClick={handleDiffLineClick}
             />
           </div>
         </div>

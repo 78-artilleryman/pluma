@@ -19,7 +19,7 @@ function ContentComparator({
   const fixedCurrentContent = convertedCurrentContent.replace(/\n{2,}/g, "\n");
 
   return (
-    <div style={{ height: "92vh", overflowY: "auto" }}>
+    <div style={{ height: "92vh", overflowY: "auto", overflowX: "auto" }}>
       <DiffViewer
         oldValue={fixedFirstContent}
         newValue={fixedCurrentContent}
@@ -32,6 +32,15 @@ function ContentComparator({
           if (!isNaN(lineNumber)) {
             onDiffLineClick(lineNumber);
           }
+        }}
+        styles={{
+          diffContainer: {
+            diffViewer: {
+              whiteSpace: "pre",
+              overflowWrap: "normal",
+              wordBreak: "keep-all",
+            },
+          },
         }}
       />
     </div>

@@ -23,18 +23,6 @@ const Editor: React.FC<IEditor> = ({ content, setContent, selectedLineNumber }) 
     }
   }, [selectedLineNumber]);
 
-  useEffect(() => {
-    if (editorRef.current && typeof selectedLineNumber === "number") {
-      const editor = editorRef.current.getEditor();
-      const lines = editor.getLines();
-
-      if (lines[selectedLineNumber - 1]) {
-        const index = editor.getIndex(lines[selectedLineNumber - 1]);
-        editor.setSelection(index, 0);
-      }
-    }
-  }, [selectedLineNumber]);
-
   const formats = [
     "header",
     "font",
