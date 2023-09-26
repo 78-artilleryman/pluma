@@ -3,8 +3,8 @@ import DiffViewer, { DiffMethod } from "react-diff-viewer";
 import { htmlToText } from "html-to-text";
 
 interface VersionComparatorProps {
-  firstContent: string | undefined;
-  currentContent: string | undefined;
+  firstContent: string | null;
+  currentContent: string | null;
   onDiffLineClick: (lineNumber: number) => void;
 }
 
@@ -13,7 +13,7 @@ function ContentComparator({
   currentContent,
   onDiffLineClick,
 }: VersionComparatorProps): React.JSX.Element {
-  const convertContentToText = (htmlString: string | undefined) =>
+  const convertContentToText = (htmlString: string | null) =>
     htmlToText(htmlString || "", { preserveNewlines: true }).replace(/\n{2,}/g, "\n");
 
   const fixedFirstContent = convertContentToText(firstContent);
@@ -48,4 +48,5 @@ function ContentComparator({
     </div>
   );
 }
+
 export default ContentComparator;

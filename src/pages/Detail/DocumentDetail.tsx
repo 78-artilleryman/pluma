@@ -20,7 +20,7 @@ const DocumentDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const detailDocument = useSelector(selectSingleDocument);
   const detailVersion = useSelector(selectSingleVersion);
-  const [content, setContent] = useState<string | undefined>(detailVersion?.content);
+  const [content, setContent] = useState<string | null>(detailVersion?.content || null);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
@@ -105,7 +105,11 @@ const DocumentDetailPage: React.FC = () => {
             </p>
           </div>
           <div className={styles.documentInfoRight}>
-            <button onClick={toggleComparator}>
+            <button
+              onClick={toggleComparator}
+              className={styles.button}
+              style={{ marginLeft: "16px" }}
+            >
               {isComparatorVisible ? "숨기기" : "비교 보기"}
             </button>
             <DocumentVersionList

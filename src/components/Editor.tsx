@@ -1,16 +1,19 @@
 import React, { useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.snow.css"; // Quill의 기본 스타일
+import Quill from "quill"; // Quill 객체를 가져옵니다.
 import "./Editor.module.scss";
 
 interface IEditor {
-  content: string | undefined;
-  setContent: React.Dispatch<React.SetStateAction<string | undefined>>;
+  content: string | null;
+  setContent: React.Dispatch<React.SetStateAction<string | null>>;
   selectedLineNumber: number | null;
+  toggleComparator: () => void;
 }
 
 const Editor: React.FC<IEditor> = ({ content, setContent, selectedLineNumber }) => {
   const editorRef = useRef<ReactQuill | null>(null);
+
   useEffect(() => {
     if (editorRef.current && typeof selectedLineNumber === "number") {
       const editor = editorRef.current.getEditor();
@@ -50,14 +53,22 @@ const Editor: React.FC<IEditor> = ({ content, setContent, selectedLineNumber }) 
   };
 
   useEffect(() => {
-    if (editorRef.current) {
-      const editor = editorRef.current.getEditor();
-      const quillRoot = editor.root;
-      const screenHeight = window.innerHeight;
-      const desiredHeight = screenHeight - 160;
+    const adjustEditorHeight = () => {
+      if (editorRef.current) {
+        const editor = editorRef.current.getEditor();
+        const quillRoot = editor.root;
+        const screenHeight = window.innerHeight;
+        const desiredHeight = screenHeight - 160;
+        quillRoot.style.height = `${desiredHeight}px`;
+      }
+    };
 
-      quillRoot.style.height = `${desiredHeight}px`;
-    }
+    adjustEditorHeight();
+    window.addEventListener("resize", adjustEditorHeight);
+
+    return () => {
+      window.removeEventListener("resize", adjustEditorHeight);
+    };
   }, []);
 
   return (
