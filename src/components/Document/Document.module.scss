@@ -5,9 +5,11 @@
   overflow: hidden;
   width: 0;
   transition: width 0.3s;
+  border-right: 2px solid #e0e0e0;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.08);
 
   &.visible {
-    width: 400px; // 원하는 너비로 조정
+    width: 500px;
   }
 }
 
@@ -47,21 +49,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-}
-
-/* 슬라이딩 메뉴 열림 상태 스타일 */
-.menuOpen {
-  transform: translateX(0);
-  transition: transform 0.3s ease;
-  position: relative;
-}
-
-/* 슬라이딩 메뉴 닫힘 상태 스타일 */
-.menuClosed {
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  width: 0;
-  position: absolute;
 }
 
 .documentInfoLeft {

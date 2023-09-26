@@ -13,13 +13,15 @@ function ContentComparator({
   currentContent,
   onDiffLineClick,
 }: VersionComparatorProps): React.JSX.Element {
-  const convertedFirstContent = htmlToText(firstContent || "", { preserveNewlines: true });
-  const convertedCurrentContent = htmlToText(currentContent || "", { preserveNewlines: true });
-  const fixedFirstContent = convertedFirstContent.replace(/\n{2,}/g, "\n");
-  const fixedCurrentContent = convertedCurrentContent.replace(/\n{2,}/g, "\n");
+  const convertContentToText = (htmlString: string | undefined) =>
+    htmlToText(htmlString || "", { preserveNewlines: true }).replace(/\n{2,}/g, "\n");
+
+  const fixedFirstContent = convertContentToText(firstContent);
+  const fixedCurrentContent = convertContentToText(currentContent);
 
   return (
     <div style={{ height: "92vh", overflowY: "auto", overflowX: "auto" }}>
+      <h3 style={{ paddingLeft: "16px" }}>변경사항</h3>
       <DiffViewer
         oldValue={fixedFirstContent}
         newValue={fixedCurrentContent}
