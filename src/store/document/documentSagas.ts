@@ -46,20 +46,25 @@ function* loadDocuments(action: any) {
         yield put(loadDocumentsSuccess(documents));
       } else if (response.data.error === "토큰 기한 만료") {
         // 토큰이 만료되었다면 로그아웃을 실행
+        yield put(loadDocumentFailure("토큰이 만료되었습니다."));
         yield put(logoutRequest());
       } else {
         yield put(loadDocumentsFailure("문서목록 로딩에 실패했습니다."));
+        yield put(logoutRequest());
       }
     } else {
       yield put(loadDocumentsFailure("문서목록 로딩에 실패했습니다."));
+      yield put(logoutRequest());
     }
   } catch (error) {
     if ((error as any).response && (error as any).response.data.error === "토큰 기한 만료") {
+      yield put(loadDocumentFailure("토큰이 만료되었습니다."));
       console.log("토큰이 만료되었습니다.");
       yield put(logoutRequest());
     } else {
       console.error("문서목록 로딩에 실패했습니다.", error);
       yield put(loadDocumentsFailure("문서목록 로딩에 실패했습니다."));
+      yield put(logoutRequest());
     }
   }
 }
@@ -80,17 +85,20 @@ function* loadDocument(action: any) {
       yield put(loadDocumentSuccess(response.data));
     } else if (response.data.error === "토큰 기한 만료") {
       // 토큰이 만료되었다면 로그아웃을 실행
+      yield put(loadDocumentFailure("토큰이 만료되었습니다."));
       yield put(logoutRequest());
     } else {
       yield put(loadDocumentFailure("문서 로딩에 실패했습니다."));
+      yield put(logoutRequest());
     }
   } catch (error) {
     if ((error as any).response && (error as any).response.data.error === "토큰 기한 만료") {
-      console.log("토큰이 만료되었습니다.");
+      yield put(loadDocumentFailure("토큰이 만료되었습니다."));
       yield put(logoutRequest());
     } else {
       console.error("문서 로딩에 실패했습니다.", error);
       yield put(loadDocumentFailure("문서 로딩에 실패했습니다."));
+      yield put(logoutRequest());
     }
   }
 }
