@@ -1,14 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Quill의 기본 스타일
-import Quill from "quill"; // Quill 객체를 가져옵니다.
 import "./Editor.module.scss";
 
 interface IEditor {
   content: string | null;
   setContent: React.Dispatch<React.SetStateAction<string | null>>;
   selectedLineNumber: number | null;
-  toggleComparator: () => void;
 }
 
 const Editor: React.FC<IEditor> = ({ content, setContent, selectedLineNumber }) => {
