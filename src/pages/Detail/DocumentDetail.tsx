@@ -91,6 +91,8 @@ const DocumentDetailPage: React.FC = () => {
             content={content}
             setContent={setContent}
             selectedLineNumber={selectedLineNumber}
+            toggleComparator={toggleComparator}
+            isComparatorVisible={isComparatorVisible}
           />
         </div>
         <div className={styles.documentInfo}>

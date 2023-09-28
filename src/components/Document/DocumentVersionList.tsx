@@ -89,10 +89,6 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     }
   };
 
-  const fetchVersionInfo = (versionId: number) => {
-    dispatch(loadDocumentVersionRequest(versionId));
-  };
-
   const handleVersionItemClick = (version: any) => {
     if (contentChanged) {
       const isConfirmed = window.confirm(
@@ -104,29 +100,18 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     setSelectedVersionSubtitle(version.subtitle);
     setSelectedVersionDate(version.createdAt);
     setSelectedVersionId(version.id);
-    fetchVersionInfo(version.id);
+    dispatch(loadDocumentVersionRequest(version.id));
     setIsVersionComparatorExpanded(true);
   };
 
   useEffect(() => {
     if (documentId) {
       dispatch(loadDocumentVersionsRequest(documentId));
-    }
-  }, [documentId, dispatch]);
-
-  useEffect(() => {
-    if (versions && versions.length > 0) {
-      const firstVersion = versions[0];
-      setSelectedVersionSubtitle(firstVersion.subtitle);
-      setSelectedVersionDate(firstVersion.createdAt);
-      setSelectedVersionId(firstVersion.id);
-      fetchVersionInfo(firstVersion.id);
-    } else {
-      setContent(""); // 버전 정보가 없는 경우 content 초기화
       setSelectedVersionSubtitle("");
       setSelectedVersionDate("");
+      setSelectedVersionId(null);
     }
-  }, [versions]);
+  }, [documentId, dispatch]);
 
   useEffect(() => {
     if (versionInfo?.content) {
