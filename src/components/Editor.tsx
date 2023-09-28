@@ -1,16 +1,39 @@
 import React, { useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Quill의 기본 스타일
-import "./Editor.module.scss";
+import "react-quill/dist/quill.snow.css";
+import "./Editor.scss";
 
 interface IEditor {
   content: string | null;
   setContent: React.Dispatch<React.SetStateAction<string | null>>;
   selectedLineNumber: number | null;
+  toggleComparator: () => void;
+  isComparatorVisible: boolean;
 }
 
-const Editor: React.FC<IEditor> = ({ content, setContent, selectedLineNumber }) => {
+const Editor: React.FC<IEditor> = ({
+  content,
+  setContent,
+  selectedLineNumber,
+  toggleComparator,
+  isComparatorVisible,
+}) => {
   const editorRef = useRef<ReactQuill | null>(null);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      const compareButton = document.querySelector(".ql-compare") as HTMLElement;
+      if (compareButton) {
+        compareButton.addEventListener("click", toggleComparator);
+        if (isComparatorVisible) {
+          compareButton.classList.add("ql-active");
+        } else {
+          compareButton.classList.remove("ql-active");
+          compareButton.blur(); // 포커스 제거
+        }
+      }
+    }
+  }, [toggleComparator]);
 
   useEffect(() => {
     if (editorRef.current && typeof selectedLineNumber === "number") {
@@ -44,8 +67,8 @@ const Editor: React.FC<IEditor> = ({ content, setContent, selectedLineNumber }) 
     "align",
     "color",
     "background",
+    "compare",
   ];
-
   const handleEditorChange = (newHtmlStr: string) => {
     setContent(newHtmlStr);
   };
@@ -88,6 +111,7 @@ const Editor: React.FC<IEditor> = ({ content, setContent, selectedLineNumber }) 
             [{ color: [] }, { background: [] }],
             [{ align: [] }],
             ["clean"],
+            ["compare"], // "비교하기" 레이블을 가진 버튼 정의
           ],
           clipboard: {
             matchVisual: false,
