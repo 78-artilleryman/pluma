@@ -14,6 +14,7 @@ import {
 } from "../../store/version/versionSelectors";
 import styles from "./DocumentVersionList.module.scss";
 import { timeSince } from "../../utils/TimeSince";
+import CreateModal from "src/utils/CreateModal";
 
 interface VersionListProps {
   content: string | null;
@@ -31,7 +32,6 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   const { documentId } = useParams();
   const dispatch = useDispatch();
   const versions = useSelector(selectVersionsList);
-  const loading = useSelector(selectVersionLoading);
   const versionInfo = useSelector(selectSingleVersion);
   const [selectedVersionId, setSelectedVersionId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,17 +133,37 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     }
   }, [content, contentChanged]);
 
+  useEffect(() => {
+    if (versions.length === 0) {
+      setContent("");
+    }
+  }, [versions]);
+
   const handleModalOuterClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (event.target === event.currentTarget) {
       handleModalClose();
     }
   };
-  const handleDeleteVersion = (versionId: number) => {
-    // 사용자 확인 추가
-    const isConfirmed = window.confirm("해당 버전을 정말로 삭제하시겠습니까?");
-    if (!isConfirmed) return;
 
-    dispatch(deleteDocumentVersionRequest({ versionId, documentId }));
+  const handleDeleteVersionClick = (versionId: number) => {
+    setVersionIdToDelete(versionId);
+    setIsDeleteConfirmationModalOpen(true);
+  };
+
+  const [isDeleteConfirmationModalOpen, setIsDeleteConfirmationModalOpen] = useState(false);
+  const [versionIdToDelete, setVersionIdToDelete] = useState<number | null>(null);
+
+  const handleConfirmDeleteVersion = () => {
+    if (versionIdToDelete !== null && documentId) {
+      dispatch(deleteDocumentVersionRequest({ documentId, versionId: String(versionIdToDelete) }));
+    }
+    setIsDeleteConfirmationModalOpen(false);
+    setVersionIdToDelete(null);
+    setContent("");
+  };
+  const gandleCloseModal = () => {
+    setIsDeleteConfirmationModalOpen(false);
+    setVersionIdToDelete(null);
   };
 
   return (
@@ -171,9 +191,26 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
           >
             <span style={{ width: "50%" }}> {version.subtitle}</span>
             <span> {timeSince(version.createdAt)}</span>
-            <button onClick={() => handleDeleteVersion(version.id)}>삭제</button>
+            <button onClick={() => handleDeleteVersionClick(version.id)}>삭제</button>
           </div>
         ))}
+
+        {isDeleteConfirmationModalOpen && (
+          <CreateModal isOpen={isDeleteConfirmationModalOpen} onClose={gandleCloseModal}>
+            <h2>버전</h2>
+            <p>정말로 이 버전을 삭제하시겠습니까?</p>
+            <button
+              className={styles.dangerBtn}
+              style={{ marginRight: "10px" }}
+              onClick={handleConfirmDeleteVersion}
+            >
+              네, 삭제합니다
+            </button>
+            <button className={styles.button} onClick={gandleCloseModal}>
+              아니오, 취소합니다
+            </button>
+          </CreateModal>
+        )}
       </div>
       {isModalOpen && (
         <div className={styles.modalContainer} onClick={handleModalOuterClick}>

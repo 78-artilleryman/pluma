@@ -22,10 +22,10 @@ export const addDocumentVersionSuccess = createAction<sendVersion>(
 export const addDocumentVersionFailure = createAction<string>("version/addDocumentVersionFailure");
 // 문서 버전 삭제
 export const deleteDocumentVersionRequest = createAction<{
-  versionId: number;
+  versionId: string;
   documentId: string | undefined;
 }>("version/deleteDocumentVersionRequest");
-export const deleteDocumentVersionSuccess = createAction<{ id: number }>(
+export const deleteDocumentVersionSuccess = createAction<{ id: string }>(
   "version/deleteDocumentVersionSuccess"
 );
 

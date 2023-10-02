@@ -79,11 +79,12 @@ function* addDocumentVersion(action: AddDocumentVersionAction) {
   }
 }
 //문서 버전 삭제
-function* deleteDocumentVersion(action: PayloadAction<{ versionId: number; documentId: string }>) {
+function* deleteDocumentVersion(action: PayloadAction<{ documentId: string; versionId: string }>) {
+  console.log(action.payload);
   try {
     const accessToken = getTokenFromCookie("access_token");
     const response: AxiosResponse<any> = yield call(() =>
-      axios.delete(`/document/${action.payload.documentId}/versions/${action.payload.versionId}`, {
+      axios.delete(`/versions/${action.payload.documentId}+${action.payload.versionId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
