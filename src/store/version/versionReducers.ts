@@ -44,6 +44,20 @@ const versionReducer = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    deleteDocumentVersionRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    deleteDocumentVersionSuccess: (state, action: PayloadAction<{ id: string }>) => {
+      state.loading = false;
+      state.versionsList = state.versionsList.filter(
+        (version) => version.id !== parseInt(action.payload.id)
+      );
+    },
+    deleteDocumentVersionFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     loadDocumentVersionRequest: (state) => {
       state.loading = true;
       state.error = null;

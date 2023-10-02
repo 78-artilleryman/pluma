@@ -5,6 +5,7 @@ import {
   loadDocumentVersionsRequest,
   addDocumentVersionRequest,
   loadDocumentVersionRequest,
+  deleteDocumentVersionRequest,
 } from "../../store/version/versionActions";
 import {
   selectVersionsList,
@@ -32,7 +33,6 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   const versions = useSelector(selectVersionsList);
   const loading = useSelector(selectVersionLoading);
   const versionInfo = useSelector(selectSingleVersion);
-
   const [selectedVersionId, setSelectedVersionId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subtitle, setSubtitle] = useState("");
@@ -138,6 +138,13 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
       handleModalClose();
     }
   };
+  const handleDeleteVersion = (versionId: number) => {
+    // 사용자 확인 추가
+    const isConfirmed = window.confirm("해당 버전을 정말로 삭제하시겠습니까?");
+    if (!isConfirmed) return;
+
+    dispatch(deleteDocumentVersionRequest({ versionId, documentId }));
+  };
 
   return (
     <>
@@ -162,8 +169,9 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             }`}
             onClick={() => handleVersionItemClick(version)}
           >
-            <span> {version.subtitle}</span>
+            <span style={{ width: "50%" }}> {version.subtitle}</span>
             <span> {timeSince(version.createdAt)}</span>
+            <button onClick={() => handleDeleteVersion(version.id)}>삭제</button>
           </div>
         ))}
       </div>

@@ -10,6 +10,9 @@ import {
   addDocumentVersionSuccess,
   addDocumentVersionRequest,
   loadDocumentVersionRequest,
+  deleteDocumentVersionSuccess,
+  deleteDocumentVersionFailure,
+  deleteDocumentVersionRequest,
 } from "./versionActions";
 import axios, { AxiosResponse } from "axios";
 import { getTokenFromCookie } from "../../utils/tokenUtils";
@@ -75,6 +78,31 @@ function* addDocumentVersion(action: AddDocumentVersionAction) {
     yield put(addDocumentVersionFailure("문서 버전 추가에 실패했습니다."));
   }
 }
+//문서 버전 삭제
+function* deleteDocumentVersion(action: PayloadAction<{ versionId: number; documentId: string }>) {
+  try {
+    const accessToken = getTokenFromCookie("access_token");
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.delete(`/document/${action.payload.documentId}/versions/${action.payload.versionId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+    );
+
+    if (response.status === 200) {
+      yield put(deleteDocumentVersionSuccess({ id: action.payload.versionId }));
+    } else if (response.status === 401) {
+      yield put(deleteDocumentVersionFailure("토큰이 만료되었습니다. 다시 로그인해주세요."));
+    } else {
+      yield put(deleteDocumentVersionFailure("문서 버전 삭제에 실패했습니다."));
+    }
+  } catch (error) {
+    console.error("문서 버전 삭제에 실패했습니다.", error);
+    yield put(deleteDocumentVersionFailure("문서 버전 삭제에 실패했습니다."));
+  }
+}
 
 // 문서 버전 로딩
 function* loadDocumentVersion(action: LoadDocumentVersionAction) {
@@ -105,5 +133,6 @@ function* loadDocumentVersion(action: LoadDocumentVersionAction) {
 export function* versionSaga() {
   yield takeLatest(loadDocumentVersionsRequest.type, loadDocumentVersions);
   yield takeLatest(addDocumentVersionRequest.type, addDocumentVersion);
+  yield takeLatest(deleteDocumentVersionRequest.type, deleteDocumentVersion);
   yield takeLatest(loadDocumentVersionRequest.type, loadDocumentVersion);
 }
