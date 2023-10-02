@@ -40,7 +40,7 @@ const DocumentList: React.FC = () => {
 
   return (
     <Layout>
-      <h2>문서 목록</h2>
+      <h2 style={{ textAlign: "center", fontWeight: "600" }}>문서 목록</h2>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
