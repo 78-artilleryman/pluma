@@ -53,11 +53,24 @@ const documentReducer = createSlice({
       state.error = null;
     },
     addDocumentSuccess: (state, action: PayloadAction<DocumentInfo | null>) => {
-      console.log(action);
       state.loading = false;
       state.newDocument = action.payload;
     },
     addDocumentFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    deleteDocumentRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    deleteDocumentSuccess: (state, action: PayloadAction<number>) => {
+      state.loading = false;
+      state.documentsList = state.documentsList.filter(
+        (doc: DocumentInfo) => doc.documentId !== action.payload
+      );
+    },
+    deleteDocumentFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
     },

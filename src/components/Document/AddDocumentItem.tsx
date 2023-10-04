@@ -24,7 +24,6 @@ const AddDocument: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log(addDocument);
     if (addDocument) {
       navigate(`/document/${addDocument?.documentId}`);
     }

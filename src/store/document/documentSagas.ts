@@ -1,8 +1,8 @@
+import { PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { checkTokenExpiration, getTokenFromCookie } from "../../utils/tokenUtils";
-import { checkTokenExpirationRequest, logoutRequest } from "../auth/authActions";
-import { checkTokenExpirationSaga } from "../auth/authSagas";
+import { getTokenFromCookie } from "../../utils/tokenUtils";
+import { logoutRequest } from "../auth/authActions";
 import {
   loadDocumentsRequest,
   loadDocumentsSuccess,
@@ -13,15 +13,9 @@ import {
   addDocumentRequest,
   addDocumentSuccess,
   addDocumentFailure,
-  saveDocumentRequest,
-  saveDocumentSuccess,
-  saveDocumentFailure,
   deleteDocumentRequest,
   deleteDocumentSuccess,
   deleteDocumentFailure,
-  updateDocumentRequest,
-  updateDocumentSuccess,
-  updateDocumentFailure,
 } from "./documentActions";
 import { DocumentInfo } from "./types";
 
@@ -134,67 +128,50 @@ function* addDocument(action: any) {
   }
 }
 
-// // 새 문서 추가
-// function* addDocument(action: any) {
-//   try {
-//     console.log(action);
-
-//     console.log("addDocument action payload:", action.payload); // 값을 찍어보기 위해 추가
-
-//     // Use dummy data instead of an actual API call
-//     const dummyData = {
-//       id: action.payload.id, // payload에서 id를 가져옴
-//       content: action.payload.content, // payload에서 content를 가져옴
-//     };
-//     yield put(addDocumentSuccess(dummyDta));
-//   } catch (error) {
-//     yield put(addDocumentFailure("새 문서 추가에 실패했습니다."));
-//   }
-// }
-
-// // 글 저장
-// function* saveDocument(action: any) {
-//   try {
-//     console.log(action);
-
-//     const dummyData = action.payload; // 더미 데이터로 대체
-//     yield put(saveDocumentSuccess(dummyData));
-//   } catch (error) {
-//     yield put(saveDocumentFailure("문서 저장에 실패했습니다."));
-//   }
-// }
-
-// // 글 삭제
-// function* deleteDocument(action: any) {
-//   try {
-//     console.log(action);
-
-//     const dummyData = action.payload; // 더미 데이터로 대체
-//     yield put(deleteDocumentSuccess(dummyData));
-//   } catch (error) {
-//     yield put(deleteDocumentFailure("문서 삭제에 실패했습니다."));
-//   }
-// }
-
-// // 글 수정
-// function* updateDocument(action: any) {
-//   try {
-//     console.log(action);
-
-//     const dummyData = action.payload; // 더미 데이터로 대체
-//     yield put(updateDocumentSuccess(dummyData));
-//   } catch (error) {
-//     yield put(updateDocumentFailure("문서 수정에 실패했습니다."));
-//   }
-// }
+function* deleteDocument(action: PayloadAction<{ documentId: string; userId: string }>) {
+  try {
+    const access_token = getTokenFromCookie("access_token");
+    if (access_token) {
+      // API 호출을 실행하고 응답을 가져옵니다.
+      const response: AxiosResponse<any> = yield call(() =>
+        axios.delete(`/documents/${action.payload.userId}+${action.payload.documentId}`, {
+          data: {},
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        })
+      );
+      if (response.status === 200) {
+        yield put(deleteDocumentSuccess(action.payload.documentId));
+        yield put(loadDocumentsRequest(action.payload.userId)); //삭제 후 문서를 다시 로딩하지만 state 관리 방법을 다시 생각해봐야함
+      } else if (response.data.error === "토큰 기한 만료") {
+        // 토큰이 만료되었다면 로그아웃을 실행합니다.
+        yield put(deleteDocumentFailure("토큰이 만료되었습니다."));
+        yield put(logoutRequest());
+      } else {
+        yield put(deleteDocumentFailure("문서 삭제에 실패했습니다."));
+      }
+    } else {
+      yield put(deleteDocumentFailure("문서 삭제에 실패했습니다."));
+      yield put(logoutRequest());
+    }
+  } catch (error) {
+    if ((error as any).response && (error as any).response.data.error === "토큰 기한 만료") {
+      yield put(deleteDocumentFailure("토큰이 만료되었습니다."));
+      yield put(logoutRequest());
+    } else {
+      console.error("문서 삭제에 실패했습니다.", error);
+      yield put(deleteDocumentFailure("문서 삭제에 실패했습니다."));
+    }
+  }
+}
 
 function* documentSaga() {
   yield takeLatest(loadDocumentsRequest.type, loadDocuments);
   yield takeLatest(loadDocumentRequest.type, loadDocument);
   yield takeLatest(addDocumentRequest.type, addDocument);
-  // yield takeLatest(saveDocumentRequest.type, saveDocument);
-  // yield takeLatest(deleteDocumentRequest.type, deleteDocument);
-  // yield takeLatest(updateDocumentRequest.type, updateDocument);
+  yield takeLatest(deleteDocumentRequest.type, deleteDocument);
 }
 
 export default documentSaga;

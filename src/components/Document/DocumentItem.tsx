@@ -8,21 +8,32 @@ import { getInitialTheme } from "../../utils/theme";
 import styles from "./Document.module.scss";
 
 interface DocumentProps {
-  documentData: DocumentInfo; // Document 인터페이스를 사용하여 타입 지정
+  documentData: DocumentInfo;
+  onDeleteDocument: (documentId: number) => void;
 }
 
-const Document: React.FC<DocumentProps> = ({ documentData }) => {
+const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument }) => {
   const [timeAgo, setTimeAgo] = useState("");
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
   }, []);
   useEffect(() => {
-    // 문서의 날짜를 현재 시간을 기준으로 얼마나 지났는지로 변환
     const timeAgoString = timeSince(documentData.regDate);
     setTimeAgo(timeAgoString);
   }, [documentData.regDate]);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴 상태
+
+  const handleMenuToggle = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setIsMenuOpen(!isMenuOpen); // 메뉴 상태 토글
+  };
+
+  const handleDeleteClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    onDeleteDocument(documentData.documentId);
+  };
   return (
     <Link to={`/document/${documentData.documentId}`} className={styles.documentLink}>
       <div className={styles.documentCard}>
@@ -32,9 +43,19 @@ const Document: React.FC<DocumentProps> = ({ documentData }) => {
         {/* <p>작성일: {documentData.regDate}</p>
       <p>수정일: {documentData.modDate}</p> */}
         <p className={styles.documentDescription}>{timeAgo}</p>
+        <button onClick={handleMenuToggle} className={styles.menuButton}>
+          ...
+        </button>
+        {isMenuOpen && (
+          <div className={styles.menu}>
+            <button onClick={handleDeleteClick} className={styles.menuItem}>
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </Link>
   );
 };
 
-export default Document;
+export default DocumentItem;

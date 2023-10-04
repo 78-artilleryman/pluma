@@ -40,7 +40,41 @@
     color: #555;
     margin-top: 6px;
   }
-  /* 링크 스타일 */
+  //문서 메뉴
+  .menuButton {
+    position: absolute;
+    top: 0;
+    right: 5px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #333; // 색상은 원하는 대로 변경
+    padding: 8px;
+  }
+
+  .menu {
+    position: absolute;
+    top: 15%;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+  }
+
+  .menuItem {
+    padding: 8px 12px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
 }
 /* DocumentDetailPage.scss */
 
@@ -77,6 +111,9 @@
     color: white;
   }
   .documentDescription {
+    color: white;
+  }
+  .menuButton {
     color: white;
   }
 }
