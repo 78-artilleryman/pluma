@@ -7,11 +7,7 @@ import {
   loadDocumentVersionRequest,
   deleteDocumentVersionRequest,
 } from "../../store/version/versionActions";
-import {
-  selectVersionsList,
-  selectVersionLoading,
-  selectSingleVersion,
-} from "../../store/version/versionSelectors";
+import { selectVersionsList, selectSingleVersion } from "../../store/version/versionSelectors";
 import styles from "./DocumentVersionList.module.scss";
 import { timeSince } from "../../utils/TimeSince";
 import CreateModal from "src/utils/CreateModal";
@@ -115,6 +111,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
 
   useEffect(() => {
     if (versionInfo?.content) {
+      setSelectedVersionId(versionInfo.versionId);
       setContent(versionInfo.content);
       setSelectedVersionSubtitle(versionInfo.subtitle);
       setSelectedVersionDate(versionInfo.createdAt);

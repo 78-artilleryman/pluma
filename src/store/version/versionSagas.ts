@@ -80,7 +80,6 @@ function* addDocumentVersion(action: AddDocumentVersionAction) {
 }
 //문서 버전 삭제
 function* deleteDocumentVersion(action: PayloadAction<{ documentId: string; versionId: string }>) {
-  console.log(action.payload);
   try {
     const accessToken = getTokenFromCookie("access_token");
     const response: AxiosResponse<any> = yield call(() =>
