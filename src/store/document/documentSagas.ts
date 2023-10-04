@@ -144,7 +144,6 @@ function* deleteDocument(action: PayloadAction<{ documentId: string; userId: str
       );
       if (response.status === 200) {
         yield put(deleteDocumentSuccess(action.payload.documentId));
-        yield put(loadDocumentsRequest(action.payload.userId)); //삭제 후 문서를 다시 로딩하지만 state 관리 방법을 다시 생각해봐야함
       } else if (response.data.error === "토큰 기한 만료") {
         // 토큰이 만료되었다면 로그아웃을 실행합니다.
         yield put(deleteDocumentFailure("토큰이 만료되었습니다."));

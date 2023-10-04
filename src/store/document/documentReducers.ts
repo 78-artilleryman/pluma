@@ -64,10 +64,10 @@ const documentReducer = createSlice({
       state.loading = true;
       state.error = null;
     },
-    deleteDocumentSuccess: (state, action: PayloadAction<number>) => {
+    deleteDocumentSuccess: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.documentsList = state.documentsList.filter(
-        (doc: DocumentInfo) => doc.documentId !== action.payload
+        (doc: DocumentInfo) => doc.documentId !== parseInt(action.payload)
       );
     },
     deleteDocumentFailure: (state, action: PayloadAction<string>) => {
