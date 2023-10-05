@@ -11,8 +11,15 @@ import Modal from "../../utils/Modal";
 import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
 import { selectSingleVersion } from "../../store/version/versionSelectors";
+
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+import ChangeHtml from "src/components/Document/ChangeHtml";
+
 import ContentComparator from "src/utils/ContentComparator";
 import Layout from "src/components/Layout/Layout";
+
 
 const DocumentDetailPage: React.FC = () => {
   const { documentId } = useParams();
@@ -31,6 +38,8 @@ const DocumentDetailPage: React.FC = () => {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(true);
+
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -76,6 +85,15 @@ const DocumentDetailPage: React.FC = () => {
     );
   }
 
+  const pdfClick = () => {
+    if(isPdfModalOpen){
+      setIsPdfModalOpen(false)
+    }
+    setIsPdfModalOpen(true)
+  }
+
+  
+    
   return (
     <Layout>
       <div className={styles.container}>
@@ -96,6 +114,13 @@ const DocumentDetailPage: React.FC = () => {
           />
         </div>
         <div className={styles.documentInfo}>
+    
+    
+          {typeof content === "string" && isPdfModalOpen && (
+            <ChangeHtml htmlString={content}></ChangeHtml>
+          )}
+         
+       
           <div className={styles.documentInfoLeft}>
             <h3 style={{ margin: "0" }}>제목: {detailDocument.title}</h3>
             <p style={{ margin: "0" }}>작성일: {formatDate(new Date(detailDocument.regDate))}</p>
@@ -129,6 +154,7 @@ const DocumentDetailPage: React.FC = () => {
           </Modal>
         )}
       </div>
+
     </Layout>
   );
 };
