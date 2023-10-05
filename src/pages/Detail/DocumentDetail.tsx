@@ -12,8 +12,6 @@ import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
 import { selectSingleVersion } from "../../store/version/versionSelectors";
 
-import ChangeHtml from "src/components/Document/ChangeHtml";
-
 import ContentComparator from "src/utils/ContentComparator";
 import Layout from "src/components/Layout/Layout";
 import ReactQuill from "react-quill";
@@ -104,10 +102,6 @@ const DocumentDetailPage: React.FC = () => {
           />
         </div>
         <div className={styles.documentInfo}>
-          {typeof content === "string" && isPdfModalOpen && (
-            <ChangeHtml editorRef={editorRef} htmlString={content}></ChangeHtml>
-          )}
-
           <div className={styles.documentInfoLeft}>
             <h3 style={{ margin: "0" }}>제목: {detailDocument.title}</h3>
             <p style={{ margin: "0" }}>작성일: {formatDate(new Date(detailDocument.regDate))}</p>

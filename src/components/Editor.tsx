@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./Editor.scss";
 import { ImageResize } from "quill-image-resize-module-ts";
-import ChangeHtml, { captureAndDownloadPdf } from "./Document/ChangeHtml";
+import { captureAndDownloadPdf } from "./Document/ChangeHtml";
+import CreateModal from "src/utils/CreateModal";
+import styles from "../components/Document/AddDocumentItem.module.scss";
 Quill.register("modules/ImageResize", ImageResize);
 
 interface IEditor {
@@ -39,21 +41,32 @@ const Editor: React.FC<IEditor> = ({
     }
   }, [toggleComparator, isComparatorVisible]);
 
+  const [isPdfNameModalOpen, setIsPdfNameModalOpen] = useState(false);
+  const [pdfFileName, setPdfFileName] = useState("document");
+  const pdfFileNameRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (editorRef.current) {
       const pdfButton = document.querySelector(".ql-pdf") as HTMLElement;
-      const onPdfButtonClick = () => {
-        captureAndDownloadPdf(editorRef);
+      const handlePdfButtonClick = () => {
+        setIsPdfNameModalOpen(true);
       };
       if (pdfButton) {
-        pdfButton.addEventListener("click", onPdfButtonClick);
+        pdfButton.addEventListener("click", handlePdfButtonClick);
       }
       return () => {
-        pdfButton?.removeEventListener("click", onPdfButtonClick);
+        pdfButton?.removeEventListener("click", handlePdfButtonClick);
       };
     }
   }, []);
 
+  const handleSavePdfName = () => {
+    if (pdfFileNameRef.current) {
+      setPdfFileName(pdfFileNameRef.current.value);
+      captureAndDownloadPdf(editorRef, pdfFileNameRef.current.value); // Ensure captureAndDownloadPdf accepts file name
+      setIsPdfNameModalOpen(false);
+    }
+  };
   useEffect(() => {
     if (editorRef.current && typeof selectedLineNumber === "number") {
       const editor = editorRef.current.getEditor();
@@ -144,6 +157,27 @@ const Editor: React.FC<IEditor> = ({
         }}
         formats={formats}
       />
+      {isPdfNameModalOpen && (
+        <CreateModal isOpen={isPdfNameModalOpen} onClose={() => setIsPdfNameModalOpen(false)}>
+          <h2>PDF 명</h2>
+          <input
+            className={styles.title}
+            ref={pdfFileNameRef}
+            type="text"
+            defaultValue={pdfFileName}
+          />
+          <button
+            className={styles.button}
+            onClick={handleSavePdfName}
+            style={{ marginRight: "10px" }}
+          >
+            저장
+          </button>
+          <button className={styles.button} onClick={() => setIsPdfNameModalOpen(false)}>
+            취소
+          </button>
+        </CreateModal>
+      )}
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import styles from "./ChangeHtml.module.scss";
 import ReactQuill from "react-quill";
 
 interface PdfModalProps {
@@ -9,7 +8,10 @@ interface PdfModalProps {
   editorRef: React.RefObject<ReactQuill>;
 }
 
-export const captureAndDownloadPdf = async (editorRef: React.RefObject<ReactQuill>) => {
+export const captureAndDownloadPdf = async (
+  editorRef: React.RefObject<ReactQuill>,
+  fileName?: string
+) => {
   if (editorRef.current) {
     const quillInstance = editorRef.current.getEditor();
     const editorElement = quillInstance.root;
@@ -92,7 +94,7 @@ export const captureAndDownloadPdf = async (editorRef: React.RefObject<ReactQuil
     editorElement.style.overflowY = originalOverflowY;
     editorElement.style.height = originalHeight;
 
-    doc.save("capture.pdf");
+    doc.save(`${fileName}.pdf`);
   }
 };
 

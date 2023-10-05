@@ -13,7 +13,11 @@
 .ql-compare.ql-active {
   color: #007bff; // 예: #333333
 }
+@use "../../styles/buttonStyles.scss";
 
+button {
+  @extend button;
+}
 .ql-compare {
   &::before {
     content: "비교"; // 버튼의 텍스트
