@@ -1,9 +1,13 @@
 import React, { useRef, useEffect } from "react";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./Editor.scss";
+import { ImageResize } from "quill-image-resize-module-ts";
+import ChangeHtml, { captureAndDownloadPdf } from "./Document/ChangeHtml";
+Quill.register("modules/ImageResize", ImageResize);
 
 interface IEditor {
+  editorRef: React.RefObject<ReactQuill>;
   content: string | null;
   setContent: React.Dispatch<React.SetStateAction<string | null>>;
   selectedLineNumber: number | null;
@@ -17,23 +21,38 @@ const Editor: React.FC<IEditor> = ({
   selectedLineNumber,
   toggleComparator,
   isComparatorVisible,
+  editorRef,
 }) => {
-  const editorRef = useRef<ReactQuill | null>(null);
-
   useEffect(() => {
     if (editorRef.current) {
       const compareButton = document.querySelector(".ql-compare") as HTMLElement;
+      const onCompareButtonClick = () => {
+        toggleComparator();
+        compareButton.classList.toggle("ql-active", isComparatorVisible);
+      };
       if (compareButton) {
-        compareButton.addEventListener("click", toggleComparator);
-        if (isComparatorVisible) {
-          compareButton.classList.add("ql-active");
-        } else {
-          compareButton.classList.remove("ql-active");
-          compareButton.blur(); // 포커스 제거
-        }
+        compareButton.addEventListener("click", onCompareButtonClick);
       }
+      return () => {
+        compareButton?.removeEventListener("click", onCompareButtonClick);
+      };
     }
-  }, [toggleComparator]);
+  }, [toggleComparator, isComparatorVisible]);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      const pdfButton = document.querySelector(".ql-pdf") as HTMLElement;
+      const onPdfButtonClick = () => {
+        captureAndDownloadPdf(editorRef);
+      };
+      if (pdfButton) {
+        pdfButton.addEventListener("click", onPdfButtonClick);
+      }
+      return () => {
+        pdfButton?.removeEventListener("click", onPdfButtonClick);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     if (editorRef.current && typeof selectedLineNumber === "number") {
@@ -61,7 +80,6 @@ const Editor: React.FC<IEditor> = ({
     "indent",
     "link",
     "video",
-    "image",
     "code-block",
     "table",
     "align",
@@ -74,31 +92,37 @@ const Editor: React.FC<IEditor> = ({
   };
 
   useEffect(() => {
-    const adjustEditorHeight = () => {
-      if (editorRef.current) {
-        const editor = editorRef.current.getEditor();
-        const quillRoot = editor.root;
-        const screenHeight = window.innerHeight;
-        const desiredHeight = screenHeight - 160;
-        quillRoot.style.height = `${desiredHeight}px`;
-      }
-    };
+    // const adjustEditorHeight = () => {
+    //   if (editorRef.current) {
+    //     const editor = editorRef.current.getEditor();
+    //     const quillRoot = editor.root;
+    //     const screenHeight = window.innerHeight;
+    //     const desiredHeight = screenHeight - 118;
+    //     quillRoot.style.minHeight = `${desiredHeight}px`;
+    //   }
+    // };
+    Quill.register("modules/ImageResize", ImageResize);
 
-    adjustEditorHeight();
-    window.addEventListener("resize", adjustEditorHeight);
+    // adjustEditorHeight();
+    // window.addEventListener("resize", adjustEditorHeight);
 
-    return () => {
-      window.removeEventListener("resize", adjustEditorHeight);
-    };
+    // return () => {
+    //   window.removeEventListener("resize", adjustEditorHeight);
+    // };
   }, []);
 
   return (
     <div>
       <ReactQuill
+        theme="snow"
         ref={editorRef}
         value={content || ""}
         onChange={handleEditorChange}
         modules={{
+          ImageResize: {
+            parchment: Quill.import("parchment"),
+            modules: ["Resize", "DisplaySize"],
+          },
           toolbar: [
             [
               { header: [1, 2, 3, 4, 5, 6] },
@@ -112,6 +136,7 @@ const Editor: React.FC<IEditor> = ({
             [{ align: [] }],
             ["clean"],
             ["compare"], // "비교하기" 레이블을 가진 버튼 정의
+            ["pdf"],
           ],
           clipboard: {
             matchVisual: false,

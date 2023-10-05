@@ -4,7 +4,7 @@
 }
 
 .ql-snow.ql-toolbar button.ql-compare {
-  width: 50px;
+  width: 40px;
   border-radius: 5px;
   display: flex;
   justify-content: center;
@@ -13,12 +13,27 @@
 .ql-compare.ql-active {
   color: #007bff; // 예: #333333
 }
+
 .ql-compare {
   &::before {
     content: "비교"; // 버튼의 텍스트
   }
 }
+.ql-toolbar .ql-pdf::before {
+  content: "PDF";
+}
+.ql-container.ql-snow {
+  height: 87vh;
+  overflow-y: auto;
+  background-color: #c2c2c2;
+}
 
+.ql-editor {
+  padding: 50px;
+  width: 595px;
+  margin: 0 auto;
+  background: white;
+}
 [data-theme="dark"] {
   .ql-toolbar.ql-snow {
     background-color: #333333; /* 툴바 배경색을 변경 */
@@ -28,7 +43,8 @@
   .ql-picker-options,
   .ql-picker-label,
   .ql-snow .ql-stroke,
-  .ql-compare {
+  .ql-compare,
+  .ql-pdf {
     stroke: white;
     background-color: #333333; /* 툴바 배경색을 변경 */
     color: white; /* 툴바 아이콘 색상을 변경 */
