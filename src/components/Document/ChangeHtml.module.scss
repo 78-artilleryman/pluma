@@ -1,0 +1,19 @@
+.container{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.content{
+  padding: 5px;
+  width: 136.5mm;
+  height: 193mm;
+  background-color: white;
+}

@@ -12,6 +12,10 @@ import Modal from "../../utils/Modal"; // 모달 컴포넌트 import
 import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
 import { selectSingleVersion } from "../../store/version/versionSelectors";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+import ChangeHtml from "src/components/Document/ChangeHtml";
 
 const DocumentDetailPage: React.FC = () => {
   const { documentId } = useParams();
@@ -33,6 +37,8 @@ const DocumentDetailPage: React.FC = () => {
   // 모달 상태 추가
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(true);
+
 
   useEffect(() => {
     // 사용자가 로그인하지 않은 경우 모달 열기
@@ -76,6 +82,15 @@ const DocumentDetailPage: React.FC = () => {
     );
   }
 
+  const pdfClick = () => {
+    if(isPdfModalOpen){
+      setIsPdfModalOpen(false)
+    }
+    setIsPdfModalOpen(true)
+  }
+
+  
+    
   return (
     <Layout>
       <div className={styles.container}>
@@ -83,6 +98,13 @@ const DocumentDetailPage: React.FC = () => {
           <Editor content={content} setContent={setContent} />
         </div>
         <div className={styles.documentInfo}>
+    
+    
+          {typeof content === "string" && isPdfModalOpen && (
+            <ChangeHtml htmlString={content}></ChangeHtml>
+          )}
+         
+       
           <div className={styles.documentInfoLeft}>
             <h3 style={{ margin: "0" }}>제목: {detailDocument.title}</h3>
             <p style={{ margin: "0" }}>작성일: {formatDate(new Date(detailDocument.regDate))}</p>
@@ -110,6 +132,7 @@ const DocumentDetailPage: React.FC = () => {
           <p>문서를 보려면 먼저 로그인하세요.</p>
         </Modal>
       )}
+   
     </Layout>
   );
 };
