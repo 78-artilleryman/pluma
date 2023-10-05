@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import Layout from "../../components/Layout/Layout";
+import { useDispatch, useSelector } from "react-redux";
 import { loadDocumentRequest } from "../../store/document/documentActions";
 import { selectSingleDocument } from "../../store/document/documentSelectors";
 import { getInitialTheme } from "../../utils/theme";
 import Editor from "../../components/Editor";
 import styles from "../../components/Document/Document.module.scss";
 import { formatDate } from "../../utils/dateUtils";
-import Modal from "../../utils/Modal"; // 모달 컴포넌트 import
+import Modal from "../../utils/Modal";
 import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
 import { selectSingleVersion } from "../../store/version/versionSelectors";
+
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 import ChangeHtml from "src/components/Document/ChangeHtml";
+
+import ContentComparator from "src/utils/ContentComparator";
+import Layout from "src/components/Layout/Layout";
+
 
 const DocumentDetailPage: React.FC = () => {
   const { documentId } = useParams();
@@ -23,10 +27,8 @@ const DocumentDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const detailDocument = useSelector(selectSingleDocument);
   const detailVersion = useSelector(selectSingleVersion);
-  const [content, setContent] = useState<string | undefined>(detailVersion?.content);
-  useEffect(() => {
-    console.log(detailVersion);
-  }, [detailVersion]);
+  const [content, setContent] = useState<string | null>(detailVersion?.content || null);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
     if (documentId) {
@@ -34,14 +36,12 @@ const DocumentDetailPage: React.FC = () => {
     }
   }, [documentId, dispatch]);
 
-  // 모달 상태 추가
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(true);
 
 
   useEffect(() => {
-    // 사용자가 로그인하지 않은 경우 모달 열기
     if (!isAuthenticated) {
       setIsModalOpen(true);
     } else {
@@ -49,18 +49,21 @@ const DocumentDetailPage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  // 모달을 닫기 위한 함수
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
   const [selectedVersionSubtitle, setSelectedVersionSubtitle] = useState<string | undefined>("");
   const [selectedVersionDate, setSelectedVersionDate] = useState<string | undefined>("");
+  const [selectedLineNumber, setSelectedLineNumber] = useState<number | null>(null);
 
-  // 버전 선택을 처리하는 함수를 업데이트합니다
-  const handleVersionSelect = (subtitle: string | undefined, createdAt: string | undefined) => {
-    setSelectedVersionSubtitle(subtitle || "");
-    setSelectedVersionDate(createdAt || "");
+  const [isComparatorVisible, setIsComparatorVisible] = useState(false);
+  const toggleComparator = () => {
+    setIsComparatorVisible(!isComparatorVisible);
+  };
+
+  const handleDiffLineClick = (lineNumber: number) => {
+    setSelectedLineNumber(lineNumber);
   };
 
   if (!detailDocument) {
@@ -94,8 +97,21 @@ const DocumentDetailPage: React.FC = () => {
   return (
     <Layout>
       <div className={styles.container}>
+        <div className={`${styles.slideContainer} ${isComparatorVisible ? styles.visible : ""}`}>
+          <ContentComparator
+            firstContent={detailVersion?.content || ""}
+            currentContent={content}
+            onDiffLineClick={handleDiffLineClick}
+          />
+        </div>
         <div className={styles.editorContainer}>
-          <Editor content={content} setContent={setContent} />
+          <Editor
+            content={content}
+            setContent={setContent}
+            selectedLineNumber={selectedLineNumber}
+            toggleComparator={toggleComparator}
+            isComparatorVisible={isComparatorVisible}
+          />
         </div>
         <div className={styles.documentInfo}>
     
@@ -116,23 +132,29 @@ const DocumentDetailPage: React.FC = () => {
             </p>
           </div>
           <div className={styles.documentInfoRight}>
+            <button
+              onClick={toggleComparator}
+              className={styles.button}
+              style={{ marginLeft: "16px" }}
+            >
+              {isComparatorVisible ? "숨기기" : "비교 보기"}
+            </button>
             <DocumentVersionList
               content={content}
               setContent={setContent}
-              handleVersionSelect={handleVersionSelect}
               setSelectedVersionSubtitle={setSelectedVersionSubtitle}
               setSelectedVersionDate={setSelectedVersionDate}
             />
           </div>
         </div>
+        {isModalOpen && (
+          <Modal isOpen={isModalOpen} onClose={closeModal}>
+            <h2>로그인이 필요합니다</h2>
+            <p>문서를 보려면 먼저 로그인하세요.</p>
+          </Modal>
+        )}
       </div>
-      {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <h2>로그인이 필요합니다</h2>
-          <p>문서를 보려면 먼저 로그인하세요.</p>
-        </Modal>
-      )}
-   
+
     </Layout>
   );
 };

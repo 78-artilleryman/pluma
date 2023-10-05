@@ -22,6 +22,7 @@ const versionReducer = createSlice({
     loadDocumentVersionsRequest: (state) => {
       state.loading = true;
       state.error = null;
+      state.singleVersion = null;
     },
     loadDocumentVersionsSuccess: (state, action: PayloadAction<VersionInfo[]>) => {
       state.loading = false;
@@ -37,9 +38,23 @@ const versionReducer = createSlice({
     },
     addDocumentVersionSuccess: (state, action: PayloadAction<VersionInfo>) => {
       state.loading = false;
-      state.versionsList = [...state.versionsList, action.payload]; // 배열을 변경하지 않고 새로운 배열로 업데이트
+      state.versionsList = [...state.versionsList, action.payload];
     },
     addDocumentVersionFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    deleteDocumentVersionRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    deleteDocumentVersionSuccess: (state, action: PayloadAction<{ id: string }>) => {
+      state.loading = false;
+      state.versionsList = state.versionsList.filter(
+        (version) => version.id !== parseInt(action.payload.id)
+      );
+    },
+    deleteDocumentVersionFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
     },

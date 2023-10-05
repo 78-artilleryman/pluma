@@ -20,6 +20,18 @@ export const addDocumentVersionSuccess = createAction<sendVersion>(
   "version/addDocumentVersionSuccess"
 );
 export const addDocumentVersionFailure = createAction<string>("version/addDocumentVersionFailure");
+// 문서 버전 삭제
+export const deleteDocumentVersionRequest = createAction<{
+  versionId: string;
+  documentId: string | undefined;
+}>("version/deleteDocumentVersionRequest");
+export const deleteDocumentVersionSuccess = createAction<{ id: string }>(
+  "version/deleteDocumentVersionSuccess"
+);
+
+export const deleteDocumentVersionFailure = createAction<string>(
+  "version/deleteDocumentVersionFailure"
+);
 
 // 문서 버전 로딩
 export const loadDocumentVersionRequest = createAction<number>(

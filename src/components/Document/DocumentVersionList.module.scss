@@ -12,6 +12,7 @@
   padding: 8px;
   border-bottom: 1px solid#e0e0e0;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   &:hover {
     background-color: #e0e0e0;
@@ -26,7 +27,22 @@
     background-color: #0056b3;
   }
 }
+@import "../../styles/buttonStyles.scss"; /* 공통 스타일 임포트 */
+.compareButton {
+  @extend .button;
+  background: linear-gradient(90deg, #6ee7d7, #007bff); /* 그라디언트 적용 */
+  color: white;
 
+  &:hover {
+    background: linear-gradient(90deg, #57d5c9, #0062cc);
+  }
+}
+
+.addButton {
+  @extend .button;
+  padding: 4px 8px;
+  color: white;
+}
 .modalContainer {
   position: fixed;
   top: 0;

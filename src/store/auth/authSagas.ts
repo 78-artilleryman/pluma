@@ -91,8 +91,8 @@ function* refreshTokenSaga() {
       const access_token = response.data?.accessToken;
       const refresh_token = response.data?.refreshToken;
       // 새로 발급받은 access_token을 쿠키에 저장
-      setTokenToCookie("access_token", access_token, 30);
-      setTokenToCookie("refresh_token", refresh_token, 180);
+      setTokenToCookie("access_token", access_token, 60);
+      setTokenToCookie("refresh_token", refresh_token, 296);
       yield put(refreshTokenSuccess());
     } else {
       yield put(refreshTokenFailure("토큰 재발급에 실패했습니다."));
@@ -128,9 +128,9 @@ function* login(action: any) {
       const refresh_token = response.data?.refreshToken;
 
       // access_token과 refresh_token을 쿠키에 저장
-      setTokenToCookie("access_token", access_token, 30);
+      setTokenToCookie("access_token", access_token, 60);
       // axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
-      setTokenToCookie("refresh_token", refresh_token, 180);
+      setTokenToCookie("refresh_token", refresh_token, 296);
 
       // 로그인 성공 액션 디스패치
       yield put(fetchUserInfoRequest());
