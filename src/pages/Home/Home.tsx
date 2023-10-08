@@ -5,8 +5,11 @@ import { getInitialTheme } from "../../utils/theme";
 import styles from "./Home.module.scss"; // Home.module.scss 파일을 가져옵니다.
 import Header from "../../components/Header/Header";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "src/store/auth/authSelectors";
 
 const Home: React.FC = () => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   useEffect(() => {
     const initialTheme = getInitialTheme();
     document.documentElement.setAttribute("data-theme", initialTheme);
@@ -24,7 +27,10 @@ const Home: React.FC = () => {
         <p style={{ fontSize: "20px" }}>
           작품의 가치를 높이고, 빛을 발하게 해주는 파일 관리 솔루션으로 소개합니다
         </p>
-        <button className={styles.button} onClick={() => navigate("/login")}>
+        <button
+          className={styles.button}
+          onClick={() => navigate(isAuthenticated ? "/document" : "/login")}
+        >
           시작하기
         </button>
       </div>

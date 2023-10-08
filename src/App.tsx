@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { getInitialTheme } from "./utils/theme";
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -43,12 +43,23 @@ function App() {
 
 function InnerApp({ isAuthenticated }: { isAuthenticated: boolean }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (
+      !isAuthenticated &&
+      location.pathname !== "/" &&
+      location.pathname !== "/login" &&
+      location.pathname !== "/register"
+    ) {
       navigate("/login");
+    } else if (
+      isAuthenticated &&
+      (location.pathname === "/login" || location.pathname === "/register")
+    ) {
+      navigate("/"); // 로그인 상태에서는 로그인 또는 회원가입 페이지에 접근하면 홈으로 리다이렉트
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, location]);
 
   return (
     <div className="App">
