@@ -48,9 +48,13 @@ button {
   .ql-picker-label,
   .ql-snow .ql-stroke,
   .ql-compare,
-  .ql-pdf {
+  .ql-pdf,
+  .ql-editor {
     stroke: white;
     background-color: #333333; /* 툴바 배경색을 변경 */
     color: white; /* 툴바 아이콘 색상을 변경 */
+  }
+  .ql-container.ql-snow {
+    background-color: #444444;
   }
 }

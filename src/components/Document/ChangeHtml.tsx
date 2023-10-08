@@ -22,9 +22,13 @@ export const captureAndDownloadPdf = async (
 
     const originalOverflowY = editorElement.style.overflowY;
     const originalHeight = editorElement.style.height;
+    const originalBackgroundColor = editorElement.style.backgroundColor;
+    const originalColor = editorElement.style.color;
 
     editorElement.style.overflowY = "visible";
     editorElement.style.height = "auto";
+    editorElement.style.backgroundColor = "white";
+    editorElement.style.color = "black";
 
     const canvas = await html2canvas(editorElement);
 
@@ -93,6 +97,8 @@ export const captureAndDownloadPdf = async (
 
     editorElement.style.overflowY = originalOverflowY;
     editorElement.style.height = originalHeight;
+    editorElement.style.backgroundColor = originalBackgroundColor;
+    editorElement.style.color = originalColor;
 
     doc.save(`${fileName}.pdf`);
   }
