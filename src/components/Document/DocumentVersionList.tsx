@@ -72,12 +72,14 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
       alert("버전 이름을 입력해주세요.");
       return;
     }
-
+    const currentDate = new Date();
+    const createdAt = currentDate.toISOString();
     if (documentId) {
       const newVersionInfo = {
         subtitle: subtitle,
         documentId: Number(documentId),
         content: content || "",
+        createdAt: createdAt,
       };
       dispatch(addDocumentVersionRequest(newVersionInfo));
       setIsModalOpen(false);
@@ -131,7 +133,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   }, [content, contentChanged]);
 
   useEffect(() => {
-    if (versions.length === 0) {
+    if (versions?.length === 0) {
       setContent("");
     }
   }, [versions]);

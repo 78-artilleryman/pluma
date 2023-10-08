@@ -65,9 +65,7 @@ function* addDocumentVersion(action: AddDocumentVersionAction) {
     );
 
     if (response.status === 200) {
-      yield put(addDocumentVersionSuccess(response.data));
-      const newVersionId = response.data.documentId;
-      yield put(loadDocumentVersionsRequest(newVersionId));
+      yield put(addDocumentVersionSuccess(action.payload));
     } else if (response.status === 401) {
       yield put(addDocumentVersionFailure("토큰이 만료되었습니다. 다시 로그인해주세요."));
     } else {
