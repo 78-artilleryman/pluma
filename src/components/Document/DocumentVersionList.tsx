@@ -82,6 +82,9 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
         createdAt: createdAt,
       };
       dispatch(addDocumentVersionRequest(newVersionInfo));
+      setSelectedVersionSubtitle(newVersionInfo.subtitle);
+      setSelectedVersionDate(newVersionInfo.createdAt);
+      setIsVersionComparatorExpanded(true);
       setIsModalOpen(false);
       setSubtitle("");
     }
@@ -117,6 +120,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
       setContent(versionInfo.content);
       setSelectedVersionSubtitle(versionInfo.subtitle);
       setSelectedVersionDate(versionInfo.createdAt);
+      setContentChanged(false);
     } else {
       setContent(""); // 버전 정보가 없는 경우 content 초기화
       setSelectedVersionSubtitle("");

@@ -36,9 +36,15 @@ const versionReducer = createSlice({
       state.loading = true;
       state.error = null;
     },
-    addDocumentVersionSuccess: (state, action: PayloadAction<VersionInfo>) => {
+    addDocumentVersionSuccess: (state, action: PayloadAction<VersionDetailInfo>) => {
       state.loading = false;
-      state.versionsList.unshift(action.payload);
+      state.versionsList.unshift({
+        id: action.payload.versionId,
+        subtitle: action.payload.subtitle,
+        createdAt: action.payload.createdAt,
+        content: action.payload.content,
+      });
+      state.singleVersion = action.payload;
     },
     addDocumentVersionFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
