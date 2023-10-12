@@ -5,6 +5,7 @@ interface VersionState {
   versionsList: VersionInfo[];
   singleVersion: VersionDetailInfo | null;
   loading: boolean;
+  imageUrl: string | null;
   error: string | null;
 }
 
@@ -12,8 +13,12 @@ const initialState: VersionState = {
   versionsList: [],
   singleVersion: null,
   loading: false,
+  imageUrl: null,
   error: null,
 };
+
+
+
 
 const versionReducer = createSlice({
   name: "version",
@@ -68,6 +73,18 @@ const versionReducer = createSlice({
       state.singleVersion = action.payload;
     },
     loadDocumentVersionFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    uploadPictureRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    uploadPictureSuccess: (state, action: PayloadAction<any>) =>{
+      state.loading = false;
+      state.imageUrl = action.payload
+    },
+    uploadPictureFailure: (state, action: PayloadAction<any>) => {
       state.loading = false;
       state.error = action.payload;
     },

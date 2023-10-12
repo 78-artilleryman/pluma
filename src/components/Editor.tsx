@@ -1,7 +1,12 @@
 import React, { useRef, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./Editor.scss";
+import {uploadPictureRequest} from "../store/version/versionActions";
+import {selectImageUrl, selectVersionLoading} from "../store/version/versionSelectors"
+
 
 interface IEditor {
   content: string | null;
@@ -11,6 +16,8 @@ interface IEditor {
   isComparatorVisible: boolean;
 }
 
+
+
 const Editor: React.FC<IEditor> = ({
   content,
   setContent,
@@ -19,6 +26,11 @@ const Editor: React.FC<IEditor> = ({
   isComparatorVisible,
 }) => {
   const editorRef = useRef<ReactQuill | null>(null);
+
+  const dispatch = useDispatch();
+  const { documentId } = useParams();
+  const imgUrl = useSelector(selectImageUrl);
+  
 
   useEffect(() => {
     if (editorRef.current) {
@@ -35,7 +47,36 @@ const Editor: React.FC<IEditor> = ({
     }
   }, [toggleComparator]);
 
+  const handleImageUpload = () => {
+    const imgElement = document.createElement("img");
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+  
+    input.addEventListener("change", (e: Event) => {
+      const inputElement = e.target as HTMLInputElement;
+      if (inputElement.files && inputElement.files.length > 0) {
+        const file = inputElement.files[0];
+        if (file) {
+          const reader = new FileReader();
+          // 파일이 선택된 경우 처리 로직을 진행합니다.
+          dispatch(uploadPictureRequest({ documentId: documentId, imageFile: file }))
+          
+          const imageUrl = `https://dowonbucket.s3.ap-northeast-2.amazonaws.com/`;
+          
+          console.log(imageUrl);
+          console.log(imgUrl);
+        }
+      } else {
+        alert("이미지를 선택하세요."); 
+      }
+    });
+     };
+  
+     
   useEffect(() => {
+  
     if (editorRef.current && typeof selectedLineNumber === "number") {
       const editor = editorRef.current.getEditor();
       const lines = editor.getLines();
@@ -46,6 +87,21 @@ const Editor: React.FC<IEditor> = ({
       }
     }
   }, [selectedLineNumber]);
+
+
+  useEffect(() => {
+    console.log(editorRef.current?.selection?.index)
+  },[content])
+  useEffect(() =>{
+    const upLoadButton = document.querySelector(".ql-upload") as HTMLElement;
+
+    if(upLoadButton){
+      upLoadButton.addEventListener("click", ()=>{
+     
+        handleImageUpload(); 
+      })
+    }
+  },[])
 
   const formats = [
     "header",
@@ -68,6 +124,7 @@ const Editor: React.FC<IEditor> = ({
     "color",
     "background",
     "compare",
+    "upload",
   ];
   const handleEditorChange = (newHtmlStr: string) => {
     setContent(newHtmlStr);
@@ -94,6 +151,7 @@ const Editor: React.FC<IEditor> = ({
 
   return (
     <div>
+     
       <ReactQuill
         ref={editorRef}
         value={content || ""}
@@ -112,6 +170,7 @@ const Editor: React.FC<IEditor> = ({
             [{ align: [] }],
             ["clean"],
             ["compare"], // "비교하기" 레이블을 가진 버튼 정의
+            ["upload"], // 사진 업로드
           ],
           clipboard: {
             matchVisual: false,

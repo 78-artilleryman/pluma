@@ -10,13 +10,8 @@ import { formatDate } from "../../utils/dateUtils";
 import Modal from "../../utils/Modal";
 import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
-import { selectSingleVersion } from "../../store/version/versionSelectors";
-
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-
+import { selectImageUrl, selectSingleVersion } from "../../store/version/versionSelectors";
 import ChangeHtml from "src/components/Document/ChangeHtml";
-
 import ContentComparator from "src/utils/ContentComparator";
 import Layout from "src/components/Layout/Layout";
 
@@ -27,6 +22,12 @@ const DocumentDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const detailDocument = useSelector(selectSingleDocument);
   const detailVersion = useSelector(selectSingleVersion);
+  const test = useSelector(selectImageUrl);
+  useEffect(()=>{
+    if(test){
+      console.log(test)
+    }
+  },[test])
   const [content, setContent] = useState<string | null>(detailVersion?.content || null);
 
   useEffect(() => {

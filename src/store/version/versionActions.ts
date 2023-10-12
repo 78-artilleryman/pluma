@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
-import { sendVersion, VersionDetailInfo, VersionInfo } from "./versionTypes";
+import { sendVersion, VersionDetailInfo, VersionInfo , SendPicture} from "./versionTypes";
 
 // 문서 버전 로딩
 export const loadDocumentVersionsRequest = createAction<string>(
@@ -43,3 +43,14 @@ export const loadDocumentVersionSuccess = createAction<VersionDetailInfo | null>
 export const loadDocumentVersionFailure = createAction<string>(
   "version/loadDocumentVersionFailure"
 );
+
+// 사진 업로드
+export const uploadPictureRequest = createAction<SendPicture>(
+  "upload/uploadPictureRequest"
+)
+export const uploadPictureSuccess = createAction<any>(
+  "upload/uploadPictureSuccess"
+)
+export const uploadPictureFailure = createAction<any>(
+  "upload/uploadPictureFailure"
+)

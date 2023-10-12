@@ -15,6 +15,9 @@ const ChangeHtml: React.FC<PdfModalProps> = ({ htmlString }) => {
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
   const captureAndDownloadPdf = async () => {
+
+    let marginBottom = 10;
+
     if (containerRef.current) {
       const canvas = await html2canvas(containerRef.current);
       const imgData = canvas.toDataURL('image/png');
@@ -38,9 +41,10 @@ const ChangeHtml: React.FC<PdfModalProps> = ({ htmlString }) => {
 
       // 한 페이지 이상일 경우 루프 돌면서 출력
       while (heightLeft >= 20) {
+      
         position = heightLeft - imgHeight;
         doc.addPage();
-        doc.addImage(imgData, 'PNG', 10, position + 10, imgWidth - 20, imgHeight);
+        doc.addImage(imgData, 'PNG', 10, doc.internal.pageSize.height - imgHeight - marginBottom, imgWidth - 20, imgHeight);
         heightLeft -= pageHeight;
       }
 
@@ -63,13 +67,13 @@ const ChangeHtml: React.FC<PdfModalProps> = ({ htmlString }) => {
 
   return (
     <div>
-      <button onClick={pdfClick}>PDF 생성1</button>
+      <button onClick={pdfClick}>PDF 생성</button>
       {isPdfModalOpen &&(
         <div className={styles.container}>
    
-        <div ref={containerRef} className={styles.content}>
+        <div ref={containerRef} className={styles.content} >
         {/* 이 부분에 HTML 태그가 그대로 유지되어야 함 */}
-        <div dangerouslySetInnerHTML={{ __html: htmlString }} />
+          <div dangerouslySetInnerHTML={{ __html: htmlString }} />
         </div>
         
         <div>
