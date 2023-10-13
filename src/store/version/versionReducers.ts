@@ -4,15 +4,21 @@ import { VersionInfo, VersionDetailInfo } from "./versionTypes";
 interface VersionState {
   versionsList: VersionInfo[];
   singleVersion: VersionDetailInfo | null;
+  compareVersion: VersionDetailInfo | null;
+  latestAddedVersion: VersionDetailInfo | null;
   loading: boolean;
   error: string | null;
+  imgUrl: any | null;
 }
 
 const initialState: VersionState = {
   versionsList: [],
   singleVersion: null,
+  compareVersion: null,
+  latestAddedVersion: null,
   loading: false,
   error: null,
+  imgUrl: null,
 };
 
 const versionReducer = createSlice({
@@ -44,6 +50,7 @@ const versionReducer = createSlice({
         createdAt: action.payload.createdAt,
         content: action.payload.content,
       });
+      state.latestAddedVersion = action.payload;
       state.singleVersion = action.payload;
     },
     addDocumentVersionFailure: (state, action: PayloadAction<string>) => {
@@ -74,6 +81,32 @@ const versionReducer = createSlice({
       state.singleVersion = action.payload;
     },
     loadDocumentVersionFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    loadCompareDocumentVersionRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+      state.compareVersion = null;
+    },
+    loadCompareDocumentVersionSuccess: (state, action: PayloadAction<VersionDetailInfo | null>) => {
+      state.loading = false;
+      state.compareVersion = action.payload;
+    },
+    loadCompareDocumentVersionFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    uploadPictureRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+      state.imgUrl = null;
+    },
+    uploadPictureSuccess: (state, action: PayloadAction<any>) => {
+      state.loading = false;
+      state.imgUrl = action.payload;
+    },
+    uploadPictureFailure: (state, action: PayloadAction<any>) => {
       state.loading = false;
       state.error = action.payload;
     },

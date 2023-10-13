@@ -19,10 +19,10 @@ import ReactQuill from "react-quill";
 const DocumentDetailPage: React.FC = () => {
   const { documentId } = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const detailDocument = useSelector(selectSingleDocument);
   const detailVersion = useSelector(selectSingleVersion);
   const [content, setContent] = useState<string | null>(detailVersion?.content || null);
+  const [comparatorContent, setComparatorContent] = useState<string | null>(null);
 
   const editorRef = useRef<ReactQuill | null>(null);
 
@@ -86,8 +86,8 @@ const DocumentDetailPage: React.FC = () => {
       <div className={styles.container}>
         <div className={`${styles.slideContainer} ${isComparatorVisible ? styles.visible : ""}`}>
           <ContentComparator
-            firstContent={detailVersion?.content || ""}
             currentContent={content}
+            firstContent={comparatorContent || ""}
             onDiffLineClick={handleDiffLineClick}
           />
         </div>
@@ -121,8 +121,10 @@ const DocumentDetailPage: React.FC = () => {
               {isComparatorVisible ? "숨기기" : "비교 보기"}
             </button>
             <DocumentVersionList
+              setIsComparatorVisible={setIsComparatorVisible}
               content={content}
               setContent={setContent}
+              setComparatorContent={setComparatorContent}
               setSelectedVersionSubtitle={setSelectedVersionSubtitle}
               setSelectedVersionDate={setSelectedVersionDate}
             />

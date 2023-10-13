@@ -13,6 +13,12 @@ import {
   deleteDocumentVersionSuccess,
   deleteDocumentVersionFailure,
   deleteDocumentVersionRequest,
+  loadCompareDocumentVersionRequest,
+  loadCompareDocumentVersionSuccess,
+  loadCompareDocumentVersionFailure,
+  uploadPictureSuccess,
+  uploadPictureFailure,
+  uploadPictureRequest,
 } from "./versionActions";
 import axios, { AxiosResponse } from "axios";
 import { getTokenFromCookie } from "../../utils/tokenUtils";
@@ -127,10 +133,72 @@ function* loadDocumentVersion(action: LoadDocumentVersionAction) {
     yield put(loadDocumentVersionFailure("문서 버전 로딩에 실패했습니다."));
   }
 }
+// 비교 문서 버전 로딩
+function* loadCompareDocumentVersion(action: LoadDocumentVersionAction) {
+  try {
+    const accessToken = getTokenFromCookie("access_token");
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get(`/versions/${action.payload}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+    );
+
+    if (response.status === 200) {
+      yield put(loadCompareDocumentVersionSuccess(response.data));
+    } else if (response.status === 401) {
+      yield put(loadCompareDocumentVersionFailure("토큰이 만료되었습니다. 다시 로그인해주세요."));
+    } else {
+      yield put(loadCompareDocumentVersionFailure("문서 버전 로딩에 실패했습니다."));
+    }
+  } catch (error) {
+    console.error("문서 버전 로딩에 실패했습니다.", error);
+    yield put(loadCompareDocumentVersionFailure("문서 버전 로딩에 실패했습니다."));
+  }
+}
+
+//사진 저장
+function* postPicture(action: any) {
+  const { documentId, imageFile } = action.payload;
+  try {
+    // 쿠키에서 accessToken 가져오기
+    const access_token = getTokenFromCookie("access_token");
+    if (access_token) {
+      const response: AxiosResponse<any> = yield call(() =>
+        axios.post(
+          `/upload/${documentId}`,
+          { multipartFile: imageFile },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        )
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        yield put(uploadPictureSuccess(response.data));
+      } else if (response.status === 401) {
+        yield put(loadDocumentVersionFailure("토큰이 만료되었습니다. 다시 로그인해주세요."));
+      } else {
+        yield put(uploadPictureFailure("사진 업로드가 실행되지 않았습니다."));
+      }
+    }
+  } catch (error) {
+    console.error("사진 업로드가 실행되지 않았습니다.", error);
+    yield put(uploadPictureFailure("사진 업로드가 실행되지 않았습니다."));
+  }
+}
 
 export function* versionSaga() {
   yield takeLatest(loadDocumentVersionsRequest.type, loadDocumentVersions);
   yield takeLatest(addDocumentVersionRequest.type, addDocumentVersion);
   yield takeLatest(deleteDocumentVersionRequest.type, deleteDocumentVersion);
   yield takeLatest(loadDocumentVersionRequest.type, loadDocumentVersion);
+  yield takeLatest(loadCompareDocumentVersionRequest.type, loadCompareDocumentVersion);
+  yield takeLatest(uploadPictureRequest.type, postPicture);
 }

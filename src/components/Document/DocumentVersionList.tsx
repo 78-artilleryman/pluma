@@ -6,8 +6,14 @@ import {
   addDocumentVersionRequest,
   loadDocumentVersionRequest,
   deleteDocumentVersionRequest,
+  loadCompareDocumentVersionRequest,
 } from "../../store/version/versionActions";
-import { selectVersionsList, selectSingleVersion } from "../../store/version/versionSelectors";
+import {
+  selectVersionsList,
+  selectSingleVersion,
+  selectAddedVersion,
+  selectCompareVersion,
+} from "../../store/version/versionSelectors";
 import styles from "./DocumentVersionList.module.scss";
 import { timeSince } from "../../utils/TimeSince";
 import CreateModal from "src/utils/CreateModal";
@@ -15,26 +21,58 @@ import CreateModal from "src/utils/CreateModal";
 interface VersionListProps {
   content: string | null;
   setContent: (content: string) => void;
+  setComparatorContent: (content: string) => void;
   setSelectedVersionSubtitle: (subtitle: string) => void;
   setSelectedVersionDate: (date: string) => void;
+  setIsComparatorVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const DocumentVersionList: React.FC<VersionListProps> = ({
   content,
   setContent,
+  setComparatorContent,
   setSelectedVersionSubtitle,
   setSelectedVersionDate,
+  setIsComparatorVisible,
 }) => {
   const { documentId } = useParams();
   const dispatch = useDispatch();
   const versions = useSelector(selectVersionsList);
   const versionInfo = useSelector(selectSingleVersion);
+  const compareVersionInfo = useSelector(selectCompareVersion);
+  const addedVersion = useSelector(selectAddedVersion);
   const [selectedVersionId, setSelectedVersionId] = useState<number | null>(null);
+  const [comparingVersionId, setComparingVersionId] = useState<number | null>(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [subtitle, setSubtitle] = useState("");
   const [contentChanged, setContentChanged] = useState(false);
-  const [isVersionComparatorExpanded, setIsVersionComparatorExpanded] = useState(false);
+  const [initialContent, setInitialContent] = useState<string | null>(null);
 
+  useEffect(() => {
+    // 초기 콘텐츠 값을 설정
+    setInitialContent(content);
+  }, []);
+
+  const handleVersionClick = (version: any, event: React.MouseEvent) => {
+    event.stopPropagation();
+    dispatch(loadDocumentVersionRequest(version.id));
+    setIsComparatorVisible(false);
+  };
+  useEffect(() => {
+    // 초기 콘텐츠 값과 현재 콘텐츠 값을 비교하여 contentChanged를 업데이트
+    if (content !== initialContent) {
+      setContentChanged(true);
+    }
+  }, [content, initialContent]);
+  useEffect(() => {
+    if (addedVersion) {
+      setSelectedVersionId(addedVersion.versionId);
+      setSelectedVersionSubtitle(addedVersion.subtitle);
+      setSelectedVersionDate(addedVersion.createdAt);
+      setContent(addedVersion.content);
+    }
+  }, [addedVersion]);
   const handleCtrlS = (event: KeyboardEvent) => {
     if ((event.ctrlKey && event.key === "s") || (event.metaKey && event.key === "s")) {
       event.preventDefault();
@@ -82,65 +120,55 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
         createdAt: createdAt,
       };
       dispatch(addDocumentVersionRequest(newVersionInfo));
-      setSelectedVersionSubtitle(newVersionInfo.subtitle);
-      setSelectedVersionDate(newVersionInfo.createdAt);
-      setIsVersionComparatorExpanded(true);
+
       setIsModalOpen(false);
       setSubtitle("");
     }
   };
 
   const handleVersionItemClick = (version: any) => {
-    if (contentChanged) {
-      const isConfirmed = window.confirm(
-        "변경된 사항은 저장되지 않습니다. 정말로 이동하시겠습니까?"
-      );
-      if (!isConfirmed) return;
-    }
-
-    setSelectedVersionSubtitle(version.subtitle);
-    setSelectedVersionDate(version.createdAt);
-    setSelectedVersionId(version.id);
-    dispatch(loadDocumentVersionRequest(version.id));
-    setIsVersionComparatorExpanded(true);
+    setIsComparatorVisible(true);
+    dispatch(loadCompareDocumentVersionRequest(version.id));
   };
 
   useEffect(() => {
     if (documentId) {
       dispatch(loadDocumentVersionsRequest(documentId));
-      setSelectedVersionSubtitle("");
-      setSelectedVersionDate("");
-      setSelectedVersionId(null);
     }
   }, [documentId, dispatch]);
 
   useEffect(() => {
-    if (versionInfo?.content) {
+    if (versionInfo) {
       setSelectedVersionId(versionInfo.versionId);
       setContent(versionInfo.content);
       setSelectedVersionSubtitle(versionInfo.subtitle);
       setSelectedVersionDate(versionInfo.createdAt);
-      setContentChanged(false);
-    } else {
-      setContent(""); // 버전 정보가 없는 경우 content 초기화
-      setSelectedVersionSubtitle("");
-      setSelectedVersionDate("");
+      setComparingVersionId(null);
+      setComparatorContent(versionInfo.content);
+      setSelectedVersionSubtitle(versionInfo.subtitle);
+      setSelectedVersionDate(versionInfo.createdAt);
     }
-  }, [versionInfo, versions, documentId]);
+  }, [versionInfo, setSelectedVersionSubtitle, setSelectedVersionDate]);
 
   useEffect(() => {
-    if (versionInfo?.content !== content) {
-      setContentChanged(true);
-    } else {
-      setContentChanged(false);
+    if (compareVersionInfo) {
+      setComparingVersionId(compareVersionInfo.versionId);
+      setComparatorContent(compareVersionInfo.content);
+      setSelectedVersionSubtitle(compareVersionInfo.subtitle);
+      setSelectedVersionDate(compareVersionInfo.createdAt);
     }
-  }, [content, contentChanged]);
+  }, [
+    compareVersionInfo,
+    setComparatorContent,
+    setSelectedVersionSubtitle,
+    setSelectedVersionDate,
+  ]);
 
   useEffect(() => {
-    if (versions?.length === 0) {
-      setContent("");
+    if (selectedVersionId !== null) {
+      dispatch(loadDocumentVersionRequest(selectedVersionId));
     }
-  }, [versions]);
+  }, [selectedVersionId, dispatch]);
 
   const handleModalOuterClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (event.target === event.currentTarget) {
@@ -189,12 +217,16 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             key={version.id}
             className={`${styles.versionItem} ${
               selectedVersionId === version.id ? styles.selectedVersion : ""
-            }`}
+            } ${comparingVersionId === version.id ? styles.comparingVersion : ""}
+            `}
             onClick={() => handleVersionItemClick(version)}
           >
-            <span style={{ width: "50%" }}> {version.subtitle}</span>
+            <span style={{ width: "40%" }}> {version.subtitle}</span>
             <span> {timeSince(version.createdAt)}</span>
-            <button onClick={() => handleDeleteVersionClick(version.id)}>삭제</button>
+            <div>
+              <button onClick={(event) => handleVersionClick(version, event)}>이동</button>
+              <button onClick={() => handleDeleteVersionClick(version.id)}>삭제</button>
+            </div>
           </div>
         ))}
 
