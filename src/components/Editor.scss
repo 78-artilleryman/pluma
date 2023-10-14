@@ -33,6 +33,7 @@ button {
 .ql-toolbar .ql-pdf::before {
   content: "PDF";
 
+
 }
 .ql-upload::before {
   content: "사진"; // 버튼의 텍스트
@@ -72,7 +73,6 @@ button {
     .ql-snow .ql-stroke,
     .ql-compare,
     .ql-pdf,
-    .ql-upload,
     .ql-editor {
       stroke: white;
       background-color: #333333; /* 툴바 배경색을 변경 */
