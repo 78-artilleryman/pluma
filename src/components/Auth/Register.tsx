@@ -76,7 +76,6 @@ const Register: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   useEffect(() => {
     if (isAuthenticated) {
-      console.log(isAuthenticated);
       navigate(-1);
     }
   }, [isAuthenticated]);

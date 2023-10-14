@@ -1,6 +1,8 @@
 import { createAction } from "@reduxjs/toolkit";
 import { sendVersion, VersionDetailInfo, VersionInfo , SendPicture} from "./versionTypes";
 
+
+
 // 문서 버전 로딩
 export const loadDocumentVersionsRequest = createAction<string>(
   "version/loadDocumentVersionsRequest"
@@ -44,13 +46,20 @@ export const loadDocumentVersionFailure = createAction<string>(
   "version/loadDocumentVersionFailure"
 );
 
+
+// 비교 문서 버전 로딩
+export const loadCompareDocumentVersionRequest = createAction<number>(
+  "version/loadCompareDocumentVersionRequest"
+);
+export const loadCompareDocumentVersionSuccess = createAction<VersionDetailInfo | null>(
+  "version/loadCompareDocumentVersionSuccess"
+);
+export const loadCompareDocumentVersionFailure = createAction<string>(
+  "version/loadCompareDocumentVersionFailure"
+);
+
 // 사진 업로드
-export const uploadPictureRequest = createAction<SendPicture>(
-  "upload/uploadPictureRequest"
-)
-export const uploadPictureSuccess = createAction<any>(
-  "upload/uploadPictureSuccess"
-)
-export const uploadPictureFailure = createAction<any>(
-  "upload/uploadPictureFailure"
-)
+export const uploadPictureRequest = createAction<SendPicture>("version/uploadPictureRequest");
+export const uploadPictureSuccess = createAction<any>("version/uploadPictureSuccess");
+export const uploadPictureFailure = createAction<any>("version/uploadPictureFailure");
+

@@ -3,8 +3,9 @@
   color: #333333; /* 툴바 아이콘 색상을 변경 */
 }
 
-.ql-snow.ql-toolbar button.ql-compare {
-  width: 50px;
+.ql-snow.ql-toolbar button.ql-compare,
+.ql-snow.ql-toolbar button.ql-upload {
+  width: 40px;
   border-radius: 5px;
   display: flex;
   justify-content: center;
@@ -18,29 +19,67 @@
 .ql-compare.ql-active {
   color: #007bff; // 예: #333333
 }
+@use "../../styles/buttonStyles.scss";
+
+button {
+  @extend button;
+}
 .ql-compare {
   &::before {
     content: "비교"; // 버튼의 텍스트
   }
 }
-.ql-upload {
-  &::before {
-    content: "사진 업로드"; // 버튼의 텍스트
+
+.ql-toolbar .ql-pdf::before {
+  content: "PDF";
+
+
+}
+.ql-upload::before {
+  content: "사진"; // 버튼의 텍스트
+}
+
+.Document_editorContainer__AfWOF {
+  .ql-container.ql-snow {
+    height: 87vh;
+    overflow-y: auto;
+    background-color: #c2c2c2;
   }
+
+  .ql-editor {
+    padding: 50px;
+    width: 595px;
+    margin: 0 auto;
+    background: white;
+    word-break: break-all;
+  }
+}
+.ql-editor {
+  width: 505px;
+  margin: 0;
+  padding: 0;
+  word-break: break-all;
 }
 
 [data-theme="dark"] {
-  .ql-toolbar.ql-snow {
-    background-color: #333333; /* 툴바 배경색을 변경 */
-    color: white; /* 툴바 아이콘 색상을 변경 */
-  }
-  .ql-toolbar.ql-snow .ql-formats .ql-picker,
-  .ql-picker-options,
-  .ql-picker-label,
-  .ql-snow .ql-stroke,
-  .ql-compare {
-    stroke: white;
-    background-color: #333333; /* 툴바 배경색을 변경 */
-    color: white; /* 툴바 아이콘 색상을 변경 */
+  .Document_editorContainer__AfWOF {
+    .ql-toolbar.ql-snow {
+      background-color: #333333; /* 툴바 배경색을 변경 */
+      color: white; /* 툴바 아이콘 색상을 변경 */
+    }
+    .ql-toolbar.ql-snow .ql-formats .ql-picker,
+    .ql-picker-options,
+    .ql-picker-label,
+    .ql-snow .ql-stroke,
+    .ql-compare,
+    .ql-pdf,
+    .ql-editor {
+      stroke: white;
+      background-color: #333333; /* 툴바 배경색을 변경 */
+      color: white; /* 툴바 아이콘 색상을 변경 */
+    }
+    .ql-container.ql-snow {
+      background-color: #444444;
+    }
   }
 }
