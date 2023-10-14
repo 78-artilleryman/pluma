@@ -27,6 +27,15 @@
     background-color: #0056b3;
   }
 }
+.comparingVersion {
+  background-color: #6f42c1; // 보라색
+  color: white;
+
+  &:hover {
+    background-color: #5a328a; // 어두운 보라색
+  }
+}
+
 @import "../../styles/buttonStyles.scss"; /* 공통 스타일 임포트 */
 .compareButton {
   @extend .button;
@@ -114,6 +123,7 @@
       background-color: #e0e0e0;
     }
   }
+
   .selectedVersion {
     background-color: #007bff;
     color: white;
@@ -193,6 +203,14 @@
     background-color: #007bff;
     color: white;
     /* 다크 모드에 맞게 스타일 추가 */
+  }
+  .comparingVersion {
+    background-color: #6f42c1; // 보라색
+    color: white;
+
+    &:hover {
+      background-color: #5a328a; // 어두운 보라색
+    }
   }
 
   .modalContainer {

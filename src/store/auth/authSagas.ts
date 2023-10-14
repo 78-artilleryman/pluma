@@ -166,7 +166,7 @@ function* register(action: any) {
     const response: AxiosResponse<any> = yield call(
       () =>
         axios.post(
-          "/auth/join",
+          "/auth/signup",
           { username, password, name },
           { headers: { "Content-Type": "application/json" } }
         ) // 회원가입 엔드포인트 URL

@@ -13,9 +13,14 @@ import {
   deleteDocumentVersionSuccess,
   deleteDocumentVersionFailure,
   deleteDocumentVersionRequest,
-  uploadPictureRequest,
+
+  loadCompareDocumentVersionRequest,
+  loadCompareDocumentVersionSuccess,
+  loadCompareDocumentVersionFailure,
   uploadPictureSuccess,
-  uploadPictureFailure
+  uploadPictureFailure,
+  uploadPictureRequest,
+
 } from "./versionActions";
 import axios, { AxiosResponse } from "axios";
 import { getTokenFromCookie } from "../../utils/tokenUtils";
@@ -69,8 +74,6 @@ function* addDocumentVersion(action: AddDocumentVersionAction) {
 
     if (response.status === 200) {
       yield put(addDocumentVersionSuccess(response.data));
-      const newVersionId = response.data.documentId;
-      yield put(loadDocumentVersionsRequest(newVersionId));
     } else if (response.status === 401) {
       yield put(addDocumentVersionFailure("토큰이 만료되었습니다. 다시 로그인해주세요."));
     } else {
@@ -132,6 +135,33 @@ function* loadDocumentVersion(action: LoadDocumentVersionAction) {
     yield put(loadDocumentVersionFailure("문서 버전 로딩에 실패했습니다."));
   }
 }
+// 비교 문서 버전 로딩
+function* loadCompareDocumentVersion(action: LoadDocumentVersionAction) {
+  try {
+    const accessToken = getTokenFromCookie("access_token");
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get(`/versions/${action.payload}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+    );
+
+    if (response.status === 200) {
+      yield put(loadCompareDocumentVersionSuccess(response.data));
+    } else if (response.status === 401) {
+      yield put(loadCompareDocumentVersionFailure("토큰이 만료되었습니다. 다시 로그인해주세요."));
+    } else {
+      yield put(loadCompareDocumentVersionFailure("문서 버전 로딩에 실패했습니다."));
+    }
+  } catch (error) {
+    console.error("문서 버전 로딩에 실패했습니다.", error);
+    yield put(loadCompareDocumentVersionFailure("문서 버전 로딩에 실패했습니다."));
+  }
+}
+
+
 
 //사진 저장
 function* postPicture(action: any){
@@ -176,5 +206,6 @@ export function* versionSaga() {
   yield takeLatest(addDocumentVersionRequest.type, addDocumentVersion);
   yield takeLatest(deleteDocumentVersionRequest.type, deleteDocumentVersion);
   yield takeLatest(loadDocumentVersionRequest.type, loadDocumentVersion);
+  yield takeLatest(loadCompareDocumentVersionRequest.type, loadCompareDocumentVersion);
   yield takeLatest(uploadPictureRequest.type, postPicture);
 }

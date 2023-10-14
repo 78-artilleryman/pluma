@@ -4,17 +4,23 @@ import { VersionInfo, VersionDetailInfo } from "./versionTypes";
 interface VersionState {
   versionsList: VersionInfo[];
   singleVersion: VersionDetailInfo | null;
+  compareVersion: VersionDetailInfo | null;
+  latestAddedVersion: VersionDetailInfo | null;
   loading: boolean;
   imageUrl: string | null;
   error: string | null;
+  imgUrl: any | null;
 }
 
 const initialState: VersionState = {
   versionsList: [],
   singleVersion: null,
+  compareVersion: null,
+  latestAddedVersion: null,
   loading: false,
   imageUrl: null,
   error: null,
+  imgUrl: null,
 };
 
 
@@ -41,9 +47,16 @@ const versionReducer = createSlice({
       state.loading = true;
       state.error = null;
     },
-    addDocumentVersionSuccess: (state, action: PayloadAction<VersionInfo>) => {
+    addDocumentVersionSuccess: (state, action: PayloadAction<VersionDetailInfo>) => {
       state.loading = false;
-      state.versionsList = [...state.versionsList, action.payload];
+      state.versionsList.unshift({
+        id: action.payload.versionId,
+        subtitle: action.payload.subtitle,
+        createdAt: action.payload.createdAt,
+        content: action.payload.content,
+      });
+      state.latestAddedVersion = action.payload;
+      state.singleVersion = action.payload;
     },
     addDocumentVersionFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -76,13 +89,29 @@ const versionReducer = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    loadCompareDocumentVersionRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+      state.compareVersion = null;
+    },
+    loadCompareDocumentVersionSuccess: (state, action: PayloadAction<VersionDetailInfo | null>) => {
+      state.loading = false;
+      state.compareVersion = action.payload;
+    },
+    loadCompareDocumentVersionFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     uploadPictureRequest: (state) => {
       state.loading = true;
       state.error = null;
+      state.imgUrl = null;
     },
-    uploadPictureSuccess: (state, action: PayloadAction<any>) =>{
+    uploadPictureSuccess: (state, action: PayloadAction<any>) => {
       state.loading = false;
-      state.imageUrl = action.payload
+      state.imgUrl = action.payload;
+
     },
     uploadPictureFailure: (state, action: PayloadAction<any>) => {
       state.loading = false;

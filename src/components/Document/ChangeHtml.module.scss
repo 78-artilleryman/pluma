@@ -1,4 +1,4 @@
-.container{
+.container {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,10 +11,13 @@
   z-index: 999;
 }
 
-.content{
+.content {
   padding: 5px;
-  width: 210mm;
 
+  width: 136.5mm;
   background-color: white;
-  font-size: 8.45px;
 }
+.avoid-break {
+  page-break-inside: avoid;
+}
+
