@@ -28,10 +28,6 @@ button {
   content: "PDF";
 }
 
-.ql-upload::before {
-  content: "사진"; // 버튼의 텍스트
-}
-
 .Document_editorContainer__AfWOF {
   .ql-container.ql-snow {
     height: 87vh;
@@ -66,7 +62,6 @@ button {
     .ql-snow .ql-stroke,
     .ql-compare,
     .ql-pdf,
-    .ql-upload,
     .ql-editor {
       stroke: white;
       background-color: #333333; /* 툴바 배경색을 변경 */

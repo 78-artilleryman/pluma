@@ -52,26 +52,9 @@ const Editor: React.FC<IEditor> = ({
   const [isPdfNameModalOpen, setIsPdfNameModalOpen] = useState(false);
   const [pdfFileName, setPdfFileName] = useState("document");
   const pdfFileNameRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (editorRef.current) {
-      const pdfButton = document.querySelector(".ql-pdf") as HTMLElement;
-      const uploadButton = document.querySelector(".ql-upload") as HTMLElement;
-      const handlePdfButtonClick = () => {
-        setIsPdfNameModalOpen(true);
-      };
-      if (pdfButton) {
-        pdfButton.addEventListener("click", handlePdfButtonClick);
-      }
-      if (uploadButton) {
-        uploadButton.addEventListener("click", handleImageUpload);
-      }
-      return () => {
-        pdfButton?.removeEventListener("click", handlePdfButtonClick);
-        uploadButton?.removeEventListener("click", handleImageUpload);
-      };
-    }
-  }, []);
+  const handlePdfButtonClick = () => {
+    setIsPdfNameModalOpen(true);
+  };
 
   useEffect(() => {
     if (imgUrl !== null) {
@@ -94,6 +77,7 @@ const Editor: React.FC<IEditor> = ({
       setIsPdfNameModalOpen(false);
     }
   };
+
   const handleImageUpload = () => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
@@ -112,6 +96,15 @@ const Editor: React.FC<IEditor> = ({
       }
     });
   };
+  useEffect(() => {
+    if (editorRef.current) {
+      const quill = editorRef.current.getEditor();
+      const toolbar = quill.getModule("toolbar");
+
+      toolbar.addHandler("image", handleImageUpload);
+      toolbar.addHandler("pdf", handlePdfButtonClick); // 'pdf' 핸들러 추가
+    }
+  }, [editorRef]);
 
   useEffect(() => {
     if (editorRef.current && typeof selectedLineNumber === "number") {
@@ -177,7 +170,6 @@ const Editor: React.FC<IEditor> = ({
             ["clean"],
             ["compare"], // "비교하기" 레이블을 가진 버튼 정의
             ["pdf"],
-            ["upload"], // 사진 업로드
           ],
           clipboard: {
             matchVisual: false,
