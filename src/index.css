@@ -9,3 +9,8 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+.css-1ks9aww-gutter {
+  min-width: unset !important;
+  display: none;
+}

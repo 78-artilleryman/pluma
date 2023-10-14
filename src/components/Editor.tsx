@@ -6,7 +6,11 @@ import { ImageResize } from "quill-image-resize-module-ts";
 import { captureAndDownloadPdf } from "./Document/ChangeHtml";
 import CreateModal from "src/utils/CreateModal";
 import styles from "../components/Document/AddDocumentItem.module.scss";
-Quill.register("modules/ImageResize", ImageResize);
+import { uploadPictureRequest } from "src/store/version/versionActions";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { selectImageUrl } from "src/store/version/versionSelectors";
+Quill.register("modules/ImageResize", ImageResize); // 이미지 리사이징 모듈 등록
 
 interface IEditor {
   editorRef: React.RefObject<ReactQuill>;
@@ -25,6 +29,10 @@ const Editor: React.FC<IEditor> = ({
   isComparatorVisible,
   editorRef,
 }) => {
+  const dispatch = useDispatch();
+  const { documentId } = useParams();
+  const imgUrl = useSelector(selectImageUrl);
+
   useEffect(() => {
     if (editorRef.current) {
       const compareButton = document.querySelector(".ql-compare") as HTMLElement;
@@ -48,25 +56,63 @@ const Editor: React.FC<IEditor> = ({
   useEffect(() => {
     if (editorRef.current) {
       const pdfButton = document.querySelector(".ql-pdf") as HTMLElement;
+      const uploadButton = document.querySelector(".ql-upload") as HTMLElement;
       const handlePdfButtonClick = () => {
         setIsPdfNameModalOpen(true);
       };
       if (pdfButton) {
         pdfButton.addEventListener("click", handlePdfButtonClick);
       }
+      if (uploadButton) {
+        uploadButton.addEventListener("click", handleImageUpload);
+      }
       return () => {
         pdfButton?.removeEventListener("click", handlePdfButtonClick);
+        uploadButton?.removeEventListener("click", handleImageUpload);
       };
     }
   }, []);
 
+  useEffect(() => {
+    if (imgUrl !== null) {
+      const baseImageUrl = `https://dowonbucket.s3.ap-northeast-2.amazonaws.com/`;
+      const uploadedImageUrl = baseImageUrl + imgUrl;
+      console.log(uploadedImageUrl);
+      const editor = editorRef.current?.getEditor();
+
+      if (editor && uploadedImageUrl) {
+        const range = editor.getSelection(true);
+        editor.insertEmbed(range.index + 1, "image", uploadedImageUrl, "user"); // 이미지 추가
+      }
+    }
+  }, [imgUrl]);
+
   const handleSavePdfName = () => {
     if (pdfFileNameRef.current) {
       setPdfFileName(pdfFileNameRef.current.value);
-      captureAndDownloadPdf(editorRef, pdfFileNameRef.current.value); // Ensure captureAndDownloadPdf accepts file name
+      captureAndDownloadPdf(editorRef, pdfFileNameRef.current.value);
       setIsPdfNameModalOpen(false);
     }
   };
+  const handleImageUpload = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.addEventListener("change", async (e: Event) => {
+      const inputElement = e.target as HTMLInputElement;
+      if (inputElement.files && inputElement.files.length > 0) {
+        const file = inputElement.files[0];
+        if (file) {
+          dispatch(uploadPictureRequest({ documentId: documentId, imageFile: file }));
+        }
+      } else {
+        alert("이미지를 선택하세요.");
+      }
+    });
+  };
+
   useEffect(() => {
     if (editorRef.current && typeof selectedLineNumber === "number") {
       const editor = editorRef.current.getEditor();
@@ -99,30 +145,11 @@ const Editor: React.FC<IEditor> = ({
     "color",
     "background",
     "compare",
+    "image",
   ];
   const handleEditorChange = (newHtmlStr: string) => {
     setContent(newHtmlStr);
   };
-
-  useEffect(() => {
-    // const adjustEditorHeight = () => {
-    //   if (editorRef.current) {
-    //     const editor = editorRef.current.getEditor();
-    //     const quillRoot = editor.root;
-    //     const screenHeight = window.innerHeight;
-    //     const desiredHeight = screenHeight - 118;
-    //     quillRoot.style.minHeight = `${desiredHeight}px`;
-    //   }
-    // };
-    Quill.register("modules/ImageResize", ImageResize);
-
-    // adjustEditorHeight();
-    // window.addEventListener("resize", adjustEditorHeight);
-
-    // return () => {
-    //   window.removeEventListener("resize", adjustEditorHeight);
-    // };
-  }, []);
 
   return (
     <div>
@@ -144,12 +171,13 @@ const Editor: React.FC<IEditor> = ({
             ],
             ["bold", "italic", "underline", "strike", "blockquote"],
             [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-            ["link", "video", "image", "code-block"],
+            ["link", "video", "code-block", "image"],
             [{ color: [] }, { background: [] }],
             [{ align: [] }],
             ["clean"],
             ["compare"], // "비교하기" 레이블을 가진 버튼 정의
             ["pdf"],
+            ["upload"], // 사진 업로드
           ],
           clipboard: {
             matchVisual: false,
