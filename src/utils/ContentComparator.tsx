@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import DiffViewer, { DiffMethod } from "react-diff-viewer";
-import ReactQuill from "react-quill";
 import { getInitialTheme, toggleTheme } from "./theme";
+import parse from "html-react-parser"; // 추가
+import "react-quill/dist/quill.snow.css"; // 필요한 스타일을 가져옵니다.
+import ReactQuill from "react-quill";
 
 interface VersionComparatorProps {
   firstContent: string | null;
@@ -14,23 +16,23 @@ function ContentComparator({
   currentContent,
   onDiffLineClick,
 }: VersionComparatorProps): React.JSX.Element {
-  const [isDarkMode, setIsDarkMode] = useState(false); // 다크모드 상태를 관리하는 state
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const currentTheme = getInitialTheme(); // theme.js의 getInitialTheme 함수를 통해 현재 테마 얻기
-    setIsDarkMode(currentTheme === "dark"); // 얻은 테마를 기반으로 isDarkMode 상태 설정
+    const currentTheme = getInitialTheme();
+    setIsDarkMode(currentTheme === "dark");
   }, []);
+
   const renderContent = (content: string) => {
     return (
-      <>
-        <ReactQuill
-          value={content}
-          readOnly={true}
-          modules={{
-            toolbar: false,
-          }}
-        />
-      </>
+      <ReactQuill
+        value={content}
+        readOnly={true}
+        modules={{
+          toolbar: false,
+        }}
+        theme="snow"
+      />
     );
   };
 
