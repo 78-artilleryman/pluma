@@ -28,11 +28,11 @@ const versionReducer = createSlice({
     loadDocumentVersionsRequest: (state) => {
       state.loading = true;
       state.error = null;
-      state.singleVersion = null;
     },
     loadDocumentVersionsSuccess: (state, action: PayloadAction<VersionInfo[]>) => {
       state.loading = false;
       state.versionsList = action.payload;
+      state.singleVersion = null;
     },
     loadDocumentVersionsFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -51,7 +51,6 @@ const versionReducer = createSlice({
         content: action.payload.content,
       });
       state.latestAddedVersion = action.payload;
-      state.singleVersion = action.payload;
     },
     addDocumentVersionFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -83,6 +82,7 @@ const versionReducer = createSlice({
     loadDocumentVersionFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
+      state.singleVersion = null;
     },
     loadCompareDocumentVersionRequest: (state) => {
       state.loading = true;

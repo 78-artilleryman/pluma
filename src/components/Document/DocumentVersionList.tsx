@@ -35,7 +35,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   setSelectedVersionDate,
   setIsComparatorVisible,
 }) => {
-  const { documentId } = useParams();
+  const { documentId } = useParams<{ documentId: string }>();
   const dispatch = useDispatch();
   const versions = useSelector(selectVersionsList);
   const versionInfo = useSelector(selectSingleVersion);
@@ -56,7 +56,9 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
 
   const handleVersionClick = (version: any, event: React.MouseEvent) => {
     event.stopPropagation();
-    dispatch(loadDocumentVersionRequest(version.id));
+    if (version) {
+      dispatch(loadDocumentVersionRequest(version.id));
+    }
     setIsComparatorVisible(false);
   };
   useEffect(() => {
@@ -133,12 +135,15 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
 
   useEffect(() => {
     if (documentId) {
+      setSelectedVersionId(null);
+      setComparingVersionId(null);
+      setContent("");
       dispatch(loadDocumentVersionsRequest(documentId));
     }
   }, [documentId, dispatch]);
 
   useEffect(() => {
-    if (versionInfo) {
+    if (versions.length > 0 && versionInfo) {
       setSelectedVersionId(versionInfo.versionId);
       setContent(versionInfo.content);
       setSelectedVersionSubtitle(versionInfo.subtitle);
@@ -147,8 +152,20 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
       setComparatorContent(versionInfo.content);
       setSelectedVersionSubtitle(versionInfo.subtitle);
       setSelectedVersionDate(versionInfo.createdAt);
+    } else {
+      setSelectedVersionId(null);
+      setContent("");
+      setSelectedVersionSubtitle("");
+      setSelectedVersionDate("");
     }
-  }, [versionInfo, setSelectedVersionSubtitle, setSelectedVersionDate]);
+  }, [
+    setComparatorContent,
+    setContent,
+    setSelectedVersionDate,
+    setSelectedVersionSubtitle,
+    versionInfo,
+    versions.length,
+  ]);
 
   useEffect(() => {
     if (compareVersionInfo) {
@@ -163,12 +180,6 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     setSelectedVersionSubtitle,
     setSelectedVersionDate,
   ]);
-
-  useEffect(() => {
-    if (selectedVersionId !== null) {
-      dispatch(loadDocumentVersionRequest(selectedVersionId));
-    }
-  }, [selectedVersionId, dispatch]);
 
   const handleModalOuterClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (event.target === event.currentTarget) {
@@ -192,7 +203,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     setVersionIdToDelete(null);
     setContent("");
   };
-  const gandleCloseModal = () => {
+  const handleCloseModal = () => {
     setIsDeleteConfirmationModalOpen(false);
     setVersionIdToDelete(null);
   };
@@ -231,7 +242,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
         ))}
 
         {isDeleteConfirmationModalOpen && (
-          <CreateModal isOpen={isDeleteConfirmationModalOpen} onClose={gandleCloseModal}>
+          <CreateModal isOpen={isDeleteConfirmationModalOpen} onClose={handleCloseModal}>
             <h2>버전</h2>
             <p>정말로 이 버전을 삭제하시겠습니까?</p>
             <button
@@ -241,7 +252,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             >
               네, 삭제합니다
             </button>
-            <button className={styles.button} onClick={gandleCloseModal}>
+            <button className={styles.button} onClick={handleCloseModal}>
               아니오, 취소합니다
             </button>
           </CreateModal>
