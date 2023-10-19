@@ -19,6 +19,12 @@ import {
   refreshTokenSuccess,
   refreshTokenFailure,
   refreshTokenRequest,
+  emailAuthenticationRequest,
+  emailAuthenticationSuccess,
+  emailAuthenticationFailure,
+  checkEmailAuthenticationRequest,
+  checkEmailAuthenticationSuccess,
+  checkEmailAuthenticationFailure,
 } from "./authActions";
 import { Dispatch } from "redux";
 
@@ -56,6 +62,61 @@ function* fetchUserInfo() {
   }
 }
 
+// 이메일 인증번호 요청 사가
+function* emailAuthentication(action: any) {
+  try {
+    const { email } = action.payload;
+    // 서버에 사용자 정보를 요청
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.post(
+        "/auth/emails/verification",
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+    );
+
+    if (response.status === 200) {
+      yield put(emailAuthenticationSuccess());
+    } else {
+      yield put(emailAuthenticationFailure("인증메일 전송에 실패했습니다."));
+    }
+  } catch (error) {
+    yield put(emailAuthenticationFailure("인증메일 전송에 실패했습니다."));
+  }
+}
+// 이메일 인증번호 확인 요청 사가
+function* checkEmailAuthentication(action: any) {
+  try {
+    const { email, code } = action.payload;
+    // 서버에 사용자 정보를 요청
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.post(
+        "/auth/emails-code/verification",
+        { email, code },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+    );
+
+    if (response.status === 200) {
+      if (response.data === false) {
+        alert("인증 코드가 틀렸습니다");
+      }
+      yield put(checkEmailAuthenticationSuccess(response.data));
+    } else {
+      yield put(checkEmailAuthenticationFailure("메일 인증에 실패했습니다."));
+    }
+  } catch (error) {
+    yield put(checkEmailAuthenticationFailure("메일 인증에 실패했습니다."));
+  }
+}
 // 토큰 만료 검사 사가
 export function* checkTokenExpirationSaga() {
   try {
@@ -184,6 +245,8 @@ function* register(action: any) {
 
 function* authSaga() {
   yield takeLatest(fetchUserInfoRequest.type, fetchUserInfo);
+  yield takeLatest(emailAuthenticationRequest.type, emailAuthentication);
+  yield takeLatest(checkEmailAuthenticationRequest.type, checkEmailAuthentication);
   yield takeLatest(checkTokenExpirationRequest.type, checkTokenExpirationSaga);
   yield takeLatest(refreshTokenRequest.type, refreshTokenSaga);
   yield takeLatest(loginRequest.type, login);

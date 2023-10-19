@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loadDocumentRequest } from "../../store/document/documentActions";
 import { selectSingleDocument } from "../../store/document/documentSelectors";

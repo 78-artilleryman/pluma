@@ -44,8 +44,9 @@ function* loadDocumentVersions(action: LoadDocumentVersionsAction) {
 
     if (response.status === 200) {
       yield put(loadDocumentVersionsSuccess(response.data.dtoList));
-      if (response.data.dtoList && response.data.dtoList.length > 0) {
-        const firstVersionId = response.data.dtoList[0].id;
+      const firstVersionId = response.data.dtoList[0]?.id;
+
+      if (response.data.dtoList.length > 0 && firstVersionId) {
         yield put(loadDocumentVersionRequest(firstVersionId));
       }
     } else if (response.status === 401) {

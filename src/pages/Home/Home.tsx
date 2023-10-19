@@ -5,14 +5,17 @@ import { getInitialTheme } from "../../utils/theme";
 import styles from "./Home.module.scss"; // Home.module.scss 파일을 가져옵니다.
 import Header from "../../components/Header/Header";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectIsAuthenticated } from "src/store/auth/authSelectors";
+import { resetEmailAuthenticationRequest } from "src/store/auth/authActions";
 
 const Home: React.FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const dispatch = useDispatch();
   useEffect(() => {
     const initialTheme = getInitialTheme();
     document.documentElement.setAttribute("data-theme", initialTheme);
+    dispatch(resetEmailAuthenticationRequest());
   }, []);
   const navigate = useNavigate();
   return (
