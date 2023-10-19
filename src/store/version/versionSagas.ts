@@ -30,7 +30,6 @@ interface LoadDocumentVersionAction extends PayloadAction<string> {}
 // 문서 버전 로딩
 function* loadDocumentVersions(action: LoadDocumentVersionsAction) {
   try {
-    console.log(action);
     const accessToken = getTokenFromCookie("access_token");
     const response: AxiosResponse<any> = yield call(() =>
       axios.get(`/versions?documentId=${action.payload}`, {
