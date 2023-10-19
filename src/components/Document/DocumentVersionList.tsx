@@ -143,7 +143,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   }, [documentId, dispatch]);
 
   useEffect(() => {
-    if (versions.length > 0 && versionInfo) {
+    if (versionInfo) {
       setSelectedVersionId(versionInfo.versionId);
       setContent(versionInfo.content);
       setSelectedVersionSubtitle(versionInfo.subtitle);
@@ -157,6 +157,10 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
       setContent("");
       setSelectedVersionSubtitle("");
       setSelectedVersionDate("");
+      setComparatorContent("");
+      setComparingVersionId(null);
+      setSelectedVersionSubtitle("");
+      setSelectedVersionDate("");
     }
   }, [
     setComparatorContent,
@@ -166,6 +170,20 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     versionInfo,
     versions.length,
   ]);
+  useEffect(() => {
+    // 버전 목록이 변경될 때마다 실행되며, 첫 번째 버전을 선택합니다.
+    if (versions.length > 0) {
+      const firstVersion = versions[0];
+      dispatch(loadDocumentVersionRequest(firstVersion.id));
+    } else {
+      // 버전이 없는 경우 초기화 작업을 수행할 수 있습니다.
+      setSelectedVersionId(null);
+      setContent("");
+      setSelectedVersionSubtitle("");
+      setSelectedVersionDate("");
+      setComparatorContent("");
+    }
+  }, [versions, dispatch]);
 
   useEffect(() => {
     if (compareVersionInfo) {
@@ -187,7 +205,8 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     }
   };
 
-  const handleDeleteVersionClick = (versionId: number) => {
+  const handleDeleteVersionClick = (versionId: number, event: React.MouseEvent) => {
+    event.stopPropagation();
     setVersionIdToDelete(versionId);
     setIsDeleteConfirmationModalOpen(true);
   };
@@ -201,6 +220,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     }
     setIsDeleteConfirmationModalOpen(false);
     setVersionIdToDelete(null);
+    setIsComparatorVisible(false);
     setContent("");
   };
   const handleCloseModal = () => {
@@ -236,7 +256,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             <span> {timeSince(version.createdAt)}</span>
             <div>
               <button onClick={(event) => handleVersionClick(version, event)}>이동</button>
-              <button onClick={() => handleDeleteVersionClick(version.id)}>삭제</button>
+              <button onClick={(event) => handleDeleteVersionClick(version.id, event)}>삭제</button>
             </div>
           </div>
         ))}
