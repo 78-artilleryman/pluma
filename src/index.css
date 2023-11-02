@@ -11,6 +11,5 @@ code {
 }
 
 .css-1ks9aww-gutter {
-  min-width: unset !important;
-  display: none;
+  width: 5px;
 }

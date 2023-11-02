@@ -1,51 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import DiffViewer, { DiffMethod } from "react-diff-viewer";
-import { getInitialTheme, toggleTheme } from "./theme";
-import parse from "html-react-parser"; // 추가
-import "react-quill/dist/quill.snow.css"; // 필요한 스타일을 가져옵니다.
-import ReactQuill from "react-quill";
+import { htmlToText } from "html-to-text";
 
 interface VersionComparatorProps {
   firstContent: string | null;
   currentContent: string | null;
   onDiffLineClick: (lineNumber: number) => void;
 }
-
 function ContentComparator({
   firstContent,
   currentContent,
   onDiffLineClick,
 }: VersionComparatorProps): React.JSX.Element {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const convertContentToText = (htmlString: string | null) =>
+    htmlToText(htmlString || "", { preserveNewlines: true }).replace(/\n{2,}/g, "\n");
 
-  useEffect(() => {
-    const currentTheme = getInitialTheme();
-    setIsDarkMode(currentTheme === "dark");
-  }, []);
-
-  const renderContent = (content: string) => {
-    return (
-      <ReactQuill
-        value={content}
-        readOnly={true}
-        modules={{
-          toolbar: false,
-        }}
-        theme="snow"
-      />
-    );
-  };
+  const fixedFirstContent = convertContentToText(firstContent);
+  const fixedCurrentContent = convertContentToText(currentContent);
 
   return (
-    <div>
+    <div style={{ height: "92vh", overflowY: "auto", overflowX: "auto" }}>
       <h3 style={{ paddingLeft: "16px" }}>변경사항</h3>
+      <p style={{ paddingLeft: "16px" }}>변경사항에는 텍스트 비교만 가능합니다</p>
       <DiffViewer
-        oldValue={firstContent || ""}
-        newValue={currentContent || ""}
+        oldValue={fixedFirstContent}
+        newValue={fixedCurrentContent}
         splitView={false}
-        useDarkTheme={isDarkMode}
+        useDarkTheme={false}
         compareMethod={DiffMethod.CHARS}
-        renderContent={renderContent}
         onLineNumberClick={(lineString) => {
           const parts = lineString.split("-");
           const lineNumber = parts.length > 1 ? Number(parts[1]) : NaN;
@@ -53,9 +35,17 @@ function ContentComparator({
             onDiffLineClick(lineNumber);
           }
         }}
+        styles={{
+          diffContainer: {
+            diffViewer: {
+              whiteSpace: "pre",
+              overflowWrap: "normal",
+              wordBreak: "keep-all",
+            },
+          },
+        }}
       />
     </div>
   );
 }
-
 export default ContentComparator;
