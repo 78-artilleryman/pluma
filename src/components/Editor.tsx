@@ -10,7 +10,7 @@ import { uploadPictureRequest } from "src/store/version/versionActions";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { selectImageUrl } from "src/store/version/versionSelectors";
-Quill.register("modules/ImageResize", ImageResize); // 이미지 리사이징 모듈 등록
+Quill.register("modules/ImageResize", ImageResize);
 
 interface IEditor {
   editorRef: React.RefObject<ReactQuill>;
@@ -32,7 +32,25 @@ const Editor: React.FC<IEditor> = ({
   const dispatch = useDispatch();
   const { documentId } = useParams();
   const imgUrl = useSelector(selectImageUrl);
-
+  useEffect(() => {
+    if (editorRef.current) {
+      const pdfButton = document.querySelector(".ql-pdf") as HTMLElement;
+      const uploadButton = document.querySelector(".ql-upload") as HTMLElement;
+      const handlePdfButtonClick = () => {
+        setIsPdfNameModalOpen(true);
+      };
+      if (pdfButton) {
+        pdfButton.addEventListener("click", handlePdfButtonClick);
+      }
+      if (uploadButton) {
+        uploadButton.addEventListener("click", handleImageUpload);
+      }
+      return () => {
+        pdfButton?.removeEventListener("click", handlePdfButtonClick);
+        uploadButton?.removeEventListener("click", handleImageUpload);
+      };
+    }
+  }, []);
   useEffect(() => {
     if (editorRef.current) {
       const compareButton = document.querySelector(".ql-compare") as HTMLElement;
@@ -52,9 +70,6 @@ const Editor: React.FC<IEditor> = ({
   const [isPdfNameModalOpen, setIsPdfNameModalOpen] = useState(false);
   const [pdfFileName, setPdfFileName] = useState("document");
   const pdfFileNameRef = useRef<HTMLInputElement>(null);
-  const handlePdfButtonClick = () => {
-    setIsPdfNameModalOpen(true);
-  };
 
   useEffect(() => {
     if (imgUrl !== null) {
@@ -69,6 +84,10 @@ const Editor: React.FC<IEditor> = ({
       }
     }
   }, [imgUrl]);
+
+  const handlePdfButtonClick = () => {
+    setIsPdfNameModalOpen(true);
+  };
 
   const handleSavePdfName = () => {
     if (pdfFileNameRef.current) {
@@ -96,15 +115,15 @@ const Editor: React.FC<IEditor> = ({
       }
     });
   };
+
   useEffect(() => {
     if (editorRef.current) {
       const quill = editorRef.current.getEditor();
       const toolbar = quill.getModule("toolbar");
-
       toolbar.addHandler("image", handleImageUpload);
-      toolbar.addHandler("pdf", handlePdfButtonClick); // 'pdf' 핸들러 추가
+      toolbar.addHandler("pdf", handlePdfButtonClick);
     }
-  }, [editorRef]);
+  }, [editorRef, handleImageUpload, handlePdfButtonClick]);
 
   useEffect(() => {
     if (editorRef.current && typeof selectedLineNumber === "number") {
@@ -168,7 +187,7 @@ const Editor: React.FC<IEditor> = ({
             [{ color: [] }, { background: [] }],
             [{ align: [] }],
             ["clean"],
-            ["compare"], // "비교하기" 레이블을 가진 버튼 정의
+            ["compare"],
             ["pdf"],
           ],
           clipboard: {

@@ -6,7 +6,7 @@ import { getInitialTheme } from "../../utils/theme";
 import logo from "../../assets/FlumaLogo.png";
 
 import styles from "./Auth.module.scss";
-import { selectAuth, selectIsAuthenticated } from "../../store/auth/authSelectors";
+import { selectAuth, selectAuthError, selectIsAuthenticated } from "../../store/auth/authSelectors";
 
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Login: React.FC = () => {
   const dispatch = useDispatch();
   const authState = useSelector(selectAuth);
+  const error = useSelector(selectAuthError);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -70,13 +71,11 @@ const Login: React.FC = () => {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
   }, []);
-
   useEffect(() => {
-    if (authState.error) {
-      alert(authState.error);
+    if (error.login) {
+      alert(error.login);
     }
-  }, [authState.error]);
-
+  }, [error.login]);
   return (
     <div className={styles.authContainer}>
       <Link to="/">

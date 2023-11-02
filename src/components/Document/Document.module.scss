@@ -7,7 +7,17 @@
   transition: width 0.3s;
   border-right: 2px solid #e0e0e0;
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.08);
+  img {
+    width: 200px;
+    height: auto;
+  }
+  .d2h-ins .d2h-code-line {
+    background-color: #e6ffed; /* Light green for added lines */
+  }
 
+  .d2h-del .d2h-code-line {
+    background-color: #ffeef0; /* Light red for deleted lines */
+  }
   &.visible {
     width: 500px;
   }

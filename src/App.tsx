@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getInitialTheme } from "./utils/theme";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -6,13 +6,21 @@ import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import Home from "./pages/Home/Home";
 import DocumentsList from "./pages/List/DocumentList";
-import { selectIsAuthenticated } from "./store/auth/authSelectors";
+import { selectUserInfo } from "./store/auth/authSelectors";
 import { checkTokenExpiration } from "./utils/tokenUtils";
 import "./App.module.scss";
 import DocumentDetailPage from "./pages/Detail/DocumentDetail";
 function App() {
   const initialTheme = getInitialTheme();
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const userInfo = useSelector(selectUserInfo);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    if (userInfo) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [userInfo]);
   const dispatch = useDispatch();
 
   const setInitialTheme = () => {

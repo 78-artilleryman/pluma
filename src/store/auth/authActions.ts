@@ -35,3 +35,21 @@ export const checkTokenExpirationFailure = createAction<string>("auth/checkToken
 export const refreshTokenRequest = createAction("auth/refreshTokenRequest");
 export const refreshTokenSuccess = createAction("auth/refreshTokenSuccess");
 export const refreshTokenFailure = createAction<string>("auth/refreshTokenFailure");
+
+//이메일 인증 관련 액션
+export const resetEmailAuthenticationRequest = createAction("auth/resetEmailAuthenticationRequest");
+
+export const emailAuthenticationRequest = createAction<{ email: string }>(
+  "auth/emailAuthenticationRequest"
+);
+export const emailAuthenticationSuccess = createAction("auth/emailAuthenticationSuccess");
+export const emailAuthenticationFailure = createAction<string>("auth/emailAuthenticationFailure");
+
+//이메일 인증 코드 확인 관련 액션
+export const checkEmailAuthenticationRequest = createAction<{ email: string; code: string }>(
+  "auth/checkEmailAuthenticationRequest"
+);
+export const checkEmailAuthenticationSuccess = createAction("auth/checkEmailAuthenticationSuccess");
+export const checkEmailAuthenticationFailure = createAction<string>(
+  "auth/checkEmailAuthenticationFailure"
+);

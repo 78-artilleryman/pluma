@@ -35,7 +35,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
   setSelectedVersionDate,
   setIsComparatorVisible,
 }) => {
-  const { documentId } = useParams();
+  const { documentId } = useParams<{ documentId: string }>();
   const dispatch = useDispatch();
   const versions = useSelector(selectVersionsList);
   const versionInfo = useSelector(selectSingleVersion);
@@ -56,7 +56,9 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
 
   const handleVersionClick = (version: any, event: React.MouseEvent) => {
     event.stopPropagation();
-    dispatch(loadDocumentVersionRequest(version.id));
+    if (version) {
+      dispatch(loadDocumentVersionRequest(version.id));
+    }
     setIsComparatorVisible(false);
   };
   useEffect(() => {
@@ -133,6 +135,9 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
 
   useEffect(() => {
     if (documentId) {
+      setSelectedVersionId(null);
+      setComparingVersionId(null);
+      setContent("");
       dispatch(loadDocumentVersionsRequest(documentId));
     }
   }, [documentId, dispatch]);
@@ -147,8 +152,38 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
       setComparatorContent(versionInfo.content);
       setSelectedVersionSubtitle(versionInfo.subtitle);
       setSelectedVersionDate(versionInfo.createdAt);
+    } else {
+      setSelectedVersionId(null);
+      setContent("");
+      setSelectedVersionSubtitle("");
+      setSelectedVersionDate("");
+      setComparatorContent("");
+      setComparingVersionId(null);
+      setSelectedVersionSubtitle("");
+      setSelectedVersionDate("");
     }
-  }, [versionInfo, setSelectedVersionSubtitle, setSelectedVersionDate]);
+  }, [
+    setComparatorContent,
+    setContent,
+    setSelectedVersionDate,
+    setSelectedVersionSubtitle,
+    versionInfo,
+    versions.length,
+  ]);
+  useEffect(() => {
+    // 버전 목록이 변경될 때마다 실행되며, 첫 번째 버전을 선택합니다.
+    if (versions.length > 0) {
+      const firstVersion = versions[0];
+      dispatch(loadDocumentVersionRequest(firstVersion.id));
+    } else {
+      // 버전이 없는 경우 초기화 작업을 수행할 수 있습니다.
+      setSelectedVersionId(null);
+      setContent("");
+      setSelectedVersionSubtitle("");
+      setSelectedVersionDate("");
+      setComparatorContent("");
+    }
+  }, [versions, dispatch]);
 
   useEffect(() => {
     if (compareVersionInfo) {
@@ -164,19 +199,14 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     setSelectedVersionDate,
   ]);
 
-  useEffect(() => {
-    if (selectedVersionId !== null) {
-      dispatch(loadDocumentVersionRequest(selectedVersionId));
-    }
-  }, [selectedVersionId, dispatch]);
-
   const handleModalOuterClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (event.target === event.currentTarget) {
       handleModalClose();
     }
   };
 
-  const handleDeleteVersionClick = (versionId: number) => {
+  const handleDeleteVersionClick = (versionId: number, event: React.MouseEvent) => {
+    event.stopPropagation();
     setVersionIdToDelete(versionId);
     setIsDeleteConfirmationModalOpen(true);
   };
@@ -190,9 +220,10 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
     }
     setIsDeleteConfirmationModalOpen(false);
     setVersionIdToDelete(null);
+    setIsComparatorVisible(false);
     setContent("");
   };
-  const gandleCloseModal = () => {
+  const handleCloseModal = () => {
     setIsDeleteConfirmationModalOpen(false);
     setVersionIdToDelete(null);
   };
@@ -225,13 +256,13 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             <span> {timeSince(version.createdAt)}</span>
             <div>
               <button onClick={(event) => handleVersionClick(version, event)}>이동</button>
-              <button onClick={() => handleDeleteVersionClick(version.id)}>삭제</button>
+              <button onClick={(event) => handleDeleteVersionClick(version.id, event)}>삭제</button>
             </div>
           </div>
         ))}
 
         {isDeleteConfirmationModalOpen && (
-          <CreateModal isOpen={isDeleteConfirmationModalOpen} onClose={gandleCloseModal}>
+          <CreateModal isOpen={isDeleteConfirmationModalOpen} onClose={handleCloseModal}>
             <h2>버전</h2>
             <p>정말로 이 버전을 삭제하시겠습니까?</p>
             <button
@@ -241,7 +272,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             >
               네, 삭제합니다
             </button>
-            <button className={styles.button} onClick={gandleCloseModal}>
+            <button className={styles.button} onClick={handleCloseModal}>
               아니오, 취소합니다
             </button>
           </CreateModal>

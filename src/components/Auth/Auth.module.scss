@@ -1,10 +1,52 @@
 @import "../../styles/common.scss";
+
 .authContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
+
+  .emailInputContainer {
+    position: relative;
+    width: 100%;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    border-radius: $common-border-radius;
+
+    input[type="email"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      height: 50px;
+    }
+
+    .verifyEmailButton {
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      transform: translateY(-50%);
+
+      padding: 5px;
+      width: 90px;
+      height: 40px;
+      background-color: #66b2ff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: $common-border-radius;
+
+      &:disabled {
+        background-color: grey;
+        cursor: not-allowed;
+      }
+
+      &:not(:disabled):hover {
+        background-color: darkblue;
+      }
+    }
+  }
 
   .logoContainer {
     padding-left: 16px;
@@ -23,23 +65,26 @@
       box-sizing: border-box;
       padding: 10px;
       height: 50px;
-      border: 1px solid #ccc;
+      border: none;
       border-radius: $common-border-radius;
-      transition: border-color 0.3s, box-shadow 0.3s; /* 추가: hover 및 focus 효과 스타일 */
+      transition: border-color 0.3s, box-shadow 0.3s;
 
       &:hover {
-        border-color: #007bff; /* 추가: hover 효과 스타일 */
+        border-color: #007bff;
       }
 
       &:focus {
-        border-color: #007bff; /* 추가: focus 효과 스타일 */
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 추가: focus 효과 스타일 */
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
     }
-    .passwordInputContainer {
-      position: relative; /* Position the container relative to its parent */
-    }
 
+    .passwordInputContainer {
+      position: relative;
+    }
+    input[type="text"],
+    input[type="name"],
+    input[type="number"],
     input[type="password"] {
       width: 100%;
       padding: 10px;
@@ -48,12 +93,13 @@
     }
 
     .passwordToggleIcon {
-      position: absolute; /* Position the icon absolutely inside the container */
-      top: 50%; /* Align vertically in the middle */
-      right: 10px; /* Position 10px from the right */
-      transform: translateY(-50%); /* Center vertically */
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
       cursor: pointer;
     }
+
     p {
       font-size: 20px;
     }
@@ -67,6 +113,7 @@
         text-decoration: underline;
       }
     }
+
     button {
       width: 100%;
       padding: $common-padding;
@@ -75,10 +122,10 @@
       cursor: pointer;
       color: #fff;
       border-radius: $common-border-radius;
-      transition: background-color 0.3s; /* 버튼 공통 스타일 */
+      transition: background-color 0.3s;
 
       &:hover {
-        /* 버튼 공통 스타일 */
+        background-color: #0056b3;
       }
 
       &.loginButton {
@@ -96,34 +143,88 @@
         &:hover {
           background-color: #1e7e34;
         }
+        &:disabled {
+          background-color: grey;
+          cursor: not-allowed;
+        }
       }
     }
   }
-}
-
-// 다크모드
-[data-theme="dark"] {
-  .authForm {
-    input {
-      background-color: #444444;
-      color: #ffffff;
-      border: 1px solid #666666;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-    &.loginButton {
-      background-color: #007bff;
+  .verificationCodeInputContainer {
+    animation: fadeIn 1s forwards;
 
-      &:hover {
-        background-color: #0056b3;
+    .verifyCodeButton {
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      transform: translateY(-50%);
+      padding: 5px;
+      width: 90px;
+      height: 40px;
+      background-color: #66b2ff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: $common-border-radius;
+
+      &:disabled {
+        background-color: grey;
+        cursor: not-allowed;
+      }
+
+      &:not(:disabled):hover {
+        background-color: darkblue;
       }
     }
+    // 기타 스타일링
+  }
+  // 다크모드
+  [data-theme="dark"] {
+    .authForm {
+      input {
+        background-color: #444444;
+        color: #ffffff;
+        border: 1px solid #666666;
+      }
 
-    &.registerButton {
-      background-color: #28a745;
-      color: #fff;
+      .verifyEmailButton {
+        background-color: blue;
 
-      &:hover {
-        background-color: #1e7e34;
+        &:disabled {
+          background-color: grey;
+        }
+
+        &:not(:disabled):hover {
+          background-color: darkblue;
+        }
+      }
+
+      &.loginButton {
+        background-color: #007bff;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+
+      &.registerButton {
+        background-color: #28a745;
+        color: #fff;
+
+        &:hover {
+          background-color: #1e7e34;
+        }
       }
     }
   }
