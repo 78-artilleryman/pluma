@@ -28,7 +28,7 @@ button {
   content: "PDF";
 }
 
-.Document_editorContainer__AfWOF {
+.Document_editorContainer {
   .ql-container.ql-snow {
     height: 87vh;
     overflow-y: auto;
@@ -51,7 +51,7 @@ button {
 }
 
 [data-theme="dark"] {
-  .Document_editorContainer__AfWOF {
+  .Document_editorContainer {
     .ql-toolbar.ql-snow {
       background-color: #333333; /* 툴바 배경색을 변경 */
       color: white; /* 툴바 아이콘 색상을 변경 */
