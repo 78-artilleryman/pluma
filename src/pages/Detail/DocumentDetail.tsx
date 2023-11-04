@@ -35,7 +35,6 @@ const DocumentDetailPage: React.FC = () => {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPdfModalOpen, setIsPdfModalOpen] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) {

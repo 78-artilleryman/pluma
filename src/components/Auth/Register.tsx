@@ -123,7 +123,7 @@ const Register: React.FC = () => {
     if (isAuthenticated) {
       navigate("/login");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
   }, []);
