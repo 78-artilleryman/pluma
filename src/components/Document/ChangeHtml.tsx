@@ -1,7 +1,8 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import ReactQuill from "react-quill";
+import axios from "axios";
 
 interface PdfModalProps {
   htmlString: string;
@@ -10,36 +11,50 @@ interface PdfModalProps {
 
 export const captureAndDownloadPdf = async (
   editorRef: React.RefObject<ReactQuill>,
-  fileName?: string
+  fileName: string = "document"
 ) => {
   if (editorRef.current) {
     const quillInstance = editorRef.current.getEditor();
     const editorElement = quillInstance.root;
 
-    // 1. [CSS 페이지 나누기 사용]
-    //  - CSS 클래스를 사용하여 각 섹션의 페이지 분할을 최적화합니다.
+    const images = editorElement.getElementsByTagName("img");
+    for (let img of Array.from(images)) {
+      try {
+        const response = await axios.get(img.src, { responseType: "blob" });
+        const blobUrl = URL.createObjectURL(response.data);
+        img.src = blobUrl;
+      } catch (error) {
+        console.error("Error fetching image", error);
+      }
+    }
+
     editorElement.classList.add("avoid-break");
 
-    const originalOverflowY = editorElement.style.overflowY;
-    const originalHeight = editorElement.style.height;
-    const originalBackgroundColor = editorElement.style.backgroundColor;
-    const originalColor = editorElement.style.color;
+    const originalStyles = {
+      overflowY: editorElement.style.overflowY,
+      height: editorElement.style.height,
+      backgroundColor: editorElement.style.backgroundColor,
+      color: editorElement.style.color,
+    };
 
-    editorElement.style.overflowY = "visible";
-    editorElement.style.height = "auto";
-    editorElement.style.backgroundColor = "white";
-    editorElement.style.color = "black";
+    Object.assign(editorElement.style, {
+      overflowY: "visible",
+      height: "auto",
+      backgroundColor: "white",
+      color: "black",
+    });
 
-    const canvas = await html2canvas(editorElement);
+    const canvas = await html2canvas(editorElement, {
+      useCORS: true,
+      logging: true,
+    });
 
     const imgWidth = 210;
     const initialPageHeight = 297;
     const subsequentPageHeight = 280;
     const margin = 10;
-    let topMargin = 30;
 
     const doc = new jsPDF({
-      orientation: "p",
       unit: "mm",
       format: "a4",
     });
@@ -49,7 +64,6 @@ export const captureAndDownloadPdf = async (
     let pageIndex = 0;
 
     while (remainingImgHeight > 0) {
-      // 2. [캡쳐 전 렌더링 최적화]
       const pageHeight = pageIndex === 0 ? initialPageHeight : subsequentPageHeight;
 
       const canvas1 = document.createElement("canvas");
@@ -68,14 +82,7 @@ export const captureAndDownloadPdf = async (
         (pageHeight * canvas.width) / imgWidth
       );
 
-      if (pageIndex === 0) {
-        topMargin = 5;
-      } else {
-        topMargin = 20;
-      }
-
-      // 3. [캔버스 렌더링 로직 최적화]
-      //  - 이미지의 크기와 위치를 정교하게 조절하여 페이지에서 텍스트가 잘리지 않도록 합니다.
+      const topMargin = pageIndex === 0 ? 5 : 20;
       const scaledHeight = (canvas1.height * (imgWidth - 2 * margin)) / canvas1.width;
       doc.addImage(
         canvas1.toDataURL("image/png"),
@@ -95,10 +102,7 @@ export const captureAndDownloadPdf = async (
       pageIndex++;
     }
 
-    editorElement.style.overflowY = originalOverflowY;
-    editorElement.style.height = originalHeight;
-    editorElement.style.backgroundColor = originalBackgroundColor;
-    editorElement.style.color = originalColor;
+    Object.assign(editorElement.style, originalStyles);
 
     doc.save(`${fileName}.pdf`);
   }
@@ -108,30 +112,10 @@ const ChangeHtml: React.FC<PdfModalProps> = ({ htmlString, editorRef }) => {
   const handleClick = () => {
     captureAndDownloadPdf(editorRef);
   };
-  // const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
-
-  // const closeModal = () => {
-  //   setIsPdfModalOpen(false);
-  // };
-
-  // const pdfClick = () => {
-  //   if (isPdfModalOpen) {
-  //     setIsPdfModalOpen(false);
-  //   }
-  //   setIsPdfModalOpen(true);
-  // };
 
   return (
     <div>
       <button onClick={handleClick}>PDF 생성1</button>
-      {/* {isPdfModalOpen && (
-        <div className={styles.container}>
-          <div>
-            <button onClick={captureAndDownloadPdf}>생성하기</button>
-            <button onClick={closeModal}>취소</button>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };
