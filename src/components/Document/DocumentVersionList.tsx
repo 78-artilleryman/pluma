@@ -252,7 +252,7 @@ const DocumentVersionList: React.FC<VersionListProps> = ({
             `}
             onClick={() => handleVersionItemClick(version)}
           >
-            <span style={{ width: "40%" }}> {version.subtitle}</span>
+            <span style={{ width: "30%" }}> {version.subtitle}</span>
             <span> {timeSince(version.createdAt)}</span>
             <div>
               <button onClick={(event) => handleVersionClick(version, event)}>이동</button>
