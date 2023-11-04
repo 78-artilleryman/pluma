@@ -1,5 +1,4 @@
 import React, { FC, ReactNode } from "react";
-import { Link } from "react-router-dom";
 import style from "./Modal.module.scss";
 
 interface CreateModalProps {
