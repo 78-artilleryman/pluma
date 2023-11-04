@@ -20,7 +20,9 @@ export interface VersionDetailInfo {
   // 다른 필요한 속성 추가 가능
 }
 
-export interface SendPicture {
+
+export interface SendPicture{
   documentId: string | undefined;
   imageFile: object;
 }
+

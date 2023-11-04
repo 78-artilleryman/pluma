@@ -7,4 +7,6 @@ export const selectAddedVersion = (state: RootState) => state.version.latestAdde
 export const selectCompareVersion = (state: RootState) => state.version.compareVersion;
 export const selectVersionLoading = (state: RootState) => state.version.loading;
 export const selectVersionError = (state: RootState) => state.version.error;
-export const selectImageUrl = (state: RootState) => state.version.imgUrl;
+export const selectImageUrl = (state: RootState) => state.version.imageUrl;
+
+

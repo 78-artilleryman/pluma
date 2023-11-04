@@ -10,7 +10,10 @@ import { formatDate } from "../../utils/dateUtils";
 import Modal from "../../utils/Modal";
 import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
-import { selectSingleVersion } from "../../store/version/versionSelectors";
+
+import { selectImageUrl, selectSingleVersion } from "../../store/version/versionSelectors";
+
+
 
 import ContentComparator from "src/utils/ContentComparator";
 import Layout from "src/components/Layout/Layout";
@@ -21,6 +24,12 @@ const DocumentDetailPage: React.FC = () => {
   const dispatch = useDispatch();
   const detailDocument = useSelector(selectSingleDocument);
   const detailVersion = useSelector(selectSingleVersion);
+  const test = useSelector(selectImageUrl);
+  useEffect(()=>{
+    if(test){
+      console.log(test)
+    }
+  },[test])
   const [content, setContent] = useState<string | null>(detailVersion?.content || null);
   const [comparatorContent, setComparatorContent] = useState<string | null>(null);
 

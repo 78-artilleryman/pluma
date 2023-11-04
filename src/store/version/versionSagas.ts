@@ -13,12 +13,14 @@ import {
   deleteDocumentVersionSuccess,
   deleteDocumentVersionFailure,
   deleteDocumentVersionRequest,
+
   loadCompareDocumentVersionRequest,
   loadCompareDocumentVersionSuccess,
   loadCompareDocumentVersionFailure,
   uploadPictureSuccess,
   uploadPictureFailure,
   uploadPictureRequest,
+
 } from "./versionActions";
 import axios, { AxiosResponse } from "axios";
 import { getTokenFromCookie } from "../../utils/tokenUtils";
@@ -160,8 +162,10 @@ function* loadCompareDocumentVersion(action: LoadDocumentVersionAction) {
   }
 }
 
+
+
 //사진 저장
-function* postPicture(action: any) {
+function* postPicture(action: any){
   const { documentId, imageFile } = action.payload;
   try {
     // 쿠키에서 accessToken 가져오기
@@ -170,7 +174,7 @@ function* postPicture(action: any) {
       const response: AxiosResponse<any> = yield call(() =>
         axios.post(
           `/upload/${documentId}`,
-          { multipartFile: imageFile },
+          {multipartFile: imageFile},
           {
             headers: {
               "Content-Type": "multipart/form-data",
@@ -181,11 +185,14 @@ function* postPicture(action: any) {
       );
 
       if (response.status === 200) {
-        console.log(response.data);
+        // console.log(response.data)
         yield put(uploadPictureSuccess(response.data));
-      } else if (response.status === 401) {
+   
+      }
+      else if (response.status === 401) {
         yield put(loadDocumentVersionFailure("토큰이 만료되었습니다. 다시 로그인해주세요."));
-      } else {
+       }
+      else {
         yield put(uploadPictureFailure("사진 업로드가 실행되지 않았습니다."));
       }
     }

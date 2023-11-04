@@ -54,6 +54,7 @@ export const captureAndDownloadPdf = async (
     const subsequentPageHeight = 280;
     const margin = 10;
 
+
     const doc = new jsPDF({
       unit: "mm",
       format: "a4",
