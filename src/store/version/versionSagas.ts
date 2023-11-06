@@ -168,7 +168,6 @@ function* loadCompareDocumentVersion(action: LoadDocumentVersionAction) {
 function* postPicture(action: any){
   const { documentId, imageFile } = action.payload;
   try {
-    // 쿠키에서 accessToken 가져오기
     const access_token = getTokenFromCookie("access_token");
     if (access_token) {
       const response: AxiosResponse<any> = yield call(() =>

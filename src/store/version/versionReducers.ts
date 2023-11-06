@@ -7,7 +7,6 @@ interface VersionState {
   compareVersion: VersionDetailInfo | null;
   latestAddedVersion: VersionDetailInfo | null;
   loading: boolean;
-  imageUrl: string | null;
   error: string | null;
   imgUrl: any | null;
 }
@@ -18,13 +17,9 @@ const initialState: VersionState = {
   compareVersion: null,
   latestAddedVersion: null,
   loading: false,
-  imageUrl: null,
   error: null,
   imgUrl: null,
 };
-
-
-
 
 const versionReducer = createSlice({
   name: "version",
@@ -111,7 +106,6 @@ const versionReducer = createSlice({
     uploadPictureSuccess: (state, action: PayloadAction<any>) => {
       state.loading = false;
       state.imgUrl = action.payload;
-
     },
     uploadPictureFailure: (state, action: PayloadAction<any>) => {
       state.loading = false;
