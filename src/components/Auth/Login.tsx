@@ -6,14 +6,13 @@ import { getInitialTheme } from "../../utils/theme";
 import logo from "../../assets/FlumaLogo.png";
 
 import styles from "./Auth.module.scss";
-import { selectAuth, selectAuthError, selectIsAuthenticated } from "../../store/auth/authSelectors";
+import { selectAuthError, selectIsAuthenticated } from "../../store/auth/authSelectors";
 
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
-  const authState = useSelector(selectAuth);
   const error = useSelector(selectAuthError);
   const navigate = useNavigate();
 
@@ -31,7 +30,7 @@ const Login: React.FC = () => {
     if (isAuthenticated) {
       navigate("/document");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

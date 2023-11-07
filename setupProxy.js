@@ -30,4 +30,11 @@ module.exports = function (app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    "/s3-images",
+    createProxyMiddleware({
+      target: "https://dowonbucket.s3.ap-northeast-2.amazonaws.com",
+      changeOrigin: true,
+    })
+  );
 };

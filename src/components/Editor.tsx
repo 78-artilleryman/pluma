@@ -164,7 +164,7 @@ const Editor: React.FC<IEditor> = ({
   };
 
   return (
-    <div>
+    <div className="Document_editorContainer">
       <ReactQuill
         theme="snow"
         ref={editorRef}
