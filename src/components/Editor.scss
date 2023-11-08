@@ -11,10 +11,8 @@
   justify-content: center;
   align-items: center;
 }
-.ql-container{
-  width: 210mm;
+.ql-container {
   margin: auto;
-
 }
 .ql-compare.ql-active {
   color: #007bff; // 예: #333333
@@ -29,11 +27,8 @@ button {
     content: "비교"; // 버튼의 텍스트
   }
 }
-
 .ql-toolbar .ql-pdf::before {
   content: "PDF";
-
-
 }
 .ql-upload::before {
   content: "사진"; // 버튼의 텍스트

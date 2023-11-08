@@ -11,25 +11,19 @@ import Modal from "../../utils/Modal";
 import { selectIsAuthenticated } from "../../store/auth/authSelectors";
 import DocumentVersionList from "../../components/Document/DocumentVersionList";
 
-import { selectImageUrl, selectSingleVersion } from "../../store/version/versionSelectors";
-
-
+import { selectSingleVersion } from "../../store/version/versionSelectors";
 
 import ContentComparator from "src/utils/ContentComparator";
 import Layout from "src/components/Layout/Layout";
 import ReactQuill from "react-quill";
+import { checkTokenExpiration } from "src/utils/tokenUtils";
 
 const DocumentDetailPage: React.FC = () => {
   const { documentId } = useParams();
   const dispatch = useDispatch();
   const detailDocument = useSelector(selectSingleDocument);
   const detailVersion = useSelector(selectSingleVersion);
-  const test = useSelector(selectImageUrl);
-  useEffect(()=>{
-    if(test){
-      console.log(test)
-    }
-  },[test])
+
   const [content, setContent] = useState<string | null>(detailVersion?.content || null);
   const [comparatorContent, setComparatorContent] = useState<string | null>(null);
 
@@ -46,12 +40,15 @@ const DocumentDetailPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(false);
-    }
-  }, [isAuthenticated]);
+    const checkAuthAndShowModal = () => {
+      const isTokenValid = checkTokenExpiration(dispatch);
+      if (!isTokenValid && !isAuthenticated) {
+        setIsModalOpen(true);
+      }
+    };
+
+    checkAuthAndShowModal();
+  }, [isAuthenticated, dispatch]);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -85,6 +82,12 @@ const DocumentDetailPage: React.FC = () => {
         >
           해당 문서를 찾을 수 없습니다.
         </div>
+        {isModalOpen && (
+          <Modal isOpen={isModalOpen} onClose={closeModal}>
+            <h2>로그인이 필요합니다</h2>
+            <p>문서를 보려면 먼저 로그인하세요.</p>
+          </Modal>
+        )}
       </Layout>
     );
   }
