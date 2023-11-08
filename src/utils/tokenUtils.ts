@@ -29,32 +29,34 @@ export function getTokenFromCookie(name: string): string | null {
 export function clearTokenFromCookie(name: string) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
-// 토큰 만료 시간을 검사하는 함수
-export function checkTokenExpiration(dispatch: any) {
-  const access_token = getTokenFromCookie("access_token");
-  const refresh_token = getTokenFromCookie("refresh_token");
 
-  if (access_token) {
-    // access_token이 있는 경우, 만료 시간 확인 로직 추가
-    const access_token_expiration = getTokenExpiration(access_token);
-
-    if (access_token_expiration && access_token_expiration < new Date()) {
-      // access_token이 만료된 경우, 재발급 요청 등의 처리를 수행
+export function checkTokenExpiration(dispatch: any): boolean {
+  const currentDateTime = new Date();
+  // Access token 유효성 검사
+  const accessToken = getTokenFromCookie("access_token");
+  if (accessToken) {
+    const accessTokenExpiration = getTokenExpiration(accessToken);
+    if (accessTokenExpiration && accessTokenExpiration > currentDateTime) {
+      return true; // Access token이 유효하면 true 반환
+    } else {
       dispatch(refreshTokenRequest());
-      console.log("access토큰 재발급");
+      console.log("액세스 토큰 재발급 필요");
+      // Access token이 유효하지 않은 경우, refreshToken 유효성 검사는 아래에서 수행됨
     }
   }
-
-  if (refresh_token) {
-    // refresh_token이 있는 경우, 만료 시간 확인 로직 추가
-    const refresh_token_expiration = getTokenExpiration(refresh_token);
-
-    if (refresh_token_expiration && refresh_token_expiration < new Date()) {
-      // refresh_token이 만료된 경우, 로그아웃 등의 처리를 수행
+  // Refresh token 유효성 검사
+  const refreshToken = getTokenFromCookie("refresh_token");
+  if (refreshToken) {
+    const refreshTokenExpiration = getTokenExpiration(refreshToken);
+    if (refreshTokenExpiration && refreshTokenExpiration > currentDateTime) {
+      // 여기서는 refreshTokenRequest가 액세스 토큰을 갱신한다고 가정
+      return true; // Refresh token이 유효하면 true 반환
+    } else {
       console.log("재로그인 필요");
       dispatch(logoutRequest());
     }
   }
+  return false; // 모든 토큰이 유효하지 않으면 false 반환
 }
 
 // 토큰의 만료 시간을 가져오는 함수
