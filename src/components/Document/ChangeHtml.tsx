@@ -43,6 +43,7 @@ export const captureAndDownloadPdf = async (
     const canvas = await html2canvas(editorElement, {
       useCORS: true,
       logging: true,
+      scale: 2, // 2배 확대 (해상도 증가)
     });
 
     const imgWidth = 210;
