@@ -16,7 +16,7 @@ const ThemeToggle: React.FC = () => {
   }, [currentTheme]);
 
   const handleToggleTheme = () => {
-    toggleTheme();
+    toggleTheme(setCurrentTheme);
     setCurrentTheme(getInitialTheme());
   };
 

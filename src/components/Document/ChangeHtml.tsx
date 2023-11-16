@@ -47,13 +47,13 @@ export const captureAndDownloadPdf = async (
     const canvas = await html2canvas(editorElement, {
       useCORS: true,
       logging: true,
+      scale: 2, // 2배 확대 (해상도 증가)
     });
 
     const imgWidth = 210;
     const initialPageHeight = 297;
     const subsequentPageHeight = 280;
     const margin = 10;
-
 
     const doc = new jsPDF({
       unit: "mm",
