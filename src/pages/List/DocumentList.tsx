@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsAuthenticated, selectUserInfo } from "../../store/auth/authSelectors";
-import { deleteDocumentRequest, loadDocumentsRequest, documentTitleImageRequest } from "../../store/document/documentActions";
+import { deleteDocumentRequest, loadDocumentsRequest } from "../../store/document/documentActions";
 import {
   selectDocumentsList,
   selectDocumentLoading,
@@ -15,12 +15,12 @@ import styles from "../../components/Document/Document.module.scss";
 import Layout from "../../components/Layout/Layout";
 import AddDocument from "../../components/Document/AddDocumentItem";
 import CreateModal from "src/utils/CreateModal";
-import { NovitaSDK } from "novita-sdk";
+import { generateImageRequest } from "src/store/image/imageActions";
 
 const DocumentList: React.FC = () => {
   const dispatch = useDispatch();
   const documents = useSelector(selectDocumentsList);
-  const singleDocument = useSelector(selectSingleDocument)
+  const singleDocument = useSelector(selectSingleDocument);
   const loading = useSelector(selectDocumentLoading);
   const error = useSelector(selectDocumentError);
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -28,17 +28,17 @@ const DocumentList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false);
   const [params, setParams] = useState({
-      model_name: "dreamshaper_8_93211.safetensors",
-      prompt: "",
-      negative_prompt: "BadDream, FastNegativeV2",
-      width: 512,
-      height: 512,
-      sampler_name: "DPM++ 2M Karras",
-      cfg_scale: 8.5,
-      steps: 40,
-      batch_size: 1,
-      n_iter: 1,
-      seed: -1,
+    model_name: "dreamshaper_8_93211.safetensors",
+    prompt: "",
+    negative_prompt: "BadDream, FastNegativeV2",
+    width: 512,
+    height: 512,
+    sampler_name: "DPM++ 2M Karras",
+    cfg_scale: 8.5,
+    steps: 40,
+    batch_size: 1,
+    n_iter: 1,
+    seed: -1,
   });
   const [isTitleImageModalOpen, setIsTitleImageModalOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
@@ -71,7 +71,6 @@ const DocumentList: React.FC = () => {
     };
   }, []);
 
-
   useEffect(() => {
     const handleEscapeKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -90,7 +89,6 @@ const DocumentList: React.FC = () => {
     };
   }, []);
 
-
   useEffect(() => {
     console.log("Document Updated: ", documents);
   }, [documents]);
@@ -103,7 +101,6 @@ const DocumentList: React.FC = () => {
     setDocumentToDelete(String(documentId));
     setDeleteConfirmModalOpen(true);
   };
-
 
   const confirmDeleteDocument = () => {
     if (documentToDelete !== null) {
@@ -120,69 +117,23 @@ const DocumentList: React.FC = () => {
     setDocumentToDelete(null);
   };
 
-
-// AI 이미지
-  const onTitleImageDocument = () =>{
-    setIsTitleImageModalOpen(true)
-  }
-  const onChangePrompt = (event: ChangeEvent<HTMLInputElement>) =>{
+  // AI 이미지
+  const onTitleImageDocument = () => {
+    setIsTitleImageModalOpen(true);
+  };
+  const onChangePrompt = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setParams((prevParams) => ({
-      
       ...prevParams,
       prompt: value,
     }));
-    console.log(params)
-  }
-  const confirmTitleImageDocument = () => {
-    try {
-      const novitaClient = new NovitaSDK("f4af0d1e-afab-47df-a195-99a36656ad18")
- 
-     
-        // API 호출을 실행하고 응답을 가져옵니다.
-        novitaClient.txt2Img(params)
-        .then((res) => {
-          if (res && res.task_id) {
-            const timer = setInterval(() => {
-              novitaClient.progress({
-                task_id: res.task_id,
-              })
-                .then((progressRes) => {
-                  if (progressRes.status === 2) {
-                    console.log("finished!", progressRes.imgs);
-                    clearInterval(timer);
-
-                  }
-                  if (progressRes.status === 3 || progressRes.status === 4) {
-                    console.warn("failed!", progressRes.failed_reason);
-                    clearInterval(timer);
-                  }
-                  if (progressRes.status === 1) {
-                    console.log("progress", progressRes.current_images);
-                  }
-                })
-                .catch((err) => {
-                  console.error("progress error:", err);
-                })
-            }, 1000);
-          }
-        })
-        .catch((err) => {
-          console.error("txt2Img error:", err);
-        })
-              
-    
-    } catch (error) {
-    
-    }
-    
-      dispatch(documentTitleImageRequest(params))
-
-      
-  
-  
-  }
-
+    console.log(params);
+  };
+  // 이미지 생성 액션 디스패치
+  const onGenerateImage = () => {
+    dispatch(generateImageRequest(params));
+    setIsTitleImageModalOpen(false);
+  };
   return (
     <Layout>
       <h2 style={{ textAlign: "center", fontWeight: "600" }}>문서 목록</h2>
@@ -232,32 +183,31 @@ const DocumentList: React.FC = () => {
         </CreateModal>
       )}
 
-      {isTitleImageModalOpen &&(
-           <CreateModal isOpen={isTitleImageModalOpen} onClose={() => setIsTitleImageModalOpen(false)}>
-             <div>
-              <div>
-                <h2>이미지 묘사</h2>
-                <input 
-                type="text" 
-                placeholder='원하는 의상이나 동작, 배경을 입력해보세요.' 
-                style={{ width: '400px' , height: '150px'}}
+      {isTitleImageModalOpen && (
+        <CreateModal isOpen={isTitleImageModalOpen} onClose={() => setIsTitleImageModalOpen(false)}>
+          <div>
+            <div>
+              <h2>이미지 묘사</h2>
+              <input
+                type="text"
+                placeholder="원하는 의상이나 동작, 배경을 입력해보세요."
+                style={{ width: "400px", height: "150px" }}
                 onChange={onChangePrompt}
-                />
-              </div>
-              <button
-                className={styles.button}
-                style={{ marginRight: "10px" }}
-                onClick={confirmTitleImageDocument}
-              >
-                이미지생성
-              </button>
-              <button className={styles.button} onClick={() => setIsTitleImageModalOpen(false)}>
-                취소
-              </button>
+              />
             </div>
-           
-         </CreateModal>
-        )}
+            <button
+              className={styles.button}
+              style={{ marginRight: "10px" }}
+              onClick={onGenerateImage}
+            >
+              이미지 생성
+            </button>
+            <button className={styles.button} onClick={() => setIsTitleImageModalOpen(false)}>
+              취소
+            </button>
+          </div>
+        </CreateModal>
+      )}
     </Layout>
   );
 };

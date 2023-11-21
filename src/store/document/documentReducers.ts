@@ -75,7 +75,6 @@ const documentReducer = createSlice({
       state.error = action.payload;
     },
     documentTitleImageRequest: (state) => {
-    
       state.error = null;
     },
     documentTitleImageSuccess: (state, action: PayloadAction<string>) => {
@@ -87,7 +86,6 @@ const documentReducer = createSlice({
       state.error = action.payload;
     },
   },
-  
 });
 
 export default documentReducer.reducer;
