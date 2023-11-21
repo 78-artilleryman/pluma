@@ -22,6 +22,7 @@
     "html2canvas": "^1.4.1",
     "http-proxy-middleware": "^2.0.6",
     "jspdf": "^2.5.1",
+    "novita-sdk": "^1.0.21",
     "quill-image-resize-module-ts": "^3.0.3",
     "react": "^16.14.0",
     "react-diff-viewer": "^3.1.1",

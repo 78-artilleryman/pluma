@@ -16,8 +16,13 @@ import {
   deleteDocumentRequest,
   deleteDocumentSuccess,
   deleteDocumentFailure,
+  documentTitleImageRequest,
+  documentTitleImageSuccess,
+  documentTitleImageFailure
 } from "./documentActions";
 import { DocumentInfo } from "./types";
+import { NovitaSDK } from "novita-sdk";
+import { get } from "http";
 
 // 글 리스트 로딩
 function* loadDocuments(action: any) {
@@ -164,13 +169,66 @@ function* deleteDocument(action: PayloadAction<{ documentId: string; userId: str
       yield put(deleteDocumentFailure("문서 삭제에 실패했습니다."));
     }
   }
-}
+  }
+  function* documentTitleImage(action: any) {
+    const params = action.payload;
+    console.log(params)
+    try {
+      const access_token = getTokenFromCookie("access_token");
+
+      if (access_token) {
+        // API 호출을 실행하고 응답을 가져옵니다.
+        const response: AxiosResponse<any> = yield call(() =>
+        axios.post(
+          `https://api.novita.ai/v2/txt2img`,
+          {params},
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${"f4af0d1e-afab-47df-a195-99a36656ad18"}`,
+            },
+          }
+        )
+        );
+        if (response.status === 200) {
+          console.log("finished!", response.data.data.task_id);
+          const task_id = response.data.data.task_id;
+          console.log(task_id)
+          const response2: AxiosResponse<any> = yield call(() =>
+          axios.get(`http://api.novita.ai/v2/progress?task_id=${task_id}`, {
+            headers: {
+              "Authorization": `Bearer ${"f4af0d1e-afab-47df-a195-99a36656ad18"}`,
+            },
+          })
+        );
+
+          if (response2.status === 200) {
+            console.log(response2.data)
+          }
+          yield put(documentTitleImageSuccess(action.payload.documentId));
+        } else if (response.data.error === "토큰 기한 만료") {
+          // 토큰이 만료되었다면 로그아웃을 실행합니다.
+          yield put(documentTitleImageFailure("토큰이 만료되었습니다."));
+          yield put(logoutRequest());
+        } else {
+          yield put(documentTitleImageFailure("이미지 생성 실패"));
+        }
+      } 
+     
+       
+    
+    } catch (error) {
+    
+    }}
+
+
 
 function* documentSaga() {
   yield takeLatest(loadDocumentsRequest.type, loadDocuments);
   yield takeLatest(loadDocumentRequest.type, loadDocument);
   yield takeLatest(addDocumentRequest.type, addDocument);
   yield takeLatest(deleteDocumentRequest.type, deleteDocument);
+  yield takeLatest(documentTitleImageRequest.type, documentTitleImage);
 }
 
 export default documentSaga;

@@ -1,6 +1,6 @@
 // store/document/documentActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { DocumentInfo, DocumentDetailInfo, AddDocument } from "./types";
+import { DocumentInfo, DocumentDetailInfo, AddDocument, TitleImage } from "./types";
 
 // 문서 리스트 로딩
 export const loadDocumentsRequest = createAction<string | null>("document/loadDocumentsRequest");
@@ -28,3 +28,8 @@ export const deleteDocumentRequest = createAction<{
 }>("document/deleteDocumentRequest");
 export const deleteDocumentSuccess = createAction<string>("document/deleteDocumentSuccess");
 export const deleteDocumentFailure = createAction<string>("document/deleteDocumentFailure");
+
+// 문서 이미지 생성
+export const documentTitleImageRequest = createAction<TitleImage>("document/documentTitleImageRequest");
+export const documentTitleImageSuccess = createAction<string>("document/documentTitleImageSuccess");
+export const documentTitleImageFailure = createAction<string>("document/documentTitleImageFailure");
