@@ -1,23 +1,15 @@
-// ThemeToggle.js
-
-import React, { useState, useEffect } from "react";
-import { getInitialTheme, toggleTheme } from "../../utils/theme";
-import styles from "./ThemeToggle.module.scss"; // 테마 토글 스위치 컴포넌트의 스타일 파일을 불러옵니다.
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTheme } from "../../store/theme/themeReducers";
+import { getTheme } from "../../store/theme/themeSelectors";
+import styles from "./ThemeToggle.module.scss";
 
 const ThemeToggle: React.FC = () => {
-  const [currentTheme, setCurrentTheme] = useState(getInitialTheme());
-
-  useEffect(() => {
-    setCurrentTheme(getInitialTheme());
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", currentTheme);
-  }, [currentTheme]);
+  const dispatch = useDispatch();
+  const currentTheme = useSelector(getTheme); // 현재 테마 상태를 가져옵니다.
 
   const handleToggleTheme = () => {
-    toggleTheme();
-    setCurrentTheme(getInitialTheme());
+    dispatch(toggleTheme()); // 테마 토글 액션을 디스패치합니다.
   };
 
   return (
