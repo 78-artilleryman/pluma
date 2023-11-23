@@ -6,7 +6,22 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  p {
+    margin-top: 20px;
+    text-align: left;
+    font-size: 20px;
+    width: 400px;
+  }
 
+  a {
+    color: #007bff;
+    text-decoration: underline;
+
+    &:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+  }
   .emailInputContainer {
     position: relative;
     width: 100%;
@@ -150,6 +165,7 @@
       }
     }
   }
+
   @keyframes fadeIn {
     from {
       opacity: 0;

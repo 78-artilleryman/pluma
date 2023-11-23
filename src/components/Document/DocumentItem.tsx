@@ -6,14 +6,18 @@ import { timeSince } from "src/utils/TimeSince";
 import { DocumentInfo } from "../../store/document/types";
 import { getInitialTheme } from "../../utils/theme";
 import styles from "./Document.module.scss";
+import CreateModal from "src/utils/CreateModal";
 
 interface DocumentProps {
   documentData: DocumentInfo;
   onDeleteDocument: (documentId: number) => void;
+  onTitleImageDocument: ()=> void;
 }
 
-const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument }) => {
+const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument, onTitleImageDocument }) => {
   const [timeAgo, setTimeAgo] = useState("");
+
+ 
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", getInitialTheme());
@@ -34,6 +38,11 @@ const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument 
     event.preventDefault();
     onDeleteDocument(documentData.documentId);
   };
+
+  const handleTitleImageClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    onTitleImageDocument();
+  };
   return (
     <Link to={`/document/${documentData.documentId}`} className={styles.documentLink}>
       <div className={styles.documentCard}>
@@ -51,8 +60,12 @@ const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument 
             <button onClick={handleDeleteClick} className={styles.menuItem}>
               Delete
             </button>
+            <button onClick={handleTitleImageClick} className={styles.menuItem}>
+              TitleImage
+            </button>
           </div>
         )}
+     
       </div>
     </Link>
   );
