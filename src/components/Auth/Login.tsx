@@ -10,6 +10,7 @@ import { selectAuthError, selectIsAuthenticated } from "../../store/auth/authSel
 
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SocialLoginButtons from "./SocialLogin";
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -75,6 +76,7 @@ const Login: React.FC = () => {
       alert(error.login);
     }
   }, [error.login]);
+
   return (
     <div className={styles.authContainer}>
       <Link to="/">
@@ -127,10 +129,11 @@ const Login: React.FC = () => {
         <button type="submit" className={styles.loginButton}>
           로그인
         </button>
-        <p>
-          Fluma 회원이 아닌가요? <Link to="/register">지금 가입하세요</Link>
-        </p>
       </form>
+      <SocialLoginButtons />
+      <p>
+        Fluma 회원이 아닌가요? <Link to="/register">지금 가입하세요</Link>
+      </p>
     </div>
   );
 };

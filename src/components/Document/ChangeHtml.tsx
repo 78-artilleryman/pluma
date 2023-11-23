@@ -30,15 +30,19 @@ export const captureAndDownloadPdf = async (
 
     editorElement.classList.add("avoid-break");
 
-    const originalOverflowY = editorElement.style.overflowY;
-    const originalHeight = editorElement.style.height;
-    const originalBackgroundColor = editorElement.style.backgroundColor;
-    const originalColor = editorElement.style.color;
+    const originalStyles = {
+      overflowY: editorElement.style.overflowY,
+      height: editorElement.style.height,
+      backgroundColor: editorElement.style.backgroundColor,
+      color: editorElement.style.color,
+    };
 
-    editorElement.style.overflowY = "visible";
-    editorElement.style.height = "auto";
-    editorElement.style.backgroundColor = "white";
-    editorElement.style.color = "black";
+    Object.assign(editorElement.style, {
+      overflowY: "visible",
+      height: "auto",
+      backgroundColor: "white",
+      color: "black",
+    });
 
     const canvas = await html2canvas(editorElement, {
       useCORS: true,
@@ -79,14 +83,7 @@ export const captureAndDownloadPdf = async (
         (pageHeight * canvas.width) / imgWidth
       );
 
-      if (pageIndex === 0) {
-        topMargin = 5;
-      } else {
-        topMargin = 20;
-      }
-
-      // 3. [캔버스 렌더링 로직 최적화]
-      //  - 이미지의 크기와 위치를 정교하게 조절하여 페이지에서 텍스트가 잘리지 않도록 합니다.
+      const topMargin = pageIndex === 0 ? 5 : 20;
       const scaledHeight = (canvas1.height * (imgWidth - 2 * margin)) / canvas1.width;
       doc.addImage(
         canvas1.toDataURL("image/png"),
@@ -120,15 +117,6 @@ const ChangeHtml: React.FC<PdfModalProps> = ({ htmlString, editorRef }) => {
   return (
     <div>
       <button onClick={handleClick}>PDF 생성1</button>
-      {/* {isPdfModalOpen && (
-        <div className={styles.container}>
-          <div>
-            <button onClick={captureAndDownloadPdf}>생성하기</button>
-            <button onClick={closeModal}>취소</button>
-          </div>
->>>>>>> 5e8a9790e54778881274a459b5d7a8c6600346a0
-        </div>
-      )} */}
     </div>
   );
 };
