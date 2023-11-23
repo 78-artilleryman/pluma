@@ -1,19 +1,25 @@
 import React from "react";
 import DiffViewer, { DiffMethod } from "react-diff-viewer";
 import { htmlToText } from "html-to-text";
+import { useSelector } from "react-redux";
+import { getTheme } from "src/store/theme/themeSelectors";
 
 interface VersionComparatorProps {
   firstContent: string | null;
   currentContent: string | null;
   onDiffLineClick: (lineNumber: number) => void;
 }
+
 function ContentComparator({
   firstContent,
   currentContent,
   onDiffLineClick,
 }: VersionComparatorProps): React.JSX.Element {
-  const convertContentToText = (htmlString: string | null) =>
-    htmlToText(htmlString || "", { preserveNewlines: true }).replace(/\n{2,}/g, "\n");
+  const theme = useSelector(getTheme);
+
+  const convertContentToText = (htmlString: string | null) => {
+    return htmlToText(htmlString || "", { preserveNewlines: true }).replace(/\n{2,}/g, "\n");
+  };
 
   const fixedFirstContent = convertContentToText(firstContent);
   const fixedCurrentContent = convertContentToText(currentContent);
@@ -26,7 +32,7 @@ function ContentComparator({
         oldValue={fixedFirstContent}
         newValue={fixedCurrentContent}
         splitView={false}
-        useDarkTheme={false}
+        useDarkTheme={theme === "dark"}
         compareMethod={DiffMethod.CHARS}
         onLineNumberClick={(lineString) => {
           const parts = lineString.split("-");

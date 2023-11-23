@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getInitialTheme } from "./utils/theme";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Login from "./components/Auth/Login";
@@ -7,42 +6,51 @@ import Register from "./components/Auth/Register";
 import Home from "./pages/Home/Home";
 import DocumentsList from "./pages/List/DocumentList";
 import { selectUserInfo } from "./store/auth/authSelectors";
-import { checkTokenExpiration, getTokenFromCookie } from "./utils/tokenUtils";
+import { checkTokenExpiration } from "./utils/tokenUtils";
 import "./App.module.scss";
 import DocumentDetailPage from "./pages/Detail/DocumentDetail";
+import { getTheme } from "./store/theme/themeSelectors";
+import { setTheme } from "./store/theme/themeReducers";
 
 interface InnerAppProps {
   isAuthenticated: boolean;
 }
 
 function App() {
-  const initialTheme = getInitialTheme();
   const userInfo = useSelector(selectUserInfo);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const dispatch = useDispatch();
+  const currentTheme = useSelector(getTheme);
   useEffect(() => {
     setIsAuthenticated(!!userInfo);
   }, [userInfo]);
 
-  const dispatch = useDispatch();
-
-  const setInitialTheme = () => {
-    document.documentElement.setAttribute("data-theme", initialTheme);
-  };
+  useEffect(() => {
+    // localStorage에서 테마를 가져옵니다.
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      dispatch(setTheme(storedTheme));
+    } else {
+      dispatch(setTheme(currentTheme));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
-    // 새로고침 시 토큰 유효성 확인 및 인증 상태 복원
-    const restoreAuthState = async () => {
-      const access_token = getTokenFromCookie("access_token");
-      if (access_token) {
-        const isAccessTokenValid = checkTokenExpiration(dispatch);
-        setIsAuthenticated(isAccessTokenValid);
-      }
-    };
+    // 현재 테마 상태를 `data-theme` 속성에 반영합니다.
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    // localStorage에도 저장합니다.
+    localStorage.setItem("theme", currentTheme);
+  }, [currentTheme]);
 
-    restoreAuthState();
-    setInitialTheme();
-  }, [initialTheme, dispatch]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      const tokenCheckInterval = setInterval(() => {
+        checkTokenExpiration(dispatch);
+      }, 60000);
+
+      return () => clearInterval(tokenCheckInterval);
+    }
+  }, [isAuthenticated, dispatch]);
 
   const handleTokenExpirationCheck = () => {
     if (isAuthenticated) {
