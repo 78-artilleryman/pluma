@@ -11,10 +11,11 @@ import CreateModal from "src/utils/CreateModal";
 interface DocumentProps {
   documentData: DocumentInfo;
   onDeleteDocument: (documentId: number) => void;
-  onTitleImageDocument: ()=> void;
+  onTitleImageDocument: (documentId: number)=> void;
+  titleImage: string | undefined;
 }
 
-const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument, onTitleImageDocument }) => {
+const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument, onTitleImageDocument, titleImage }) => {
   const [timeAgo, setTimeAgo] = useState("");
 
  
@@ -37,15 +38,21 @@ const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument,
   const handleDeleteClick = (event: React.MouseEvent) => {
     event.preventDefault();
     onDeleteDocument(documentData.documentId);
+    setIsMenuOpen(false);
   };
 
   const handleTitleImageClick = (event: React.MouseEvent) => {
     event.preventDefault();
-    onTitleImageDocument();
+    onTitleImageDocument(documentData.documentId);
+    setIsMenuOpen(false);
+
   };
   return (
     <Link to={`/document/${documentData.documentId}`} className={styles.documentLink}>
       <div className={styles.documentCard}>
+        <div className={styles.titleImageBox}>
+          <img src={titleImage} className={styles.titleIamge} alt="" />
+        </div>
         {/* <p>{documentData.documentId}</p> */}
         <h3 className={styles.documentTitle}>{documentData.title}</h3>
         {/* <p>작성자: {documentData.username}</p> */}

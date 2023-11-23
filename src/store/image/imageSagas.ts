@@ -1,6 +1,15 @@
 import { put, takeLatest, call, delay } from "redux-saga/effects";
 import axios, { AxiosResponse } from "axios";
-import { generateImageRequest, generateImageSuccess, generateImageFailure } from "./imageActions";
+import { 
+  generateImageRequest, 
+  generateImageSuccess, 
+  generateImageFailure,
+  saveImageRequest,
+  saveImageSuccess,
+  saveImageFailure,
+  imageReset
+} from "./imageActions";
+import { getTokenFromCookie } from "../../utils/tokenUtils";
 
 const API_KEY = "f4af0d1e-afab-47df-a195-99a36656ad18";
 
@@ -8,6 +17,14 @@ const api = axios.create({
   baseURL: "https://api.novita.ai",
   headers: {
     Authorization: `Bearer ${API_KEY}`,
+    "Content-Type": "application/json",
+  },
+});
+
+const saveImageApi = axios.create({
+  baseURL: "https://",
+  headers: {
+    Authorization: `Bearer `,
     "Content-Type": "application/json",
   },
 });
@@ -52,7 +69,7 @@ function* checkImageStatus(taskId: string, n_iter: number) {
         return;
       } else {
         retryCount++;
-        yield delay(5000); // 5초 대기 후 재시도
+        yield delay(10000); // 10초 대기 후 재시도
       }
     }
 
@@ -63,6 +80,35 @@ function* checkImageStatus(taskId: string, n_iter: number) {
     yield put(generateImageFailure("이미지 생성에 실패했습니다."));
   }
 }
+
+// 이미지 저장
+function* saveImage(action: any){
+  const { documentId, imageURL } = action.payload;
+  try {
+    const access_token = getTokenFromCookie("access_token");
+    if (access_token) {
+      const response: AxiosResponse<any> = yield call(() =>
+       saveImageApi.post(``)
+      );
+
+      if (response.status === 200) {
+        // console.log(response.data)
+        yield put(saveImageSuccess(response.data));
+   
+      }
+      else if (response.data.error === "토큰 기한 만료") {
+        yield put(saveImageFailure("토큰이 만료되었습니다."));
+      }
+      else {
+        yield put(saveImageFailure("사진 업로드가 실행되지 않았습니다."));
+      }
+    }
+  } catch (error) {
+    console.error("사진 업로드가 실행되지 않았습니다.", error);
+    yield put(saveImageFailure("사진 업로드가 실행되지 않았습니다."));
+  }
+}
+
 
 function* imageSagas() {
   yield takeLatest(generateImageRequest.type, generateImage);
