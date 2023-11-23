@@ -1,9 +1,8 @@
-/* buttonStyles.scss */
-
+// 일반 모드 기본 버튼 스타일
 .button {
   text-decoration: none;
   padding: 12px 16px;
-  background-color: #007bff;
+  background-color: #007bff; // 기본 파란색
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -11,36 +10,36 @@
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; // 호버 시 파란색
   }
 }
+
+// 일반 모드 위험(빨간색) 버튼 스타일
 .dangerBtn {
-  text-decoration: none;
-  padding: 12px 16px;
-  background-color: #ff0000; /* 빨간색 배경색 */
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  @extend .button; // 기본 버튼 스타일 확장
+  background-color: #dc3545; // 위험 버튼 빨간색
 
   &:hover {
-    background-color: #cc0000; /* 빨간색 버튼에 호버 시 밝은 빨간색으로 변경 */
+    background-color: #bd2130; // 위험 버튼 호버 빨간색
   }
 }
+
+// 다크 모드 스타일
 [data-theme="dark"] {
   .button {
-    background-color: #444444;
+    background-color: #666; // 다크 모드 기본 버튼 색
     color: #fff;
 
     &:hover {
-      background-color: #222222;
+      background-color: #555; // 다크 모드 호버 버튼 색
     }
   }
+
   .dangerBtn {
-    background-color: #990000; /* 다크 모드에서 빨간색 버튼 배경색 변경 */
+    background-color: #dc3545; // 다크 모드 위험 버튼 색
+
     &:hover {
-      background-color: #770000; /* 다크 모드에서 호버 시 밝은 빨간색으로 변경 */
+      background-color: #bd2130; // 다크 모드 위험 버튼 호버 색
     }
   }
 }
