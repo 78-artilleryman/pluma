@@ -25,6 +25,9 @@ import {
   checkEmailAuthenticationRequest,
   checkEmailAuthenticationSuccess,
   checkEmailAuthenticationFailure,
+  kakaoLoginFailure,
+  kakaoLoginSuccess,
+  kakaoLoginRequest,
 } from "./authActions";
 import { Dispatch } from "redux";
 
@@ -190,7 +193,7 @@ function* login(action: any) {
 
       // access_token과 refresh_token을 쿠키에 저장
       setTokenToCookie("access_token", access_token, 60);
-      // axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       setTokenToCookie("refresh_token", refresh_token, 296);
 
       // 로그인 성공 액션 디스패치
@@ -208,7 +211,7 @@ function* logout(action: any) {
   try {
     // 쿠키에서 토큰 삭제
     clearTokenFromCookie("access_token");
-    // delete axios.defaults.headers.common["ACCESS_TOKEN"];
+    delete axios.defaults.headers.common["ACCESS_TOKEN"];
     clearTokenFromCookie("refresh_token");
     clearTokenFromCookie("user");
 
@@ -242,6 +245,27 @@ function* register(action: any) {
     yield put(registerFailure("회원가입에 실패했습니다."));
   }
 }
+// 카카오 로그인 사가
+function* kakaoLogin(action: any) {
+  try {
+    console.log(action);
+    // 카카오 토큰 API 호출
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get(
+        `/oauth/kakao?grant_type=authorization_code&client_id=${process.env.REACT_APP_KAKAO_REST_KEY}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URL}&client_secret=${process.env.REACT_APP_KAKAO_SECRET_KEY}&code=${action.payload}`
+      )
+    );
+    if (response.status === 200) {
+      // 로그인 성공 처리
+      console.log(response.data);
+      yield put(kakaoLoginSuccess(response.data));
+    } else {
+      yield put(kakaoLoginFailure("카카오 로그인 실패"));
+    }
+  } catch (error) {
+    yield put(kakaoLoginFailure("카카오 로그인 실패"));
+  }
+}
 
 function* authSaga() {
   yield takeLatest(fetchUserInfoRequest.type, fetchUserInfo);
@@ -252,6 +276,7 @@ function* authSaga() {
   yield takeLatest(loginRequest.type, login);
   yield takeLatest(logoutRequest.type, logout);
   yield takeLatest(registerRequest.type, register);
+  yield takeLatest(kakaoLoginRequest.type, kakaoLogin);
 }
 
 export default authSaga;

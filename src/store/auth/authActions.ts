@@ -53,3 +53,8 @@ export const checkEmailAuthenticationSuccess = createAction("auth/checkEmailAuth
 export const checkEmailAuthenticationFailure = createAction<string>(
   "auth/checkEmailAuthenticationFailure"
 );
+
+// 카카오 로그인 관련 액션
+export const kakaoLoginRequest = createAction<string>("auth/kakaoLoginRequest");
+export const kakaoLoginSuccess = createAction<{ userData: any }>("auth/kakaoLoginSuccess");
+export const kakaoLoginFailure = createAction<string>("auth/kakaoLoginFailure");
