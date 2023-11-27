@@ -251,9 +251,7 @@ function* kakaoLogin(action: any) {
     console.log(action);
     // 카카오 토큰 API 호출
     const response: AxiosResponse<any> = yield call(() =>
-      axios.get(
-        `/oauth/kakao?grant_type=authorization_code&client_id=${process.env.REACT_APP_KAKAO_REST_KEY}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URL}&client_secret=${process.env.REACT_APP_KAKAO_SECRET_KEY}&code=${action.payload}`
-      )
+      axios.get(`/oauth/kakao?code=${action.payload}`)
     );
     if (response.status === 200) {
       // 로그인 성공 처리
