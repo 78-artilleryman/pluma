@@ -11,3 +11,8 @@ export interface TitleImage {
   n_iter: number;
   seed: number;
 }
+
+export interface SaveImage{
+  documentId: number | null;
+  imageURL: string | null;
+}

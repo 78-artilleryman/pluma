@@ -11,6 +11,7 @@ import "./App.module.scss";
 import DocumentDetailPage from "./pages/Detail/DocumentDetail";
 import { getTheme } from "./store/theme/themeSelectors";
 import { setTheme } from "./store/theme/themeReducers";
+import KakaoRedirectHandler from "./components/Auth/KakaoRedirectHandler";
 
 interface InnerAppProps {
   isAuthenticated: boolean;
@@ -77,7 +78,8 @@ function InnerApp({ isAuthenticated }: InnerAppProps) {
 
   useEffect(() => {
     const currentPath = location.pathname;
-    const isAuthPage = currentPath === "/login" || currentPath === "/register";
+    const isAuthPage =
+      currentPath === "/login" || currentPath === "/register" || currentPath === "/oauth/kakao";
     const isPublicPage = currentPath === "/" || isAuthPage;
     const isDocumentDetailPage = currentPath.startsWith("/document/");
 
@@ -93,6 +95,7 @@ function InnerApp({ isAuthenticated }: InnerAppProps) {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/oauth/kakao" element={<KakaoRedirectHandler />} />
         <Route path="/register" element={<Register />} />
         <Route path="/document" element={<DocumentsList />} />
         <Route path="/document/:documentId" element={<DocumentDetailPage />} />

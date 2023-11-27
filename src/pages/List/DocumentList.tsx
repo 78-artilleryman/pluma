@@ -15,7 +15,8 @@ import styles from "../../components/Document/Document.module.scss";
 import Layout from "../../components/Layout/Layout";
 import AddDocument from "../../components/Document/AddDocumentItem";
 import CreateModal from "src/utils/CreateModal";
-import { generateImageRequest } from "src/store/image/imageActions";
+import { generateImageRequest, saveImageRequest } from "src/store/image/imageActions";
+import { selectImage, selectImageLoading } from "src/store/image/imageSelectors";
 
 const DocumentList: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,12 +38,14 @@ const DocumentList: React.FC = () => {
     cfg_scale: 8.5,
     steps: 40,
     batch_size: 1,
-    n_iter: 1,
+    n_iter: 3,
     seed: -1,
   });
   const [isTitleImageModalOpen, setIsTitleImageModalOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
+  const [titleImageDocumentId, setTitleImageDocumentId] = useState<number | null>(null);
   const userInfo = useSelector(selectUserInfo);
+  const aiImage = useSelector(selectImage);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -59,6 +62,7 @@ const DocumentList: React.FC = () => {
         // ESC 키를 눌렀을 때 실행할 동작들
         setIsModalOpen(false);
         setDeleteConfirmModalOpen(false);
+        // dispatch(imageReset());
       }
     };
 
@@ -118,7 +122,8 @@ const DocumentList: React.FC = () => {
   };
 
   // AI 이미지
-  const onTitleImageDocument = () => {
+  const onTitleImageDocument = (documentId: number) => {
+    setTitleImageDocumentId(documentId);
     setIsTitleImageModalOpen(true);
   };
   const onChangePrompt = (event: ChangeEvent<HTMLInputElement>) => {
@@ -127,13 +132,23 @@ const DocumentList: React.FC = () => {
       ...prevParams,
       prompt: value,
     }));
-    console.log(params);
   };
   // 이미지 생성 액션 디스패치
   const onGenerateImage = () => {
     dispatch(generateImageRequest(params));
-    setIsTitleImageModalOpen(false);
   };
+
+  // 이미지 저장 액션 디스패치
+  const onSaveImage = (src: null | string) => {
+    console.log(titleImageDocumentId, src);
+    dispatch(saveImageRequest({ documentId: titleImageDocumentId, imageURL: src }));
+  };
+
+  const modalImageReset = () => {
+    setIsTitleImageModalOpen(false);
+    // dispatch(imageReset());
+  };
+
   return (
     <Layout>
       <h2 style={{ textAlign: "center", fontWeight: "600" }}>문서 목록</h2>
@@ -194,15 +209,42 @@ const DocumentList: React.FC = () => {
                 style={{ width: "400px", height: "150px" }}
                 onChange={onChangePrompt}
               />
+              {aiImage?.imageLoadData && aiImage.imageLoadData.length === 3 && (
+                <div>
+                  {aiImage.imageLoadData.map(
+                    (src, index) =>
+                      src !== null &&
+                      src !== undefined && (
+                        <img
+                          key={index}
+                          className={styles.aiImage}
+                          src={src}
+                          alt=""
+                          onClick={() => onSaveImage(src)}
+                        />
+                      )
+                  )}
+                </div>
+              )}
             </div>
-            <button
-              className={styles.button}
-              style={{ marginRight: "10px" }}
-              onClick={onGenerateImage}
-            >
-              이미지 생성
-            </button>
-            <button className={styles.button} onClick={() => setIsTitleImageModalOpen(false)}>
+            {aiImage && aiImage.imageLoadData ? (
+              <button
+                className={styles.button}
+                style={{ marginRight: "10px" }}
+                onClick={onGenerateImage}
+              >
+                다시 만들기
+              </button>
+            ) : (
+              <button
+                className={styles.button}
+                style={{ marginRight: "10px" }}
+                onClick={onGenerateImage}
+              >
+                이미지 생성
+              </button>
+            )}
+            <button className={styles.button} onClick={modalImageReset}>
               취소
             </button>
           </div>
