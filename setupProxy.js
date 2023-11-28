@@ -14,6 +14,7 @@ module.exports = function (app) {
     createProxyMiddleware({
       target: "http://localhost:8080", // API 서버 주소
       changeOrigin: true,
+      withCredentials: false, // 쿠키 비활성화
     })
   );
   app.use(
@@ -25,6 +26,13 @@ module.exports = function (app) {
   );
   app.use(
     "/auth",
+    createProxyMiddleware({
+      target: "http://localhost:8080",
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    "/oauth/kakao",
     createProxyMiddleware({
       target: "http://localhost:8080",
       changeOrigin: true,

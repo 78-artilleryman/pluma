@@ -26,7 +26,7 @@ interface AuthState {
   emailVerified: boolean;
 }
 
-const userFromCookie = getTokenFromCookie("user");
+const userFromCookie = localStorage.getItem("user");
 const initialUser = userFromCookie ? JSON.parse(userFromCookie) : null;
 
 const initialState: AuthState = {
