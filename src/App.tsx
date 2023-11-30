@@ -11,6 +11,7 @@ import "./App.module.scss";
 import DocumentDetailPage from "./pages/Detail/DocumentDetail";
 import { getTheme } from "./store/theme/themeSelectors";
 import { setTheme } from "./store/theme/themeReducers";
+import GoogleRedirectHandler from "./components/Auth/GoogleRedirectHandler";
 import KakaoRedirectHandler from "./components/Auth/KakaoRedirectHandler";
 
 interface InnerAppProps {
@@ -81,7 +82,7 @@ function InnerApp({ isAuthenticated }: InnerAppProps) {
     const isAuthPage =
       currentPath === "/login" || currentPath === "/register" || currentPath === "/oauth/kakao";
     const isPublicPage = currentPath === "/" || isAuthPage;
-    const isDocumentDetailPage = currentPath.startsWith("/document/");
+    const isDocumentDetailPage = currentPath.startsWith("/document");
 
     if (!isAuthenticated && !isPublicPage && !isDocumentDetailPage) {
       navigate("/login");
@@ -96,6 +97,7 @@ function InnerApp({ isAuthenticated }: InnerAppProps) {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/oauth/kakao" element={<KakaoRedirectHandler />} />
+        <Route path="/oauth/google" element={<GoogleRedirectHandler />} />
         <Route path="/register" element={<Register />} />
         <Route path="/document" element={<DocumentsList />} />
         <Route path="/document/:documentId" element={<DocumentDetailPage />} />

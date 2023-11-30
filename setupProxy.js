@@ -32,7 +32,7 @@ module.exports = function (app) {
     })
   );
   app.use(
-    "/oauth/kakao",
+    "/oauth",
     createProxyMiddleware({
       target: "http://localhost:8080",
       changeOrigin: true,

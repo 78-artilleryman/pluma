@@ -28,6 +28,9 @@ import {
   kakaoLoginFailure,
   kakaoLoginSuccess,
   kakaoLoginRequest,
+  googleLoginRequest,
+  googleLoginSuccess,
+  googleLoginFailure,
 } from "./authActions";
 import { Dispatch } from "redux";
 
@@ -268,6 +271,28 @@ function* kakaoLogin(action: any) {
     yield put(kakaoLoginFailure("카카오 로그인 실패"));
   }
 }
+// 구글 로그인 사가
+function* googleLogin(action: any) {
+  try {
+    console.log(action); // 카카오 토큰 API 호출
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get(`/oauth/google?code=${action.payload}`)
+    );
+    if (response.status === 200) {
+      // 로그인 성공 처리
+      console.log(response.data);
+      setTokenToCookie("access_token", response.data.accessToken, 60);
+      setTokenToCookie("refresh_token", response.data.refreshToken, 296);
+      yield put(googleLoginSuccess(response.data));
+      yield put(fetchUserInfoRequest());
+    } else {
+      yield put(googleLoginFailure("구글 로그인 실패"));
+    }
+  } catch (error) {
+    console.log(error);
+    yield put(googleLoginFailure("구글 로그인 실패"));
+  }
+}
 
 function* authSaga() {
   yield takeLatest(fetchUserInfoRequest.type, fetchUserInfo);
@@ -279,6 +304,7 @@ function* authSaga() {
   yield takeLatest(logoutRequest.type, logout);
   yield takeLatest(registerRequest.type, register);
   yield takeLatest(kakaoLoginRequest.type, kakaoLogin);
+  yield takeLatest(googleLoginRequest.type, googleLogin);
 }
 
 export default authSaga;

@@ -58,3 +58,8 @@ export const checkEmailAuthenticationFailure = createAction<string>(
 export const kakaoLoginRequest = createAction<string>("auth/kakaoLoginRequest");
 export const kakaoLoginSuccess = createAction<{ userData: any }>("auth/kakaoLoginSuccess");
 export const kakaoLoginFailure = createAction<string>("auth/kakaoLoginFailure");
+
+// 구글 로그인 관련 액션
+export const googleLoginRequest = createAction<string>("auth/googleLoginRequest");
+export const googleLoginSuccess = createAction<{ userData: any }>("auth/googleLoginSuccess");
+export const googleLoginFailure = createAction<string>("auth/googleLoginFailure");
