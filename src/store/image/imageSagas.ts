@@ -11,7 +11,8 @@ import {
 } from "./imageActions";
 import { getTokenFromCookie } from "../../utils/tokenUtils";
 
-const API_KEY = "f4af0d1e-afab-47df-a195-99a36656ad18";
+
+const API_KEY = "";
 
 const api = axios.create({
   baseURL: "https://api.novita.ai",
@@ -21,13 +22,6 @@ const api = axios.create({
   },
 });
 
-const saveImageApi = axios.create({
-  baseURL: "https://",
-  headers: {
-    Authorization: `Bearer `,
-    "Content-Type": "application/json",
-  },
-});
 
 // 이미지 생성 요청
 function* generateImage(action: ReturnType<typeof generateImageRequest>) {
@@ -88,9 +82,18 @@ function* saveImage(action: any){
     const access_token = getTokenFromCookie("access_token");
     if (access_token) {
       const response: AxiosResponse<any> = yield call(() =>
-       saveImageApi.post(``)
+      axios.post(
+        `/documents/drawing/${documentId}`,
+        {filePath: imageURL},
+        {
+          headers: {
+            "Content-Type":  "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
       );
-
+      
       if (response.status === 200) {
         // console.log(response.data)
         yield put(saveImageSuccess(response.data));
@@ -112,6 +115,7 @@ function* saveImage(action: any){
 
 function* imageSagas() {
   yield takeLatest(generateImageRequest.type, generateImage);
+  yield takeLatest(saveImageRequest.type,saveImage)
 }
 
 export default imageSagas;

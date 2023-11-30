@@ -79,7 +79,7 @@ function InnerApp({ isAuthenticated }: InnerAppProps) {
     const currentPath = location.pathname;
     const isAuthPage = currentPath === "/login" || currentPath === "/register";
     const isPublicPage = currentPath === "/" || isAuthPage;
-    const isDocumentDetailPage = currentPath.startsWith("/document/");
+    const isDocumentDetailPage = currentPath.startsWith("/document");
 
     if (!isAuthenticated && !isPublicPage && !isDocumentDetailPage) {
       navigate("/login");

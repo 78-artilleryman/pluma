@@ -17,6 +17,8 @@ import AddDocument from "../../components/Document/AddDocumentItem";
 import CreateModal from "src/utils/CreateModal";
 import { generateImageRequest, saveImageRequest ,imageReset} from "src/store/image/imageActions";
 import {selectImage, selectImageLoading} from "src/store/image/imageSelectors"
+import { RingLoader } from "react-spinners";
+
 
 const DocumentList: React.FC = () => {
   const dispatch = useDispatch();
@@ -26,8 +28,10 @@ const DocumentList: React.FC = () => {
   const error = useSelector(selectDocumentError);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false);
+  const [forceRender, setForceRender] = useState(false); // 다시 렌더링을 강제로 일으키기 위한 상태 변수
   const [params, setParams] = useState({
     model_name: "dreamshaper_8_93211.safetensors",
     prompt: "",
@@ -44,7 +48,8 @@ const DocumentList: React.FC = () => {
   const [isTitleImageModalOpen, setIsTitleImageModalOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
   const [titleImageDocumentId,setTitleImageDocumentId] = useState<number | null>(null);
-  const [titleImage, setTitleImage] = useState<string | undefined>("");
+  const [imageBoxOpen, setImageBoxOpen] = useState(false);
+ 
   const userInfo = useSelector(selectUserInfo);
   const aiImage = useSelector(selectImage);
 
@@ -62,11 +67,13 @@ const DocumentList: React.FC = () => {
     const handleEscapeKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         // ESC 키를 눌렀을 때 실행할 동작들
+        setImageBoxOpen(false)
         setIsModalOpen(false);
         setDeleteConfirmModalOpen(false);
         dispatch(imageReset());
       }
     };
+  
 
     // ESC 키 이벤트 리스너를 등록합니다.
     document.addEventListener("keydown", handleEscapeKeyPress);
@@ -97,7 +104,8 @@ const DocumentList: React.FC = () => {
 
   useEffect(() => {
     console.log("Document Updated: ", documents);
-  }, [documents]);
+  }, [documents, forceRender]);
+  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -138,20 +146,41 @@ const DocumentList: React.FC = () => {
   // 이미지 생성 액션 디스패치
   const onGenerateImage = () => {
     dispatch(generateImageRequest(params));
+    setImageBoxOpen(true);
   };
 
   // 이미지 저장 액션 디스패치
   const onSaveImage = (src: undefined | string) => {
     console.log(titleImageDocumentId, src)
-    setTitleImage(src);
     dispatch(saveImageRequest({documentId: titleImageDocumentId, imageURL: src}))
     setIsTitleImageModalOpen(false);
+    
   };
 
   const modalImageReset = () => {
+    setImageBoxOpen(false)
     setIsTitleImageModalOpen(false)
     dispatch(imageReset());
   }
+
+  //모달에 나온 이미지 클릭시 페이지 리-렌더링
+  const imageClickPageReset = (src: string) => {
+    setImageBoxOpen(false)
+    setIsTitleImageModalOpen(false)
+    onSaveImage(src)
+      // Toggle the forceRender state to trigger a re-render after the delay
+      const delayDuration = 1500;
+      setForceRender((prevForceRender) => !prevForceRender);
+
+      setTimeout(() => {
+        // Toggle the forceRender state to trigger a re-render after the delay
+       
+        window.location.reload();
+      }, delayDuration);
+      
+     
+  }
+
   
   return (
     <Layout>
@@ -172,7 +201,6 @@ const DocumentList: React.FC = () => {
               documentData={document}
               onDeleteDocument={onDeleteDocument}
               onTitleImageDocument={onTitleImageDocument}
-              titleImage={titleImage}
             />
           ))}
           <AddDocument />
@@ -213,22 +241,33 @@ const DocumentList: React.FC = () => {
                 className={styles.prompt}
                 onChange={onChangePrompt}
               />
-             {aiImage?.imageLoadData && aiImage.imageLoadData.length === 3 && (
+            {imageBoxOpen && (
               <div>
-                {aiImage.imageLoadData.map((src, index) => (
-                  src !== null && src !== undefined && (
+                {aiImage?.imageLoadData ? (
+                  <div>
+                     {aiImage.imageLoadData.map((src, index) => (
+                      src !== null && src !== undefined && (
                     <img
                       key={index}
                       className={styles.aiImage}
                       src={src}
                       alt=""
-                      onClick={() => onSaveImage(src)}
+                      onClick={() => imageClickPageReset(src)}
                     />
-                  )
+                  ) 
                 ))}
+                  </div>
+                ) : (
+                    <div className={styles.placeholderContent}>
+                      <p>AI가 그림을 생성하고 있습니다. 잠시만 기다려주세요.</p>
+                      <div className={styles.spinner}>
+                        <RingLoader color="#6c9bff"></RingLoader>
+                      </div>
+                    </div>
+                )}
+               
               </div>
-              )}    
-
+            )}
             </div>
             {aiImage && aiImage.imageLoadData  ? (
               <button

@@ -42,7 +42,9 @@
     width: 160px;
     height: 160px;
     margin: 15px 0 0 -5px;
+    background-color: #f3f3f3;
   }
+
   .titleIamge{
     width: 100%;
     border-radius: 5px;
@@ -112,6 +114,11 @@
 .aiImage:last-of-type{
   margin-right: 0;
 }
+
+.spinner{
+  width: 100px;
+  margin: 0 0 50px 310px;
+}
 /* DocumentDetailPage.scss */
 
 .container {
@@ -146,6 +153,9 @@
     background-color: #444444;
     border: 1px solid #444444;
     color: white;
+  }
+  .titleImageBox{
+    background-color: #7b7b7b;
   }
   .documentDescription {
     color: white;
