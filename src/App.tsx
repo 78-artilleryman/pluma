@@ -13,6 +13,7 @@ import { getTheme } from "./store/theme/themeSelectors";
 import { setTheme } from "./store/theme/themeReducers";
 import GoogleRedirectHandler from "./components/Auth/GoogleRedirectHandler";
 import KakaoRedirectHandler from "./components/Auth/KakaoRedirectHandler";
+import NaverRedirectHandler from "./components/Auth/NaverRedirectHandler";
 
 interface InnerAppProps {
   isAuthenticated: boolean;
@@ -80,7 +81,7 @@ function InnerApp({ isAuthenticated }: InnerAppProps) {
   useEffect(() => {
     const currentPath = location.pathname;
     const isAuthPage =
-      currentPath === "/login" || currentPath === "/register" || currentPath === "/oauth/kakao";
+      currentPath === "/login" || currentPath === "/register" || currentPath.startsWith("/oauth/");
     const isPublicPage = currentPath === "/" || isAuthPage;
     const isDocumentDetailPage = currentPath.startsWith("/document");
 
@@ -98,6 +99,7 @@ function InnerApp({ isAuthenticated }: InnerAppProps) {
         <Route path="/login" element={<Login />} />
         <Route path="/oauth/kakao" element={<KakaoRedirectHandler />} />
         <Route path="/oauth/google" element={<GoogleRedirectHandler />} />
+        <Route path="/oauth/naver" element={<NaverRedirectHandler />} />
         <Route path="/register" element={<Register />} />
         <Route path="/document" element={<DocumentsList />} />
         <Route path="/document/:documentId" element={<DocumentDetailPage />} />

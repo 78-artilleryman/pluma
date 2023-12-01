@@ -29,7 +29,7 @@ const KakaoRedirectHandler: React.FC = () => {
         height: "100vh", // 화면 전체 높이를 차지하도록 설정합니다.
       }}
     >
-      <h2 style={{ margin: "1rem" }}>카카오 로그인 시도 중</h2>
+      <h2 style={{ margin: "2rem" }}>카카오 로그인 시도 중</h2>
       <ClimbingBoxLoader size={30} color={theme === "dark" ? "#ffffff" : "#000000"} />
     </div>
   );

@@ -63,3 +63,7 @@ export const kakaoLoginFailure = createAction<string>("auth/kakaoLoginFailure");
 export const googleLoginRequest = createAction<string>("auth/googleLoginRequest");
 export const googleLoginSuccess = createAction<{ userData: any }>("auth/googleLoginSuccess");
 export const googleLoginFailure = createAction<string>("auth/googleLoginFailure");
+// 네이버 로그인 관련 액션
+export const naverLoginRequest = createAction<string>("auth/naverLoginRequest");
+export const naverLoginSuccess = createAction<{ userData: any }>("auth/naverLoginSuccess");
+export const naverLoginFailure = createAction<string>("auth/naverLoginFailure");
