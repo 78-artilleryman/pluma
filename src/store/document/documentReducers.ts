@@ -74,6 +74,17 @@ const documentReducer = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    documentTitleImageRequest: (state) => {
+      state.error = null;
+    },
+    documentTitleImageSuccess: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    documentTitleImageFailure: (state, action: PayloadAction<string>) => {
+      state.loading = true;
+      state.error = action.payload;
+    },
   },
 });
 

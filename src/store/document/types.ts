@@ -4,6 +4,7 @@ export interface DocumentInfo {
   username: string;
   regDate: string;
   modDate: string;
+  fileName: string | null
 }
 export interface DocumentDetailInfo {
   documentId: number;

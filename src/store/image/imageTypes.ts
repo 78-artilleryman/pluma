@@ -14,5 +14,5 @@ export interface TitleImage {
 
 export interface SaveImage{
   documentId: number | null;
-  imageURL: string | null;
+  imageURL: string | undefined;
 }

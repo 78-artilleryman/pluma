@@ -1,15 +1,17 @@
 import { put, takeLatest, call, delay } from "redux-saga/effects";
 import axios, { AxiosResponse } from "axios";
-import {
-  generateImageRequest,
-  generateImageSuccess,
+import { 
+  generateImageRequest, 
+  generateImageSuccess, 
   generateImageFailure,
   saveImageRequest,
   saveImageSuccess,
   saveImageFailure,
-  // imageReset,
+  imageReset
 } from "./imageActions";
 import { getTokenFromCookie } from "../../utils/tokenUtils";
+
+
 
 const api = axios.create({
   baseURL: "https://api.novita.ai",
@@ -19,13 +21,6 @@ const api = axios.create({
   },
 });
 
-const saveImageApi = axios.create({
-  baseURL: "https://",
-  headers: {
-    Authorization: `Bearer `,
-    "Content-Type": "application/json",
-  },
-});
 
 // 이미지 생성 요청
 function* generateImage(action: ReturnType<typeof generateImageRequest>) {
@@ -80,18 +75,34 @@ function* checkImageStatus(taskId: string, n_iter: number) {
 }
 
 // 이미지 저장
-function* saveImage(action: any) {
+function* saveImage(action: any){
+
   const { documentId, imageURL } = action.payload;
   try {
     const access_token = getTokenFromCookie("access_token");
     if (access_token) {
-      const response: AxiosResponse<any> = yield call(() => saveImageApi.post(``));
-
+      const response: AxiosResponse<any> = yield call(() =>
+      axios.post(
+        `/documents/drawing/${documentId}`,
+        {filePath: imageURL},
+        {
+          headers: {
+            "Content-Type":  "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+      );
+      
       if (response.status === 200) {
         // console.log(response.data)
         yield put(saveImageSuccess(response.data));
-      } else if (response.status === 401) {
-      } else {
+   
+      }
+      else if (response.data.error === "토큰 기한 만료") {
+        yield put(saveImageFailure("토큰이 만료되었습니다."));
+      }
+      else {
         yield put(saveImageFailure("사진 업로드가 실행되지 않았습니다."));
       }
     }
@@ -101,8 +112,10 @@ function* saveImage(action: any) {
   }
 }
 
+
 function* imageSagas() {
   yield takeLatest(generateImageRequest.type, generateImage);
+  yield takeLatest(saveImageRequest.type,saveImage)
 }
 
 export default imageSagas;

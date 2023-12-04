@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ImageState {
-  imageLoadData: string[] | null;
-  imageSaveData: string | null;
+  imageLoadData: string[] | null ;
+  imageSaveData : string | null
   loading: boolean;
   error: string | null;
 }
@@ -40,11 +40,12 @@ const imageReducers = createSlice({
     },
     saveImageFailure: (state, action: PayloadAction<string>) => {
       state.loading = true;
-      state.error = action.payload;
+      state.error = action.payload;;
     },
-    // imageReset:(state) => {
-    //   state.imageLoadData = null;
-    // }
+    imageReset:(state) => {
+      state.imageLoadData = null;
+    }
+
   },
 });
 

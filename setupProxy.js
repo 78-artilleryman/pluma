@@ -45,4 +45,12 @@ module.exports = function (app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    "/v2/txt2img",
+    // 이미지 생성 엔드포인트를 백엔드 서버 주소로 대상 설정합니다.
+    createProxyMiddleware({
+      target: "https://api.novita.ai", // 백엔드 서버 주소
+      changeOrigin: true,
+    })
+  );
 };

@@ -11,6 +11,7 @@ import "./App.module.scss";
 import DocumentDetailPage from "./pages/Detail/DocumentDetail";
 import { getTheme } from "./store/theme/themeSelectors";
 import { setTheme } from "./store/theme/themeReducers";
+
 import GoogleRedirectHandler from "./components/Auth/GoogleRedirectHandler";
 import KakaoRedirectHandler from "./components/Auth/KakaoRedirectHandler";
 import NaverRedirectHandler from "./components/Auth/NaverRedirectHandler";
