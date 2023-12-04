@@ -28,6 +28,12 @@ import {
   kakaoLoginFailure,
   kakaoLoginSuccess,
   kakaoLoginRequest,
+  googleLoginRequest,
+  googleLoginSuccess,
+  googleLoginFailure,
+  naverLoginSuccess,
+  naverLoginFailure,
+  naverLoginRequest,
 } from "./authActions";
 import { Dispatch } from "redux";
 
@@ -54,7 +60,7 @@ function* fetchUserInfo() {
     if (response.status === 200) {
       // 응답 데이터에서 사용자 정보 추출
       const userInfo = response.data;
-      setTokenToCookie("user", JSON.stringify(response.data));
+      localStorage.setItem("user", JSON.stringify(response.data));
       yield put(fetchUserInfoSuccess(userInfo));
       yield put(loginSuccess(userInfo.name));
     } else {
@@ -156,6 +162,7 @@ function* refreshTokenSaga() {
       const refresh_token = response.data?.refreshToken;
       // 새로 발급받은 access_token을 쿠키에 저장
       setTokenToCookie("access_token", access_token, 60);
+      // axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       setTokenToCookie("refresh_token", refresh_token, 296);
       yield put(refreshTokenSuccess());
     } else {
@@ -193,7 +200,7 @@ function* login(action: any) {
 
       // access_token과 refresh_token을 쿠키에 저장
       setTokenToCookie("access_token", access_token, 60);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+      // axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       setTokenToCookie("refresh_token", refresh_token, 296);
 
       // 로그인 성공 액션 디스패치
@@ -213,7 +220,7 @@ function* logout(action: any) {
     clearTokenFromCookie("access_token");
     delete axios.defaults.headers.common["ACCESS_TOKEN"];
     clearTokenFromCookie("refresh_token");
-    clearTokenFromCookie("user");
+    localStorage.removeItem("user");
 
     yield put(logoutSuccess("로그아웃 성공"));
   } catch (error) {
@@ -248,20 +255,67 @@ function* register(action: any) {
 // 카카오 로그인 사가
 function* kakaoLogin(action: any) {
   try {
-    console.log(action);
-    // 카카오 토큰 API 호출
+    console.log(action); // 카카오 토큰 API 호출
     const response: AxiosResponse<any> = yield call(() =>
       axios.get(`/oauth/kakao?code=${action.payload}`)
     );
     if (response.status === 200) {
       // 로그인 성공 처리
       console.log(response.data);
+      setTokenToCookie("access_token", response.data.accessToken, 60);
+      setTokenToCookie("refresh_token", response.data.refreshToken, 296);
       yield put(kakaoLoginSuccess(response.data));
+      yield put(fetchUserInfoRequest());
     } else {
       yield put(kakaoLoginFailure("카카오 로그인 실패"));
     }
   } catch (error) {
+    console.log(error);
     yield put(kakaoLoginFailure("카카오 로그인 실패"));
+  }
+}
+// 구글 로그인 사가
+function* googleLogin(action: any) {
+  try {
+    console.log(action); // 카카오 토큰 API 호출
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get(`/oauth/google?code=${action.payload}`)
+    );
+    if (response.status === 200) {
+      // 로그인 성공 처리
+      console.log(response.data);
+      setTokenToCookie("access_token", response.data.accessToken, 60);
+      setTokenToCookie("refresh_token", response.data.refreshToken, 296);
+      yield put(googleLoginSuccess(response.data));
+      yield put(fetchUserInfoRequest());
+    } else {
+      yield put(googleLoginFailure("구글 로그인 실패"));
+    }
+  } catch (error) {
+    console.log(error);
+    yield put(googleLoginFailure("구글 로그인 실패"));
+  }
+}
+// 네이버 로그인 사가
+function* naverLogin(action: any) {
+  try {
+    console.log(action); // 카카오 토큰 API 호출
+    const response: AxiosResponse<any> = yield call(() =>
+      axios.get(`/oauth/naver?code=${action.payload}&state=1234`)
+    );
+    if (response.status === 200) {
+      // 로그인 성공 처리
+      console.log(response.data);
+      setTokenToCookie("access_token", response.data.accessToken, 60);
+      setTokenToCookie("refresh_token", response.data.refreshToken, 296);
+      yield put(naverLoginSuccess(response.data));
+      yield put(fetchUserInfoRequest());
+    } else {
+      yield put(naverLoginFailure("구글 로그인 실패"));
+    }
+  } catch (error) {
+    console.log(error);
+    yield put(naverLoginFailure("구글 로그인 실패"));
   }
 }
 
@@ -275,6 +329,8 @@ function* authSaga() {
   yield takeLatest(logoutRequest.type, logout);
   yield takeLatest(registerRequest.type, register);
   yield takeLatest(kakaoLoginRequest.type, kakaoLogin);
+  yield takeLatest(googleLoginRequest.type, googleLogin);
+  yield takeLatest(naverLoginRequest.type, naverLogin);
 }
 
 export default authSaga;
