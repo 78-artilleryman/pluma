@@ -1,0 +1,71 @@
+.socialLoginTitle {
+  display: flex;
+  padding-top: 20px;
+  width: 430px;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 14px;
+  margin: 8px 0;
+  &::before,
+  &::after {
+    content: "";
+    flex-grow: 1;
+    margin: 0 16px;
+    background-color: rgba(0, 0, 0, 0.2);
+    height: 1px;
+  }
+}
+.socialLoginContainer {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+  width: 400px;
+}
+
+/* 소셜 로그인 버튼의 기본 스타일 */
+.socialLoginButton {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 5px !important;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s, opacity 0.3s;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 네이버 로그인 버튼 스타일 */
+.socialLoginButton.naver {
+  background: url("../../assets/naverLogo.png") center/contain no-repeat;
+  background-color: #03c75a; /* 네이버 녹색 */
+  &:hover {
+    background-color: #03c75a !important; /* 호버 상태에서 네이버 녹색 유지 */
+  }
+}
+
+/* 카카오 로그인 버튼 스타일 */
+.socialLoginButton.kakao {
+  background: url("../../assets/kakaoLogo.png") center/contain no-repeat;
+  background-color: #fee500; /* 카카오 노랑색 */
+  &:hover {
+    background-color: #fee500 !important; /* 호버 상태에서 카카오 노랑색 유지 */
+  }
+}
+
+/* 구글 로그인 버튼 스타일 */
+.socialLoginButton.google {
+  background: url("../../assets/googleLogoLight.png") center/contain no-repeat;
+  background-color: #ffffff; /* 구글 흰색 */
+  background-size: 60%; /* 로고 크기를 줄입니다. */
+
+  &:hover {
+    background-color: #ffffff !important; /* 호버 상태에서 구글 흰색 유지 */
+  }
+}
+
+/* 호버 효과: 버튼 크기 변화와 투명도 변경 */
+.socialLoginButton:hover {
+  transform: scale(1.1);
+  transition: ease-in-out 0.1s !important;
+  opacity: 0.8;
+}

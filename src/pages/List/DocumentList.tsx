@@ -32,6 +32,7 @@ const DocumentList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false);
   const [forceRender, setForceRender] = useState(false); // 다시 렌더링을 강제로 일으키기 위한 상태 변수
+
   const [params, setParams] = useState({
     model_name: "dreamshaper_8_93211.safetensors",
     prompt: "",
@@ -54,6 +55,7 @@ const DocumentList: React.FC = () => {
   const aiImage = useSelector(selectImage);
 
 
+
   useEffect(() => {
     if (!isAuthenticated) {
       setIsModalOpen(true);
@@ -74,6 +76,7 @@ const DocumentList: React.FC = () => {
       }
     };
   
+
 
     // ESC 키 이벤트 리스너를 등록합니다.
     document.addEventListener("keydown", handleEscapeKeyPress);
@@ -137,6 +140,7 @@ const DocumentList: React.FC = () => {
     setIsTitleImageModalOpen(true);
   };
   const onChangePrompt = (event: ChangeEvent<HTMLTextAreaElement>) => {
+
     const value = event.target.value;
     setParams((prevParams) => ({
       ...prevParams,
@@ -182,6 +186,7 @@ const DocumentList: React.FC = () => {
   }
 
   
+
   return (
     <Layout>
       <h2 style={{ textAlign: "center", fontWeight: "600" }}>문서 목록</h2>
@@ -270,6 +275,7 @@ const DocumentList: React.FC = () => {
             )}
             </div>
             {aiImage && aiImage.imageLoadData  ? (
+
               <button
                 className={styles.button}
                 style={{ marginRight: "10px" }}

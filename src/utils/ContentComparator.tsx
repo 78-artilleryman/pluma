@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DiffViewer, { DiffMethod } from "react-diff-viewer";
 import { htmlToText } from "html-to-text";
 import { getInitialTheme } from "./theme"; // theme.js 파일의 위치에 맞게 경로를 조정하세요.
+
 import { useSelector } from "react-redux";
 import { getTheme } from "src/store/theme/themeSelectors";
 

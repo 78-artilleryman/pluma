@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { timeSince } from "src/utils/TimeSince";
 import { DocumentInfo } from "../../store/document/types";
-import { getInitialTheme } from "../../utils/theme";
 import styles from "./Document.module.scss";
 import CreateModal from "src/utils/CreateModal";
 
@@ -12,16 +11,18 @@ interface DocumentProps {
   documentData: DocumentInfo;
   onDeleteDocument: (documentId: number) => void;
   onTitleImageDocument: (documentId: number)=> void;
-
 }
-
-const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument, onTitleImageDocument }) => {
+const DocumentItem: React.FC<DocumentProps> = ({
+  documentData,
+  onDeleteDocument,
+  onTitleImageDocument,
+}) => {
   const [timeAgo, setTimeAgo] = useState("");
   const amazonaws = "https://dowonbucket.s3.ap-northeast-2.amazonaws.com/drawing/"
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", getInitialTheme());
-  }, []);
+  // useEffect(() => {
+  //   document.documentElement.setAttribute("data-theme", getInitialTheme());
+  // }, []);
   useEffect(() => {
     const timeAgoString = timeSince(documentData.regDate);
     setTimeAgo(timeAgoString);
@@ -45,6 +46,11 @@ const DocumentItem: React.FC<DocumentProps> = ({ documentData, onDeleteDocument,
     event.preventDefault();
     onTitleImageDocument(documentData.documentId);
     setIsMenuOpen(false);
+  };
+
+  const handleTitleImageClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    onTitleImageDocument(documentData.documentId);
   };
   return (
     <Link to={`/document/${documentData.documentId}`} className={styles.documentLink}>

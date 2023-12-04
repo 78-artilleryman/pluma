@@ -12,12 +12,11 @@ import {
 import { getTokenFromCookie } from "../../utils/tokenUtils";
 
 
-const API_KEY = "";
 
 const api = axios.create({
   baseURL: "https://api.novita.ai",
   headers: {
-    Authorization: `Bearer ${API_KEY}`,
+    Authorization: `Bearer ${process.env.REACT_APP_IMAGE_GENERATE_API_KEY}`,
     "Content-Type": "application/json",
   },
 });
@@ -77,6 +76,7 @@ function* checkImageStatus(taskId: string, n_iter: number) {
 
 // 이미지 저장
 function* saveImage(action: any){
+
   const { documentId, imageURL } = action.payload;
   try {
     const access_token = getTokenFromCookie("access_token");

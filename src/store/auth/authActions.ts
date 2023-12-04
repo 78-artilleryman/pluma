@@ -53,3 +53,17 @@ export const checkEmailAuthenticationSuccess = createAction("auth/checkEmailAuth
 export const checkEmailAuthenticationFailure = createAction<string>(
   "auth/checkEmailAuthenticationFailure"
 );
+
+// 카카오 로그인 관련 액션
+export const kakaoLoginRequest = createAction<string>("auth/kakaoLoginRequest");
+export const kakaoLoginSuccess = createAction<{ userData: any }>("auth/kakaoLoginSuccess");
+export const kakaoLoginFailure = createAction<string>("auth/kakaoLoginFailure");
+
+// 구글 로그인 관련 액션
+export const googleLoginRequest = createAction<string>("auth/googleLoginRequest");
+export const googleLoginSuccess = createAction<{ userData: any }>("auth/googleLoginSuccess");
+export const googleLoginFailure = createAction<string>("auth/googleLoginFailure");
+// 네이버 로그인 관련 액션
+export const naverLoginRequest = createAction<string>("auth/naverLoginRequest");
+export const naverLoginSuccess = createAction<{ userData: any }>("auth/naverLoginSuccess");
+export const naverLoginFailure = createAction<string>("auth/naverLoginFailure");

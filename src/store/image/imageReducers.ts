@@ -45,6 +45,7 @@ const imageReducers = createSlice({
     imageReset:(state) => {
       state.imageLoadData = null;
     }
+
   },
 });
 
